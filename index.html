@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium EMI Calculator</title>
+    <meta name="description" content="A beautiful and modern EMI calculator.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="background-elements">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+
+    <main class="calculator-container">
+        <header>
+            <h1>EMI Calculator</h1>
+            <p>Calculate your monthly installments effortlessly</p>
+        </header>
+
+        <form id="emi-form">
+            <div class="input-group">
+                <label for="total-amount">Total Amount</label>
+                <div class="input-wrapper">
+                    <span class="currency">₹</span>
+                    <input type="number" id="total-amount" placeholder="e.g. 500000" required min="0" step="any">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="outstanding-amount">Total Outstanding Amount</label>
+                <div class="input-wrapper">
+                    <span class="currency">₹</span>
+                    <input type="number" id="outstanding-amount" placeholder="e.g. 400000" required min="0" step="any">
+                </div>
+            </div>
+
+            <div class="input-group row">
+                <div class="half">
+                    <label for="interest-rate">Interest Rate</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="interest-rate" placeholder="e.g. 12" required min="0" step="any">
+                        <span class="percent">%</span>
+                    </div>
+                </div>
+                <div class="half">
+                    <label for="tenure">Tenure</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="tenure" placeholder="Months" required min="1" step="1">
+                        <span class="unit">Mo</span>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="calculate-btn">
+                <span>Calculate EMI</span>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+        </form>
+
+        <div id="results" class="results hidden">
+            <div class="result-card primary">
+                <h3>Current EMI</h3>
+                <div class="value" id="monthly-emi">₹0.00</div>
+            </div>
+            
+            <div class="result-card secondary">
+                <div class="card-header">
+                    <h3>Possible EMI (at 9.99%)</h3>
+                    <span class="badge">Special Offer</span>
+                </div>
+                <div class="comparison-details">
+                    <div class="detail-row">
+                        <span>Possible EMI:</span>
+                        <strong id="emi-999">₹0.00</strong>
+                    </div>
+                    <div class="detail-row highlight">
+                        <span>Monthly Savings:</span>
+                        <strong id="emi-diff">₹0.00</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
