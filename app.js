@@ -10,17 +10,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const tenureUnitLabel = document.getElementById('tenure-unit-label');
     const tenureUnitButtons = document.querySelectorAll('#tenure-unit-switch .unit-btn');
     
-    // Custom Offer Controls
-    const customOfferToggle = document.getElementById('custom-offer-toggle');
-    const customOfferControls = document.getElementById('custom-offer-controls');
-    const offerTenureYearsInput = document.getElementById('offer-tenure-years');
-    const formChipButtons = document.querySelectorAll('.chips-group .chip-btn');
-    
     // Result displays
     const monthlyEmiDisplay = document.getElementById('monthly-emi');
     const currentAnnualDisplay = document.getElementById('current-annual-payment');
     const currentTotalDisplay = document.getElementById('current-total-payment');
     
+    const offerRateTitle = document.getElementById('offer-rate-title');
+    const resultOfferRateInput = document.getElementById('result-offer-rate');
     const offerTenurePill = document.getElementById('offer-tenure-pill');
     const emi999Display = document.getElementById('emi-999');
     const offerAnnualDisplay = document.getElementById('offer-annual-payment');
@@ -38,6 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const breakdownContent = document.getElementById('breakdown-content');
     const breakdownTableBody = document.getElementById('breakdown-table-body');
     const breakdownTableFoot = document.getElementById('breakdown-table-foot');
+    const thOfferHeader = document.getElementById('th-offer-header');
 
     let tenureUnit = 'months'; // 'months' or 'years'
     let currentOfferYears = 3;
@@ -96,56 +93,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Toggle Custom Offer Section
-    customOfferToggle.addEventListener('change', () => {
-        if (customOfferToggle.checked) {
-            customOfferControls.classList.remove('collapsed');
-        } else {
-            customOfferControls.classList.add('collapsed');
-        }
-        if (!resultsSection.classList.contains('hidden')) {
-            performCalculation();
-        }
-    });
-
-    // Form Quick Chips (1, 2, 3, 4, 5 Yrs)
-    formChipButtons.forEach(chip => {
-        chip.addEventListener('click', () => {
-            formChipButtons.forEach(c => c.classList.remove('active'));
-            chip.classList.add('active');
-            const years = parseFloat(chip.dataset.years);
-            offerTenureYearsInput.value = years;
-            currentOfferYears = years;
-            syncResultPills(years);
-            if (!resultsSection.classList.contains('hidden')) {
-                performCalculation();
-            }
-        });
-    });
-
-    offerTenureYearsInput.addEventListener('input', () => {
-        const val = parseFloat(offerTenureYearsInput.value);
-        if (!isNaN(val) && val > 0) {
-            currentOfferYears = val;
-            syncChipActiveState(val);
-            syncResultPills(val);
-            if (!resultsSection.classList.contains('hidden')) {
-                performCalculation();
-            }
-        }
-    });
-
-    // Synchronize Active Chip State in Form
-    const syncChipActiveState = (years) => {
-        formChipButtons.forEach(chip => {
-            if (parseFloat(chip.dataset.years) === years) {
-                chip.classList.add('active');
-            } else {
-                chip.classList.remove('active');
-            }
-        });
-    };
-
     // Synchronize Result Quick Pills
     const syncResultPills = (years) => {
         resultTenurePills.forEach(pill => {
@@ -157,34 +104,40 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    // Live Pill Buttons in Result Card
+    // Live Offer Interest Rate Input in Results Card
+    if (resultOfferRateInput) {
+        resultOfferRateInput.addEventListener('input', () => {
+            performCalculation();
+        });
+    }
+
+    // Live Pill Buttons in Result Card (1 Yr to 7 Yrs)
     resultTenurePills.forEach(pill => {
         pill.addEventListener('click', () => {
             const years = parseFloat(pill.dataset.years);
             currentOfferYears = years;
-            offerTenureYearsInput.value = years;
-            customOfferToggle.checked = true;
-            customOfferControls.classList.remove('collapsed');
-            syncChipActiveState(years);
             syncResultPills(years);
             performCalculation();
         });
     });
 
     // Year-by-Year Breakdown Toggle
-    breakdownToggleBtn.addEventListener('click', () => {
-        const isHidden = breakdownContent.classList.contains('hidden');
-        if (isHidden) {
-            breakdownContent.classList.remove('hidden');
-            breakdownToggleBtn.classList.add('expanded');
-        } else {
-            breakdownContent.classList.add('hidden');
-            breakdownToggleBtn.classList.remove('expanded');
-        }
-    });
+    if (breakdownToggleBtn) {
+        breakdownToggleBtn.addEventListener('click', () => {
+            const isHidden = breakdownContent.classList.contains('hidden');
+            if (isHidden) {
+                breakdownContent.classList.remove('hidden');
+                breakdownToggleBtn.classList.add('expanded');
+            } else {
+                breakdownContent.classList.add('hidden');
+                breakdownToggleBtn.classList.remove('expanded');
+            }
+        });
+    }
 
     // Populate Year-by-Year Schedule Table
     const populateYearlyBreakdown = (userEMI, userMonths, specialEMI, specialMonths) => {
+        if (!breakdownTableBody) return;
         breakdownTableBody.innerHTML = '';
         if (breakdownTableFoot) breakdownTableFoot.innerHTML = '';
 
@@ -256,23 +209,28 @@ document.addEventListener('DOMContentLoaded', () => {
         const userMonths = tenureUnit === 'years' ? Math.round(tenureValue * 12) : Math.round(tenureValue);
         const userYears = (userMonths / 12).toFixed(1).replace(/\.0$/, '');
 
-        // Determine special 9.99% tenure (months)
-        let specialMonths = userMonths;
-        let specialYearsFormatted = `${userYears} Yrs (${userMonths} Mo)`;
-
-        if (customOfferToggle.checked) {
-            const customYears = parseFloat(offerTenureYearsInput.value) || currentOfferYears || 3;
-            specialMonths = Math.round(customYears * 12);
-            specialYearsFormatted = `${customYears} Yrs (${specialMonths} Mo)`;
+        // Determine special offer rate and tenure (months)
+        let specialRate = 9.99;
+        if (resultOfferRateInput) {
+            const val = parseFloat(resultOfferRateInput.value);
+            if (!isNaN(val) && val >= 0) {
+                specialRate = val;
+            }
         }
+
+        const specialMonths = Math.round(currentOfferYears * 12);
+        const specialYearsFormatted = `${currentOfferYears} Yrs (${specialMonths} Mo)`;
+
+        // Update Dynamic Titles & Headers
+        if (offerRateTitle) offerRateTitle.textContent = specialRate.toString();
+        if (thOfferHeader) thOfferHeader.textContent = `${specialRate}% Offer (Yr)`;
 
         // Calculate User Loan Metrics
         const userEMI = calculateEMI(outstandingAmount, interestRate, userMonths);
         const userAnnualPayment = userEMI * Math.min(12, userMonths);
         const userTotalPayment = userEMI * userMonths;
 
-        // Calculate 9.99% Special Loan Metrics
-        const specialRate = 9.99;
+        // Calculate Special Offer Loan Metrics
         const specialEMI = calculateEMI(outstandingAmount, specialRate, specialMonths);
         const specialAnnualPayment = specialEMI * Math.min(12, specialMonths);
         const specialTotalPayment = specialEMI * specialMonths;

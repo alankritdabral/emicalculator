@@ -62,43 +62,6 @@
                 </div>
             </div>
 
-            <!-- Custom 9.99% Offer Tenure Section -->
-            <div class="custom-offer-section">
-                <div class="section-toggle">
-                    <label class="custom-toggle-label" for="custom-offer-toggle">
-                        <span class="toggle-icon">✨</span>
-                        <span class="toggle-text">Customize Tenure for 9.99% Offer</span>
-                    </label>
-                    <label class="switch">
-                        <input type="checkbox" id="custom-offer-toggle">
-                        <span class="slider round"></span>
-                    </label>
-                </div>
-
-                <div id="custom-offer-controls" class="custom-offer-controls collapsed">
-                    <div class="input-group">
-                        <label for="offer-tenure-years">9.99% Offer Tenure (in Years)</label>
-                        <div class="input-wrapper">
-                            <input type="number" id="offer-tenure-years" placeholder="e.g. 3" min="0.5" max="30" step="0.5" value="3">
-                            <span class="unit">Years</span>
-                        </div>
-                    </div>
-
-                    <div class="quick-chips">
-                        <span class="chips-label">Quick select:</span>
-                        <div class="chips-group">
-                            <button type="button" class="chip-btn" data-years="1">1 Yr</button>
-                            <button type="button" class="chip-btn" data-years="2">2 Yrs</button>
-                            <button type="button" class="chip-btn active" data-years="3">3 Yrs</button>
-                            <button type="button" class="chip-btn" data-years="4">4 Yrs</button>
-                            <button type="button" class="chip-btn" data-years="5">5 Yrs</button>
-                            <button type="button" class="chip-btn" data-years="6">6 Yrs</button>
-                            <button type="button" class="chip-btn" data-years="7">7 Yrs</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <button type="submit" class="calculate-btn" id="calculate-btn">
                 <span>Calculate & Compare</span>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -119,27 +82,37 @@
                 </div>
             </div>
             
-            <!-- Special 9.99% Offer Comparison -->
+            <!-- Special Offer Comparison -->
             <div class="result-card secondary">
                 <div class="card-header">
                     <div class="header-title">
-                        <h3>9.99% Special Offer</h3>
-                        <span class="badge">Low Interest Offer</span>
+                        <h3 id="offer-title"><span id="offer-rate-title">9.99</span>% Special Offer</h3>
+                        <span class="badge">Special Rate</span>
                     </div>
                     <div class="offer-tenure-pill" id="offer-tenure-pill">Tenure: 3 Yrs (36 Mo)</div>
                 </div>
 
-                <!-- Live Tenure Adjuster in Results -->
-                <div class="result-tenure-adjuster">
-                    <span class="adjuster-label">Adjust 9.99% Tenure:</span>
-                    <div class="pill-buttons" id="result-tenure-pills">
-                        <button type="button" class="pill-btn" data-years="1">1 Yr</button>
-                        <button type="button" class="pill-btn" data-years="2">2 Yrs</button>
-                        <button type="button" class="pill-btn active" data-years="3">3 Yrs</button>
-                        <button type="button" class="pill-btn" data-years="4">4 Yrs</button>
-                        <button type="button" class="pill-btn" data-years="5">5 Yrs</button>
-                        <button type="button" class="pill-btn" data-years="6">6 Yrs</button>
-                        <button type="button" class="pill-btn" data-years="7">7 Yrs</button>
+                <!-- Live Rate & Tenure Adjuster in Results -->
+                <div class="result-live-adjusters">
+                    <div class="live-rate-adjuster">
+                        <label for="result-offer-rate">Offer Rate:</label>
+                        <div class="input-wrapper mini">
+                            <input type="number" id="result-offer-rate" value="9.99" min="0" max="100" step="0.01">
+                            <span class="percent">%</span>
+                        </div>
+                    </div>
+
+                    <div class="result-tenure-adjuster">
+                        <span class="adjuster-label">Tenure:</span>
+                        <div class="pill-buttons" id="result-tenure-pills">
+                            <button type="button" class="pill-btn" data-years="1">1 Yr</button>
+                            <button type="button" class="pill-btn" data-years="2">2 Yrs</button>
+                            <button type="button" class="pill-btn active" data-years="3">3 Yrs</button>
+                            <button type="button" class="pill-btn" data-years="4">4 Yrs</button>
+                            <button type="button" class="pill-btn" data-years="5">5 Yrs</button>
+                            <button type="button" class="pill-btn" data-years="6">6 Yrs</button>
+                            <button type="button" class="pill-btn" data-years="7">7 Yrs</button>
+                        </div>
                     </div>
                 </div>
 
@@ -197,7 +170,7 @@
                             <tr>
                                 <th>Year</th>
                                 <th>Current (Yr)</th>
-                                <th>9.99% Offer (Yr)</th>
+                                <th id="th-offer-header">Offer (Yr)</th>
                                 <th>Year Difference</th>
                             </tr>
                         </thead>
