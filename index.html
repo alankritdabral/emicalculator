@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Premium EMI Calculator - Compare & Save</title>
-    <meta name="description" content="Calculate your loan EMIs, compare with 9.99% special rate, customize tenures and see yearly savings.">
+    <title>Loan Refinance & EMI Calculator - Outstanding Balance & Savings</title>
+    <meta name="description" content="Calculate your loan EMIs, automatic outstanding amount based on issue date and 21st cutoff rule, and compare savings with special interest rates.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -18,44 +18,61 @@
 
     <main class="calculator-container">
         <header>
-            <h1>EMI Calculator</h1>
-            <p>Calculate your monthly installments & compare with 9.99% offer</p>
+            <h1>EMI & Refinance Calculator</h1>
+            <p>Calculate your outstanding loan balance & compare with special offer rates</p>
         </header>
 
         <form id="emi-form">
+            <!-- Total Loan Amount -->
             <div class="input-group">
-                <label for="loan-amount">Loan Amount</label>
+                <label for="loan-amount">Total Loan Amount</label>
                 <div class="input-wrapper">
                     <span class="currency">₹</span>
-                    <input type="number" id="loan-amount" placeholder="e.g. 500000" required min="0" step="any">
+                    <input type="number" id="loan-amount" placeholder="e.g. 500000" required min="1" step="any" value="500000">
                 </div>
             </div>
 
+            <!-- Date of Loan Issued -->
+            <div class="input-group">
+                <div class="label-with-hint">
+                    <label for="loan-issue-date">Date of Loan Issued</label>
+                    <span class="cutoff-hint">Cutoff: 21st of month</span>
+                </div>
+                <div class="input-wrapper date-wrapper">
+                    <input type="date" id="loan-issue-date" required>
+                </div>
+                <div class="date-rule-explanation" id="date-rule-badge">
+                    <span class="rule-icon">💡</span>
+                    <span id="date-rule-text">Issued on or before 21st → 1st EMI starts next month | Issued after 21st → 1st EMI starts month after next</span>
+                </div>
+            </div>
+
+            <!-- Current Rate and Tenure -->
             <div class="input-group row">
                 <div class="half">
                     <label for="interest-rate">Current Interest Rate</label>
                     <div class="input-wrapper">
-                        <input type="number" id="interest-rate" placeholder="e.g. 14.5" required min="0" max="100" step="any">
+                        <input type="number" id="interest-rate" placeholder="e.g. 14.5" required min="0.1" max="100" step="any" value="14.5">
                         <span class="percent">%</span>
                     </div>
                 </div>
                 <div class="half">
                     <div class="label-with-toggle">
-                        <label for="tenure">Tenure</label>
+                        <label for="tenure">Original Tenure</label>
                         <div class="unit-switch" id="tenure-unit-switch">
                             <button type="button" class="unit-btn active" data-unit="months">Mo</button>
                             <button type="button" class="unit-btn" data-unit="years">Yr</button>
                         </div>
                     </div>
                     <div class="input-wrapper">
-                        <input type="number" id="tenure" placeholder="36" required min="1" step="any">
+                        <input type="number" id="tenure" placeholder="36" required min="1" step="any" value="36">
                         <span class="unit" id="tenure-unit-label">Mo</span>
                     </div>
                 </div>
             </div>
 
             <button type="submit" class="calculate-btn" id="calculate-btn">
-                <span>Calculate & Compare</span>
+                <span>Calculate Outstanding & Compare</span>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
@@ -63,31 +80,86 @@
         </form>
 
         <div id="results" class="results hidden">
-            <!-- Current EMI Overview -->
-            <div class="result-card primary">
-                <div class="card-tag">Current Loan</div>
-                <h3>Current Monthly EMI</h3>
-                <div class="value" id="monthly-emi">₹0</div>
-                <div class="sub-stats">
-                    <div>Annual Payment: <strong id="current-annual-payment">₹0</strong></div>
-                    <div>Total Repayment: <strong id="current-total-payment">₹0</strong></div>
+            <!-- 1. Outstanding Amount & Loan Timeline Card -->
+            <div class="result-card outstanding-card">
+                <div class="card-header">
+                    <div class="header-title">
+                        <span class="card-tag tag-cyan">Loan Timeline & Status</span>
+                    </div>
+                    <div class="as-of-badge" id="as-of-badge">As of Today</div>
+                </div>
+
+                <!-- Timeline Schedule Badges -->
+                <div class="timeline-grid">
+                    <div class="timeline-step">
+                        <span class="step-label">Issue Date</span>
+                        <strong class="step-value" id="display-issue-date">-</strong>
+                    </div>
+                    <div class="timeline-arrow">➔</div>
+                    <div class="timeline-step highlight">
+                        <span class="step-label">1st EMI Date</span>
+                        <strong class="step-value" id="display-first-emi-date">-</strong>
+                    </div>
+                    <div class="timeline-arrow">➔</div>
+                    <div class="timeline-step">
+                        <span class="step-label">EMIs Paid / Left</span>
+                        <strong class="step-value" id="display-emi-progress-count">0 / 0</strong>
+                    </div>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="progress-bar-container">
+                    <div class="progress-bar-track">
+                        <div class="progress-bar-fill" id="progress-bar-fill" style="width: 0%;"></div>
+                    </div>
+                    <div class="progress-bar-labels">
+                        <span id="progress-percent-label">0% Completed</span>
+                        <span id="remaining-emis-label">0 EMIs Remaining</span>
+                    </div>
+                </div>
+
+                <!-- Hero Outstanding Principal Display -->
+                <div class="outstanding-hero">
+                    <span class="outstanding-title">Current Outstanding Amount</span>
+                    <div class="outstanding-value" id="display-outstanding-amount">₹0</div>
+                    <span class="outstanding-subtitle">Remaining principal balance to be cleared or refinanced</span>
+                </div>
+
+                <!-- Sub-stats: Monthly Payment, Total Interest, Total Payment -->
+                <div class="sub-stats-grid">
+                    <div class="stat-box">
+                        <span class="stat-label">Monthly Payment</span>
+                        <strong class="stat-value" id="display-monthly-payment">₹0</strong>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-label">Total Interest</span>
+                        <strong class="stat-value" id="display-total-interest">₹0</strong>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-label">Total Payment</span>
+                        <strong class="stat-value" id="display-total-repayment">₹0</strong>
+                    </div>
                 </div>
             </div>
             
-            <!-- Special Offer Comparison -->
+            <!-- 2. Special Offer Refinancing Comparison on Outstanding Amount -->
             <div class="result-card secondary">
                 <div class="card-header">
                     <div class="header-title">
-                        <h3 id="offer-title"><span id="offer-rate-title">9.99</span>% Special Offer</h3>
-                        <span class="badge">Special Rate</span>
+                        <h3 id="offer-title"><span id="offer-rate-title">9.99</span>% Special Offer Rate</h3>
+                        <span class="badge">Refinance Offer</span>
                     </div>
                     <div class="offer-tenure-pill" id="offer-tenure-pill">Tenure: 3 Yrs (36 Mo)</div>
+                </div>
+
+                <div class="offer-base-notice">
+                    <span>Calculated on <strong id="offer-calculated-principal">₹0</strong> Outstanding Principal</span>
                 </div>
 
                 <!-- Live Rate & Tenure Adjuster in Results -->
                 <div class="result-live-adjusters">
                     <div class="live-rate-adjuster">
-                        <label for="result-offer-rate">Offer Rate:</label>
+                        <label for="result-offer-rate">Offer Interest Rate:</label>
                         <div class="input-wrapper mini">
                             <input type="number" id="result-offer-rate" value="9.99" min="0" max="100" step="0.01">
                             <span class="percent">%</span>
@@ -95,35 +167,39 @@
                     </div>
 
                     <div class="result-tenure-adjuster">
-                        <span class="adjuster-label">Tenure:</span>
-                        <div class="pill-buttons" id="result-tenure-pills">
-                            <button type="button" class="pill-btn" data-years="1">1 Yr</button>
-                            <button type="button" class="pill-btn" data-years="2">2 Yrs</button>
-                            <button type="button" class="pill-btn active" data-years="3">3 Yrs</button>
-                            <button type="button" class="pill-btn" data-years="4">4 Yrs</button>
-                            <button type="button" class="pill-btn" data-years="5">5 Yrs</button>
-                            <button type="button" class="pill-btn" data-years="6">6 Yrs</button>
-                            <button type="button" class="pill-btn" data-years="7">7 Yrs</button>
-                            <button type="button" class="pill-btn" data-years="8">8 Yrs</button>
-                            <button type="button" class="pill-btn" data-years="9">9 Yrs</button>
-                            <button type="button" class="pill-btn" data-years="10">10 Yrs</button>
+                        <div class="adjuster-header">
+                            <span class="adjuster-label">Refinance Tenure:</span>
+                        </div>
+                        
+                        <!-- Custom Months Direct Input -->
+                        <div class="custom-months-box">
+                            <div class="custom-months-input-group">
+                                <label for="result-offer-months">Tenure (Months):</label>
+                                <div class="input-wrapper mini tenure-input-wrapper">
+                                    <input type="number" id="result-offer-months" value="36" min="1" max="360" step="1" placeholder="36">
+                                    <span class="unit">Mo</span>
+                                </div>
+                            </div>
+                            <div class="tenure-conversion-badge" id="tenure-conversion-badge">
+                                36 Months (3.0 Yrs)
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="comparison-details">
                     <div class="detail-row">
-                        <span>Offer Monthly EMI:</span>
+                        <span>New Offer Monthly EMI:</span>
                         <strong id="emi-999">₹0</strong>
                     </div>
 
                     <div class="detail-row">
-                        <span>Offer Annual Payment:</span>
+                        <span>New Offer Annual Payment:</span>
                         <strong id="offer-annual-payment">₹0</strong>
                     </div>
 
                     <div class="detail-row">
-                        <span>Offer Total Repayment:</span>
+                        <span>New Offer Total Repayment:</span>
                         <strong id="offer-total-payment">₹0</strong>
                     </div>
 
@@ -148,36 +224,6 @@
                 </div>
             </div>
 
-            <!-- Yearly Breakdown Schedule Accordion -->
-            <div class="breakdown-toggle-wrapper">
-                <button type="button" class="breakdown-btn" id="breakdown-toggle-btn">
-                    <span>📊 View Year-by-Year Comparison</span>
-                    <svg class="chevron-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M6 9l6 6 6-6"/>
-                    </svg>
-                </button>
-            </div>
-
-            <div id="breakdown-content" class="breakdown-content hidden">
-                <div class="table-responsive">
-                    <table class="breakdown-table">
-                        <thead>
-                            <tr>
-                                <th>Year</th>
-                                <th>Current (Yr)</th>
-                                <th id="th-offer-header">Offer (Yr)</th>
-                                <th>Year Difference</th>
-                            </tr>
-                        </thead>
-                        <tbody id="breakdown-table-body">
-                            <!-- Populated dynamically -->
-                        </tbody>
-                        <tfoot id="breakdown-table-foot">
-                            <!-- Populated dynamically with Total Payment -->
-                        </tfoot>
-                    </table>
-                </div>
-            </div>
         </div>
     </main>
 

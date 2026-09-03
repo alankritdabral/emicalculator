@@ -4,39 +4,58 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Inputs
     const loanAmountInput = document.getElementById('loan-amount');
+    const loanIssueDateInput = document.getElementById('loan-issue-date');
     const interestRateInput = document.getElementById('interest-rate');
     const tenureInput = document.getElementById('tenure');
     const tenureUnitLabel = document.getElementById('tenure-unit-label');
     const tenureUnitButtons = document.querySelectorAll('#tenure-unit-switch .unit-btn');
+    const dateRuleBadge = document.getElementById('date-rule-badge');
+    const dateRuleText = document.getElementById('date-rule-text');
     
-    // Result displays
-    const monthlyEmiDisplay = document.getElementById('monthly-emi');
-    const currentAnnualDisplay = document.getElementById('current-annual-payment');
-    const currentTotalDisplay = document.getElementById('current-total-payment');
-    
+    // Result displays - Timeline & Outstanding Hero
+    const displayIssueDate = document.getElementById('display-issue-date');
+    const displayFirstEmiDate = document.getElementById('display-first-emi-date');
+    const displayEmiProgressCount = document.getElementById('display-emi-progress-count');
+    const progressBarFill = document.getElementById('progress-bar-fill');
+    const progressPercentLabel = document.getElementById('progress-percent-label');
+    const remainingEmisLabel = document.getElementById('remaining-emis-label');
+    const displayOutstandingAmount = document.getElementById('display-outstanding-amount');
+    const displayMonthlyPayment = document.getElementById('display-monthly-payment');
+    const displayTotalInterest = document.getElementById('display-total-interest');
+    const displayTotalRepayment = document.getElementById('display-total-repayment');
+    const asOfBadge = document.getElementById('as-of-badge');
+
+    // Offer displays
     const offerRateTitle = document.getElementById('offer-rate-title');
     const resultOfferRateInput = document.getElementById('result-offer-rate');
+    const resultOfferMonthsInput = document.getElementById('result-offer-months');
+    const tenureConversionBadge = document.getElementById('tenure-conversion-badge');
     const offerTenurePill = document.getElementById('offer-tenure-pill');
+    const offerCalculatedPrincipal = document.getElementById('offer-calculated-principal');
     const emi999Display = document.getElementById('emi-999');
     const offerAnnualDisplay = document.getElementById('offer-annual-payment');
     const offerTotalDisplay = document.getElementById('offer-total-payment');
     
+    // Difference displays
     const emiDiffDisplay = document.getElementById('emi-diff');
     const monthlyDiffLabel = document.getElementById('monthly-diff-label');
     const yearDiffDisplay = document.getElementById('year-diff');
     const yearlyDiffLabel = document.getElementById('yearly-diff-label');
     const totalDiffDisplay = document.getElementById('total-diff');
-    const totalSavingRow = document.getElementById('total-saving-row');
-    
-    const resultTenurePills = document.querySelectorAll('#result-tenure-pills .pill-btn');
-    const breakdownToggleBtn = document.getElementById('breakdown-toggle-btn');
-    const breakdownContent = document.getElementById('breakdown-content');
-    const breakdownTableBody = document.getElementById('breakdown-table-body');
-    const breakdownTableFoot = document.getElementById('breakdown-table-foot');
-    const thOfferHeader = document.getElementById('th-offer-header');
 
     let tenureUnit = 'months'; // 'months' or 'years'
-    let currentOfferYears = 3;
+    let currentOfferMonths = 36;
+
+    // Set default loan issue date to roughly 12 months ago
+    const setDefaultIssueDate = () => {
+        const today = new Date();
+        const defaultDate = new Date(today.getFullYear() - 1, today.getMonth(), 15);
+        const yyyy = defaultDate.getFullYear();
+        const mm = String(defaultDate.getMonth() + 1).padStart(2, '0');
+        const dd = String(defaultDate.getDate()).padStart(2, '0');
+        loanIssueDateInput.value = `${yyyy}-${mm}-${dd}`;
+        updateDateRulePreview();
+    };
 
     // Currency Formatter
     const formatCurrency = (amount) => {
@@ -47,7 +66,91 @@ document.addEventListener('DOMContentLoaded', () => {
         }).format(Math.round(amount));
     };
 
-    // Calculate EMI function
+    // Format Date for Clean Display (e.g. "15 Jan 2024")
+    const formatDateDisplay = (dateObj) => {
+        if (!dateObj || isNaN(dateObj.getTime())) return '-';
+        return dateObj.toLocaleDateString('en-IN', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric'
+        });
+    };
+
+    // Format Month & Year for EMI Start (e.g. "Feb 2024")
+    const formatMonthYearDisplay = (dateObj) => {
+        if (!dateObj || isNaN(dateObj.getTime())) return '-';
+        return dateObj.toLocaleDateString('en-IN', {
+            month: 'short',
+            year: 'numeric'
+        });
+    };
+
+    // Calculate First EMI Date based on the 21st cutoff rule
+    // Rule:
+    // If loan issued day <= 21 -> 1st EMI starts next month (M + 1)
+    // If loan issued day > 21  -> 1st EMI starts next to next month (M + 2)
+    const getFirstEMIDate = (issueDate) => {
+        if (!issueDate || isNaN(issueDate.getTime())) return null;
+
+        const day = issueDate.getDate();
+        const firstEmiDate = new Date(issueDate.getFullYear(), issueDate.getMonth(), 5); // Standard EMI due day: 5th
+
+        if (day <= 21) {
+            firstEmiDate.setMonth(firstEmiDate.getMonth() + 1);
+        } else {
+            firstEmiDate.setMonth(firstEmiDate.getMonth() + 2);
+        }
+
+        return firstEmiDate;
+    };
+
+    // Update the live hint badge below the issue date input
+    const updateDateRulePreview = () => {
+        const val = loanIssueDateInput.value;
+        if (!val) {
+            dateRuleText.textContent = 'Issued on or before 21st → 1st EMI next month | Issued after 21st → 1st EMI month after next';
+            return;
+        }
+
+        const [y, m, d] = val.split('-').map(Number);
+        const issueDate = new Date(y, m - 1, d);
+        const firstEmiDate = getFirstEMIDate(issueDate);
+
+        if (d <= 21) {
+            dateRuleText.innerHTML = `Disbursed on <strong>${d} ${issueDate.toLocaleDateString('en-IN', { month: 'short' })}</strong> (≤ 21st) ➔ 1st EMI starts next month in <strong>${formatMonthYearDisplay(firstEmiDate)}</strong>`;
+            dateRuleBadge.classList.remove('after-21');
+            dateRuleBadge.classList.add('before-21');
+        } else {
+            dateRuleText.innerHTML = `Disbursed on <strong>${d} ${issueDate.toLocaleDateString('en-IN', { month: 'short' })}</strong> (&gt; 21st) ➔ 1st EMI starts month after next in <strong>${formatMonthYearDisplay(firstEmiDate)}</strong>`;
+            dateRuleBadge.classList.remove('before-21');
+            dateRuleBadge.classList.add('after-21');
+        }
+    };
+
+    // Calculate elapsed EMIs up to As-Of date (Today)
+    const calculateElapsedEMIs = (firstEmiDate, totalMonths) => {
+        if (!firstEmiDate) return 0;
+        const today = new Date();
+
+        // If 1st EMI is in future
+        if (today < firstEmiDate) {
+            return 0;
+        }
+
+        // Calculate months elapsed
+        const yearDiff = today.getFullYear() - firstEmiDate.getFullYear();
+        const monthDiff = today.getMonth() - firstEmiDate.getMonth();
+        let elapsed = yearDiff * 12 + monthDiff;
+
+        // If today's date has passed the EMI due day (5th) of current month, count this month's installment
+        if (today.getDate() >= 5) {
+            elapsed += 1;
+        }
+
+        return Math.max(0, Math.min(totalMonths, elapsed));
+    };
+
+    // Calculate Standard EMI
     const calculateEMI = (principal, annualRate, months) => {
         if (!principal || principal <= 0 || !months || months <= 0) return 0;
         if (annualRate === 0) return principal / months;
@@ -60,6 +163,37 @@ document.addEventListener('DOMContentLoaded', () => {
         const denominator = Math.pow(1 + r, n) - 1;
         
         return numerator / denominator;
+    };
+
+    // Calculate Amortized Outstanding Balance and Repayment Stats
+    const calculateAmortization = (principal, annualRate, totalMonths, elapsedMonths) => {
+        const monthlyEmi = calculateEMI(principal, annualRate, totalMonths);
+        const r = annualRate / (12 * 100);
+
+        let balance = principal;
+        let principalPaidSoFar = 0;
+        let interestPaidSoFar = 0;
+
+        for (let i = 1; i <= elapsedMonths; i++) {
+            const interestForMonth = balance * r;
+            const principalForMonth = Math.min(balance, monthlyEmi - interestForMonth);
+
+            balance -= principalForMonth;
+            principalPaidSoFar += principalForMonth;
+            interestPaidSoFar += interestForMonth;
+        }
+
+        const outstandingBalance = Math.max(0, balance);
+        const remainingMonths = Math.max(0, totalMonths - elapsedMonths);
+
+        return {
+            monthlyEmi,
+            outstandingBalance,
+            principalPaidSoFar,
+            interestPaidSoFar,
+            totalPaidSoFar: principalPaidSoFar + interestPaidSoFar,
+            remainingMonths
+        };
     };
 
     // Tenure Unit Switcher (Mo / Yr)
@@ -87,128 +221,70 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if (!resultsSection.classList.contains('hidden')) {
-                performCalculation();
+                performCalculation(true);
             }
         });
     });
 
-    // Synchronize Result Quick Pills
-    const syncResultPills = (years) => {
-        resultTenurePills.forEach(pill => {
-            if (parseFloat(pill.dataset.years) === years) {
-                pill.classList.add('active');
-            } else {
-                pill.classList.remove('active');
-            }
-        });
-    };
-
-    // Live Offer Interest Rate Input in Results Card
+    // Live Offer Interest Rate Input
     if (resultOfferRateInput) {
         resultOfferRateInput.addEventListener('input', () => {
-            performCalculation();
+            performCalculation(false);
         });
     }
 
-    // Live Pill Buttons in Result Card (1 Yr to 7 Yrs)
-    resultTenurePills.forEach(pill => {
-        pill.addEventListener('click', () => {
-            const years = parseFloat(pill.dataset.years);
-            currentOfferYears = years;
-            syncResultPills(years);
-            performCalculation();
-        });
-    });
-
-    // Year-by-Year Breakdown Toggle
-    if (breakdownToggleBtn) {
-        breakdownToggleBtn.addEventListener('click', () => {
-            const isHidden = breakdownContent.classList.contains('hidden');
-            if (isHidden) {
-                breakdownContent.classList.remove('hidden');
-                breakdownToggleBtn.classList.add('expanded');
-            } else {
-                breakdownContent.classList.add('hidden');
-                breakdownToggleBtn.classList.remove('expanded');
+    // Live Custom Offer Months Input
+    if (resultOfferMonthsInput) {
+        resultOfferMonthsInput.addEventListener('input', () => {
+            const val = parseInt(resultOfferMonthsInput.value, 10);
+            if (!isNaN(val) && val > 0) {
+                currentOfferMonths = val;
+                performCalculation(false);
             }
         });
     }
 
-    // Populate Year-by-Year Schedule Table
-    const populateYearlyBreakdown = (userEMI, userMonths, specialEMI, specialMonths) => {
-        if (!breakdownTableBody) return;
-        breakdownTableBody.innerHTML = '';
-        if (breakdownTableFoot) breakdownTableFoot.innerHTML = '';
-
-        const totalYears = Math.ceil(Math.max(userMonths, specialMonths) / 12);
-        let totalUserPayment = 0;
-        let totalSpecialPayment = 0;
-
-        for (let y = 1; y <= totalYears; y++) {
-            const userMonthsInYear = Math.max(0, Math.min(12, userMonths - (y - 1) * 12));
-            const specialMonthsInYear = Math.max(0, Math.min(12, specialMonths - (y - 1) * 12));
-
-            const currentYearPayment = userEMI * userMonthsInYear;
-            const specialYearPayment = specialEMI * specialMonthsInYear;
-            const yearlyDiff = currentYearPayment - specialYearPayment;
-
-            totalUserPayment += currentYearPayment;
-            totalSpecialPayment += specialYearPayment;
-
-            const tr = document.createElement('tr');
-
-            const diffClass = yearlyDiff > 0 ? 'diff-positive' : (yearlyDiff < 0 ? 'diff-negative' : '');
-            const diffPrefix = yearlyDiff > 0 ? '+ ' : (yearlyDiff < 0 ? '- ' : '');
-            const diffText = yearlyDiff !== 0 
-                ? `${diffPrefix}${formatCurrency(Math.abs(yearlyDiff))} (${yearlyDiff > 0 ? 'Saved' : 'Cost'})`
-                : '₹0';
-
-            tr.innerHTML = `
-                <td>Year ${y}</td>
-                <td>${userMonthsInYear > 0 ? formatCurrency(currentYearPayment) : '-'}</td>
-                <td>${specialMonthsInYear > 0 ? formatCurrency(specialYearPayment) : '-'}</td>
-                <td class="${diffClass}">${diffText}</td>
-            `;
-
-            breakdownTableBody.appendChild(tr);
-        }
-
-        // Populate Total Payment Footer Row
-        if (breakdownTableFoot) {
-            const totalDiff = totalUserPayment - totalSpecialPayment;
-            const totalDiffClass = totalDiff > 0 ? 'diff-positive' : (totalDiff < 0 ? 'diff-negative' : '');
-            const totalDiffPrefix = totalDiff > 0 ? '+ ' : (totalDiff < 0 ? '- ' : '');
-            const totalDiffText = totalDiff !== 0
-                ? `${totalDiffPrefix}${formatCurrency(Math.abs(totalDiff))} (${totalDiff > 0 ? 'Total Saved' : 'Total Cost'})`
-                : '₹0';
-
-            const footTr = document.createElement('tr');
-            footTr.className = 'total-row';
-            footTr.innerHTML = `
-                <td><strong>Total Payment</strong></td>
-                <td><strong>${formatCurrency(totalUserPayment)}</strong></td>
-                <td><strong>${formatCurrency(totalSpecialPayment)}</strong></td>
-                <td class="${totalDiffClass}"><strong>${totalDiffText}</strong></td>
-            `;
-            breakdownTableFoot.appendChild(footTr);
-        }
-    };
-
     // Perform Full Calculation and UI Update
-    const performCalculation = () => {
+    // syncWithRemaining: when true, defaults Refinance Tenure directly to remaining months left
+    const performCalculation = (syncWithRemaining = false) => {
         const loanAmount = parseFloat(loanAmountInput.value);
         const interestRate = parseFloat(interestRateInput.value);
         const tenureValue = parseFloat(tenureInput.value);
+        const issueDateValue = loanIssueDateInput.value;
 
-        if (isNaN(loanAmount) || isNaN(interestRate) || isNaN(tenureValue) || loanAmount <= 0 || tenureValue <= 0) {
+        if (isNaN(loanAmount) || isNaN(interestRate) || isNaN(tenureValue) || !issueDateValue || loanAmount <= 0 || tenureValue <= 0) {
             return false;
         }
 
-        // Convert user tenure to months
-        const userMonths = tenureUnit === 'years' ? Math.round(tenureValue * 12) : Math.round(tenureValue);
-        const userYears = (userMonths / 12).toFixed(1).replace(/\.0$/, '');
+        // Parse issue date
+        const [iy, im, id] = issueDateValue.split('-').map(Number);
+        const issueDate = new Date(iy, im - 1, id);
+        const firstEmiDate = getFirstEMIDate(issueDate);
 
-        // Determine special offer rate and tenure (months)
+        // Convert user total tenure to months
+        const totalMonths = tenureUnit === 'years' ? Math.round(tenureValue * 12) : Math.round(tenureValue);
+
+        // Calculate elapsed EMIs
+        const elapsedEMIs = calculateElapsedEMIs(firstEmiDate, totalMonths);
+
+        // Run Amortization Schedule up to today
+        const amort = calculateAmortization(loanAmount, interestRate, totalMonths, elapsedEMIs);
+
+        // If syncWithRemaining is requested, automatically set Refinance Tenure to exact months left
+        if (syncWithRemaining) {
+            const defaultMonthsLeft = amort.remainingMonths > 0 ? amort.remainingMonths : totalMonths;
+            currentOfferMonths = defaultMonthsLeft;
+            if (resultOfferMonthsInput) {
+                resultOfferMonthsInput.value = defaultMonthsLeft;
+            }
+        } else if (resultOfferMonthsInput) {
+            const parsedMonths = parseInt(resultOfferMonthsInput.value, 10);
+            if (!isNaN(parsedMonths) && parsedMonths > 0) {
+                currentOfferMonths = parsedMonths;
+            }
+        }
+
+        // Determine special offer rate
         let specialRate = 9.99;
         if (resultOfferRateInput) {
             const val = parseFloat(resultOfferRateInput.value);
@@ -217,40 +293,59 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        const specialMonths = Math.round(currentOfferYears * 12);
-        const specialYearsFormatted = `${currentOfferYears} Yrs (${specialMonths} Mo)`;
+        const specialMonths = Math.max(1, currentOfferMonths);
+        const specialYears = (specialMonths / 12).toFixed(1).replace(/\.0$/, '');
+        const specialYearsFormatted = `${specialMonths} Mo (${specialYears} Yrs)`;
 
         // Update Dynamic Titles & Headers
         if (offerRateTitle) offerRateTitle.textContent = specialRate.toString();
-        if (thOfferHeader) thOfferHeader.textContent = `${specialRate}% Offer (Yr)`;
+        if (tenureConversionBadge) tenureConversionBadge.textContent = `${specialMonths} Months (${specialYears} Years)`;
 
-        // Calculate User Loan Metrics
-        const userEMI = calculateEMI(loanAmount, interestRate, userMonths);
-        const userAnnualPayment = userEMI * Math.min(12, userMonths);
-        const userTotalPayment = userEMI * userMonths;
-
-        // Calculate Special Offer Loan Metrics
-        const specialEMI = calculateEMI(loanAmount, specialRate, specialMonths);
+        // Calculate Special Offer on the Outstanding Balance
+        const refinancePrincipal = amort.outstandingBalance > 0 ? amort.outstandingBalance : loanAmount;
+        const specialEMI = calculateEMI(refinancePrincipal, specialRate, specialMonths);
         const specialAnnualPayment = specialEMI * Math.min(12, specialMonths);
-        const specialTotalPayment = specialEMI * specialMonths;
+        const specialTotalRepayment = specialEMI * specialMonths;
+
+        // Current Loan remaining outflow
+        const currentRemainingTotal = amort.monthlyEmi * amort.remainingMonths;
+        const currentAnnualPayment = amort.monthlyEmi * Math.min(12, amort.remainingMonths);
 
         // Differences
-        const monthlyDiff = userEMI - specialEMI;
-        const yearlyDiff = (userEMI * 12) - (specialEMI * 12); // Standardized annual difference
-        const totalDiff = userTotalPayment - specialTotalPayment;
+        const monthlyDiff = amort.monthlyEmi - specialEMI;
+        const yearlyDiff = (amort.monthlyEmi * 12) - (specialEMI * 12);
+        const totalDiff = currentRemainingTotal - specialTotalRepayment;
 
-        // Update Current Loan UI
-        monthlyEmiDisplay.textContent = formatCurrency(userEMI);
-        currentAnnualDisplay.textContent = formatCurrency(userAnnualPayment);
-        currentTotalDisplay.textContent = formatCurrency(userTotalPayment);
+        // 1. Update Timeline & Outstanding Status UI
+        displayIssueDate.textContent = formatDateDisplay(issueDate);
+        displayFirstEmiDate.textContent = formatMonthYearDisplay(firstEmiDate);
+        displayEmiProgressCount.textContent = `${elapsedEMIs} / ${totalMonths} EMIs`;
 
-        // Update Offer Loan UI
+        const percentPaid = totalMonths > 0 ? Math.round((elapsedEMIs / totalMonths) * 100) : 0;
+        progressBarFill.style.width = `${percentPaid}%`;
+        progressPercentLabel.textContent = `${percentPaid}% Completed (${elapsedEMIs} Paid)`;
+        remainingEmisLabel.textContent = `${amort.remainingMonths} EMIs Remaining`;
+
+        displayOutstandingAmount.textContent = formatCurrency(amort.outstandingBalance);
+        
+        const totalOriginalPayment = amort.monthlyEmi * totalMonths;
+        const totalOriginalInterest = Math.max(0, totalOriginalPayment - loanAmount);
+        
+        displayMonthlyPayment.textContent = formatCurrency(amort.monthlyEmi);
+        displayTotalInterest.textContent = formatCurrency(totalOriginalInterest);
+        displayTotalRepayment.textContent = formatCurrency(totalOriginalPayment);
+        
+        const todayDate = new Date();
+        asOfBadge.textContent = `As of ${todayDate.toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}`;
+
+        // 2. Update Refinance Offer Card
         offerTenurePill.textContent = `Tenure: ${specialYearsFormatted}`;
+        offerCalculatedPrincipal.textContent = formatCurrency(refinancePrincipal);
         emi999Display.textContent = formatCurrency(specialEMI);
         offerAnnualDisplay.textContent = formatCurrency(specialAnnualPayment);
-        offerTotalDisplay.textContent = formatCurrency(specialTotalPayment);
+        offerTotalDisplay.textContent = formatCurrency(specialTotalRepayment);
 
-        // Update Monthly Difference Card
+        // 4. Update Monthly Difference
         if (monthlyDiff > 0) {
             emiDiffDisplay.textContent = `+${formatCurrency(monthlyDiff)}`;
             emiDiffDisplay.style.color = '#34d399';
@@ -268,7 +363,7 @@ document.addEventListener('DOMContentLoaded', () => {
             monthlyDiffLabel.style.color = 'var(--text-muted)';
         }
 
-        // Update Yearly Difference Card
+        // 5. Update Yearly Difference
         if (yearlyDiff > 0) {
             yearDiffDisplay.textContent = `+${formatCurrency(yearlyDiff)}`;
             yearDiffDisplay.style.color = '#34d399';
@@ -286,7 +381,7 @@ document.addEventListener('DOMContentLoaded', () => {
             yearlyDiffLabel.style.color = 'var(--text-muted)';
         }
 
-        // Update Total Savings Row
+        // 6. Update Total Overall Savings
         if (totalDiff > 0) {
             totalDiffDisplay.textContent = `${formatCurrency(totalDiff)} (Total Saved)`;
             totalDiffDisplay.style.color = '#34d399';
@@ -298,17 +393,23 @@ document.addEventListener('DOMContentLoaded', () => {
             totalDiffDisplay.style.color = 'var(--text-main)';
         }
 
-        // Populate yearly breakdown table
-        populateYearlyBreakdown(userEMI, userMonths, specialEMI, specialMonths);
-
         return true;
     };
+
+    // Live update on date change
+    loanIssueDateInput.addEventListener('input', () => {
+        updateDateRulePreview();
+        if (!resultsSection.classList.contains('hidden')) {
+            performCalculation(true);
+        }
+    });
 
     // Form Submit Listener
     form.addEventListener('submit', (e) => {
         e.preventDefault();
 
-        const success = performCalculation();
+        // Automatically default Refinance Tenure to the exact remaining months left!
+        const success = performCalculation(true);
         if (success) {
             resultsSection.classList.remove('hidden');
             
@@ -326,8 +427,11 @@ document.addEventListener('DOMContentLoaded', () => {
     [loanAmountInput, interestRateInput, tenureInput].forEach(input => {
         input.addEventListener('input', () => {
             if (!resultsSection.classList.contains('hidden')) {
-                performCalculation();
+                performCalculation(true);
             }
         });
     });
+
+    // Initialize default date
+    setDefaultIssueDate();
 });
