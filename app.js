@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const offerTenurePill = document.getElementById('offer-tenure-pill');
     const offerCalculatedPrincipal = document.getElementById('offer-calculated-principal');
     const emi999Display = document.getElementById('emi-999');
-    const offerAnnualDisplay = document.getElementById('offer-annual-payment');
+    const offerTotalInterestDisplay = document.getElementById('offer-total-interest');
     const offerTotalDisplay = document.getElementById('offer-total-payment');
     
     // Difference displays
@@ -339,10 +339,11 @@ document.addEventListener('DOMContentLoaded', () => {
         asOfBadge.textContent = `As of ${todayDate.toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}`;
 
         // 2. Update Refinance Offer Card
+        const specialTotalInterest = Math.max(0, specialTotalRepayment - refinancePrincipal);
         offerTenurePill.textContent = `Tenure: ${specialYearsFormatted}`;
         offerCalculatedPrincipal.textContent = formatCurrency(refinancePrincipal);
         emi999Display.textContent = formatCurrency(specialEMI);
-        offerAnnualDisplay.textContent = formatCurrency(specialAnnualPayment);
+        offerTotalInterestDisplay.textContent = formatCurrency(specialTotalInterest);
         offerTotalDisplay.textContent = formatCurrency(specialTotalRepayment);
 
         // 4. Update Monthly Difference
