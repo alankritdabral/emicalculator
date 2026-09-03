@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Premium EMI Calculator</title>
-    <meta name="description" content="A beautiful and modern EMI calculator.">
+    <title>Premium EMI Calculator - Compare & Save</title>
+    <meta name="description" content="Calculate your loan EMIs, compare with 9.99% special rate, customize tenures and see yearly savings.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -19,12 +19,12 @@
     <main class="calculator-container">
         <header>
             <h1>EMI Calculator</h1>
-            <p>Calculate your monthly installments effortlessly</p>
+            <p>Calculate your monthly installments & compare with 9.99% offer</p>
         </header>
 
         <form id="emi-form">
             <div class="input-group">
-                <label for="total-amount">Total Amount</label>
+                <label for="total-amount">Total Loan Amount</label>
                 <div class="input-wrapper">
                     <span class="currency">₹</span>
                     <input type="number" id="total-amount" placeholder="e.g. 500000" required min="0" step="any">
@@ -41,23 +41,66 @@
 
             <div class="input-group row">
                 <div class="half">
-                    <label for="interest-rate">Interest Rate</label>
+                    <label for="interest-rate">Current Interest Rate</label>
                     <div class="input-wrapper">
-                        <input type="number" id="interest-rate" placeholder="e.g. 12" required min="0" step="any">
+                        <input type="number" id="interest-rate" placeholder="e.g. 14.5" required min="0" max="100" step="any">
                         <span class="percent">%</span>
                     </div>
                 </div>
                 <div class="half">
-                    <label for="tenure">Tenure</label>
+                    <div class="label-with-toggle">
+                        <label for="tenure">Tenure</label>
+                        <div class="unit-switch" id="tenure-unit-switch">
+                            <button type="button" class="unit-btn active" data-unit="months">Mo</button>
+                            <button type="button" class="unit-btn" data-unit="years">Yr</button>
+                        </div>
+                    </div>
                     <div class="input-wrapper">
-                        <input type="number" id="tenure" placeholder="Months" required min="1" step="1">
-                        <span class="unit">Mo</span>
+                        <input type="number" id="tenure" placeholder="36" required min="1" step="any">
+                        <span class="unit" id="tenure-unit-label">Mo</span>
                     </div>
                 </div>
             </div>
 
-            <button type="submit" class="calculate-btn">
-                <span>Calculate EMI</span>
+            <!-- Custom 9.99% Offer Tenure Section -->
+            <div class="custom-offer-section">
+                <div class="section-toggle">
+                    <label class="custom-toggle-label" for="custom-offer-toggle">
+                        <span class="toggle-icon">✨</span>
+                        <span class="toggle-text">Customize Tenure for 9.99% Offer</span>
+                    </label>
+                    <label class="switch">
+                        <input type="checkbox" id="custom-offer-toggle">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+
+                <div id="custom-offer-controls" class="custom-offer-controls collapsed">
+                    <div class="input-group">
+                        <label for="offer-tenure-years">9.99% Offer Tenure (in Years)</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="offer-tenure-years" placeholder="e.g. 3" min="0.5" max="30" step="0.5" value="3">
+                            <span class="unit">Years</span>
+                        </div>
+                    </div>
+
+                    <div class="quick-chips">
+                        <span class="chips-label">Quick select:</span>
+                        <div class="chips-group">
+                            <button type="button" class="chip-btn" data-years="1">1 Yr</button>
+                            <button type="button" class="chip-btn" data-years="2">2 Yrs</button>
+                            <button type="button" class="chip-btn active" data-years="3">3 Yrs</button>
+                            <button type="button" class="chip-btn" data-years="4">4 Yrs</button>
+                            <button type="button" class="chip-btn" data-years="5">5 Yrs</button>
+                            <button type="button" class="chip-btn" data-years="6">6 Yrs</button>
+                            <button type="button" class="chip-btn" data-years="7">7 Yrs</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="calculate-btn" id="calculate-btn">
+                <span>Calculate & Compare</span>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
@@ -65,25 +108,106 @@
         </form>
 
         <div id="results" class="results hidden">
+            <!-- Current EMI Overview -->
             <div class="result-card primary">
-                <h3>Current EMI</h3>
-                <div class="value" id="monthly-emi">₹0.00</div>
+                <div class="card-tag">Current Loan</div>
+                <h3>Current Monthly EMI</h3>
+                <div class="value" id="monthly-emi">₹0</div>
+                <div class="sub-stats">
+                    <div>Annual Payment: <strong id="current-annual-payment">₹0</strong></div>
+                    <div>Total Repayment: <strong id="current-total-payment">₹0</strong></div>
+                </div>
             </div>
             
+            <!-- Special 9.99% Offer Comparison -->
             <div class="result-card secondary">
                 <div class="card-header">
-                    <h3>Possible EMI (at 9.99%)</h3>
-                    <span class="badge">Special Offer</span>
+                    <div class="header-title">
+                        <h3>9.99% Special Offer</h3>
+                        <span class="badge">Low Interest Offer</span>
+                    </div>
+                    <div class="offer-tenure-pill" id="offer-tenure-pill">Tenure: 3 Yrs (36 Mo)</div>
                 </div>
+
+                <!-- Live Tenure Adjuster in Results -->
+                <div class="result-tenure-adjuster">
+                    <span class="adjuster-label">Adjust 9.99% Tenure:</span>
+                    <div class="pill-buttons" id="result-tenure-pills">
+                        <button type="button" class="pill-btn" data-years="1">1 Yr</button>
+                        <button type="button" class="pill-btn" data-years="2">2 Yrs</button>
+                        <button type="button" class="pill-btn active" data-years="3">3 Yrs</button>
+                        <button type="button" class="pill-btn" data-years="4">4 Yrs</button>
+                        <button type="button" class="pill-btn" data-years="5">5 Yrs</button>
+                        <button type="button" class="pill-btn" data-years="6">6 Yrs</button>
+                        <button type="button" class="pill-btn" data-years="7">7 Yrs</button>
+                    </div>
+                </div>
+
                 <div class="comparison-details">
                     <div class="detail-row">
-                        <span>Possible EMI:</span>
-                        <strong id="emi-999">₹0.00</strong>
+                        <span>Offer Monthly EMI:</span>
+                        <strong id="emi-999">₹0</strong>
                     </div>
-                    <div class="detail-row highlight">
-                        <span>Monthly Savings:</span>
-                        <strong id="emi-diff">₹0.00</strong>
+
+                    <div class="detail-row">
+                        <span>Offer Annual Payment:</span>
+                        <strong id="offer-annual-payment">₹0</strong>
                     </div>
+
+                    <div class="detail-row">
+                        <span>Offer Total Repayment:</span>
+                        <strong id="offer-total-payment">₹0</strong>
+                    </div>
+
+                    <!-- Highlighted Differences -->
+                    <div class="savings-grid">
+                        <div class="saving-card monthly-saving">
+                            <span class="saving-title">Difference / Month</span>
+                            <div class="saving-amount" id="emi-diff">₹0</div>
+                            <span class="saving-badge" id="monthly-diff-label">Monthly Savings</span>
+                        </div>
+                        <div class="saving-card yearly-saving">
+                            <span class="saving-title">Difference / Year</span>
+                            <div class="saving-amount" id="year-diff">₹0</div>
+                            <span class="saving-badge" id="yearly-diff-label">Per Year Savings</span>
+                        </div>
+                    </div>
+
+                    <div class="detail-row highlight" id="total-saving-row">
+                        <span>Total Overall Savings:</span>
+                        <strong id="total-diff">₹0</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Yearly Breakdown Schedule Accordion -->
+            <div class="breakdown-toggle-wrapper">
+                <button type="button" class="breakdown-btn" id="breakdown-toggle-btn">
+                    <span>📊 View Year-by-Year Comparison</span>
+                    <svg class="chevron-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M6 9l6 6 6-6"/>
+                    </svg>
+                </button>
+            </div>
+
+            <div id="breakdown-content" class="breakdown-content hidden">
+                <div class="table-responsive">
+                    <table class="breakdown-table">
+                        <thead>
+                            <tr>
+                                <th>Year</th>
+                                <th>Current (Yr)</th>
+                                <th>9.99% Offer (Yr)</th>
+                                <th>Year Difference</th>
+                            </tr>
+                        </thead>
+                        <tbody id="breakdown-table-body">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                        <tfoot id="breakdown-table-foot">
+                            <!-- Populated dynamically with Total Payment -->
+                        </tfoot>
+                    </table>
                 </div>
             </div>
         </div>
