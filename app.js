@@ -3,8 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const resultsSection = document.getElementById('results');
 
     // Inputs
-    const totalAmountInput = document.getElementById('total-amount');
-    const outstandingAmountInput = document.getElementById('outstanding-amount');
+    const loanAmountInput = document.getElementById('loan-amount');
     const interestRateInput = document.getElementById('interest-rate');
     const tenureInput = document.getElementById('tenure');
     const tenureUnitLabel = document.getElementById('tenure-unit-label');
@@ -197,11 +196,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Perform Full Calculation and UI Update
     const performCalculation = () => {
-        const outstandingAmount = parseFloat(outstandingAmountInput.value);
+        const loanAmount = parseFloat(loanAmountInput.value);
         const interestRate = parseFloat(interestRateInput.value);
         const tenureValue = parseFloat(tenureInput.value);
 
-        if (isNaN(outstandingAmount) || isNaN(interestRate) || isNaN(tenureValue) || outstandingAmount <= 0 || tenureValue <= 0) {
+        if (isNaN(loanAmount) || isNaN(interestRate) || isNaN(tenureValue) || loanAmount <= 0 || tenureValue <= 0) {
             return false;
         }
 
@@ -226,12 +225,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (thOfferHeader) thOfferHeader.textContent = `${specialRate}% Offer (Yr)`;
 
         // Calculate User Loan Metrics
-        const userEMI = calculateEMI(outstandingAmount, interestRate, userMonths);
+        const userEMI = calculateEMI(loanAmount, interestRate, userMonths);
         const userAnnualPayment = userEMI * Math.min(12, userMonths);
         const userTotalPayment = userEMI * userMonths;
 
         // Calculate Special Offer Loan Metrics
-        const specialEMI = calculateEMI(outstandingAmount, specialRate, specialMonths);
+        const specialEMI = calculateEMI(loanAmount, specialRate, specialMonths);
         const specialAnnualPayment = specialEMI * Math.min(12, specialMonths);
         const specialTotalPayment = specialEMI * specialMonths;
 
@@ -324,7 +323,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Auto calculate if inputs change while results are open
-    [outstandingAmountInput, interestRateInput, tenureInput].forEach(input => {
+    [loanAmountInput, interestRateInput, tenureInput].forEach(input => {
         input.addEventListener('input', () => {
             if (!resultsSection.classList.contains('hidden')) {
                 performCalculation();
