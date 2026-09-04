@@ -980,4 +980,1359 @@ input[type=number] {
     .savings-grid {
         grid-template-columns: 1fr;
     }
+
+    .modal-dialog {
+        padding: 1.25rem 1rem;
+    }
+
+    .whatsapp-share-cta-card {
+        padding: 1.25rem;
+    }
+
+    .preview-card-viewport {
+        max-width: 100%;
+    }
 }
+
+@media (max-width: 400px) {
+    .calculator-container {
+        padding: 1.25rem 0.8rem;
+    }
+    
+    header h1 {
+        font-size: 1.7rem;
+    }
+    
+    .modal-dialog {
+        padding: 1rem 0.75rem;
+    }
+    
+    .whatsapp-action-buttons,
+    .modal-actions-bar {
+        flex-direction: column;
+    }
+    
+    .whatsapp-primary-btn, 
+    .whatsapp-secondary-btn,
+    .btn-subaction, 
+    .btn-primary-action, 
+    .btn-whatsapp-direct {
+        width: 100%;
+        flex: 1 1 100%;
+    }
+    
+    .preview-card-viewport {
+        width: 280px;
+    }
+}
+
+/* ==========================================================================
+   WhatsApp 3-Image Loan Refinancing Share Flow Styles
+   ========================================================================== */
+
+/* 1. On-Page CTA Card */
+.whatsapp-share-cta-card {
+    margin-top: 2rem;
+    padding: 1.75rem;
+    background: linear-gradient(145deg, rgba(15, 31, 58, 0.95), rgba(11, 25, 48, 0.98));
+    border: 1px solid rgba(37, 211, 102, 0.3);
+    border-radius: 20px;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45), 0 0 24px rgba(37, 211, 102, 0.12);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.25s ease, border-color 0.25s ease;
+}
+
+.whatsapp-share-cta-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 240px;
+    height: 240px;
+    background: radial-gradient(circle, rgba(37, 211, 102, 0.15) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.whatsapp-cta-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.85rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.whatsapp-cta-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 0.8rem;
+    background: rgba(37, 211, 102, 0.15);
+    border: 1px solid rgba(37, 211, 102, 0.35);
+    border-radius: 20px;
+    color: #25D366;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+}
+
+.whatsapp-cta-badge .whatsapp-icon {
+    fill: #25D366;
+}
+
+.dimensions-tag {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--sky-blue);
+    background: rgba(219, 234, 254, 0.1);
+    padding: 0.3rem 0.65rem;
+    border-radius: 8px;
+    border: 1px solid rgba(219, 234, 254, 0.2);
+}
+
+.whatsapp-cta-title {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #FFFFFF;
+    margin-bottom: 0.4rem;
+}
+
+.whatsapp-cta-desc {
+    font-size: 0.92rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin-bottom: 1.25rem;
+}
+
+.whatsapp-action-buttons {
+    display: flex;
+    gap: 0.85rem;
+    flex-wrap: wrap;
+}
+
+.whatsapp-primary-btn {
+    flex: 1 1 200px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    padding: 0.85rem 1.4rem;
+    background: linear-gradient(135deg, #2563EB, #1D4ED8);
+    color: #FFFFFF;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 4px 18px rgba(37, 99, 235, 0.4);
+    transition: all 0.2s ease;
+}
+
+.whatsapp-primary-btn:hover {
+    background: linear-gradient(135deg, #1D4ED8, #1E40AF);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 22px rgba(37, 99, 235, 0.55);
+}
+
+.whatsapp-secondary-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.85rem 1.25rem;
+    background: rgba(37, 211, 102, 0.12);
+    border: 1px solid rgba(37, 211, 102, 0.4);
+    color: #34D399;
+    font-size: 0.92rem;
+    font-weight: 600;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.whatsapp-secondary-btn:hover {
+    background: rgba(37, 211, 102, 0.22);
+    border-color: #25D366;
+    color: #FFFFFF;
+    transform: translateY(-2px);
+}
+
+/* 2. Modal Overlay & Dialog */
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(5, 15, 30, 0.88);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1.5rem;
+    overflow-y: auto;
+}
+
+.modal-backdrop.hidden {
+    display: none !important;
+}
+
+.modal-dialog {
+    background: #0D1F38;
+    border: 1px solid rgba(191, 219, 254, 0.25);
+    border-radius: 24px;
+    width: 100%;
+    max-width: 680px;
+    max-height: 92vh;
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(37, 99, 235, 0.2);
+    overflow-y: auto;
+    animation: modalPopIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalPopIn {
+    0% { opacity: 0; transform: scale(0.94) translateY(20px); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+
+.modal-title-wrap h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #FFFFFF;
+    margin-top: 0.35rem;
+    margin-bottom: 0.25rem;
+}
+
+.modal-title-wrap p {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+}
+
+.modal-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #34D399;
+    background: rgba(16, 185, 129, 0.15);
+    padding: 0.25rem 0.6rem;
+    border-radius: 20px;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.modal-badge .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #10B981;
+    box-shadow: 0 0 8px #10B981;
+}
+
+.modal-close-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: var(--text-muted);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.modal-close-btn:hover {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: rgba(239, 68, 68, 0.4);
+    color: #EF4444;
+}
+
+/* 3. Slide Switcher Tabs */
+.slide-nav-tabs {
+    display: flex;
+    gap: 0.6rem;
+    background: rgba(11, 25, 48, 0.7);
+    padding: 0.4rem;
+    border-radius: 14px;
+    border: 1px solid rgba(191, 219, 254, 0.15);
+    margin-bottom: 1.5rem;
+}
+
+.slide-tab-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.65rem 0.5rem;
+    background: transparent;
+    border: none;
+    border-radius: 10px;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.slide-tab-btn .slide-num {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.slide-tab-btn:hover {
+    color: #FFFFFF;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.slide-tab-btn.active {
+    background: var(--primary);
+    color: #FFFFFF;
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+}
+
+.slide-tab-btn.active .slide-num {
+    background: #FFFFFF;
+    color: var(--primary);
+}
+
+/* 4. Preview Viewport */
+.preview-stage-container {
+    background: #08162A;
+    border: 1px solid rgba(191, 219, 254, 0.18);
+    border-radius: 18px;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.preview-card-viewport {
+    width: 320px;
+    height: 400px;
+    border-radius: 16px;
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6), 0 0 24px rgba(37, 99, 235, 0.15);
+    overflow: hidden;
+    position: relative;
+    background: #0B1F3A;
+    border: 1px solid rgba(191, 219, 254, 0.25);
+}
+
+/* Scaled Preview Frame containing the 1080x1350 card scaled down */
+.preview-card-viewport .share-card {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1080px !important;
+    height: max-content !important;
+    transform: scale(0.2963); /* 320 / 1080 = ~0.2963 */
+    transform-origin: top left;
+    pointer-events: none;
+    user-select: none;
+}
+
+.preview-nav-controls {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+}
+
+.nav-arrow-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #FFFFFF;
+    font-size: 1.3rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.nav-arrow-btn:hover {
+    background: var(--primary);
+    border-color: var(--primary);
+}
+
+.slide-indicator-label {
+    font-size: 0.86rem;
+    font-weight: 600;
+    color: var(--sky-blue);
+    font-family: monospace;
+}
+
+/* 5. Modal Actions Bar */
+.modal-actions-bar {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.btn-subaction {
+    flex: 1 1 200px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.85rem 1.2rem;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(191, 219, 254, 0.25);
+    color: #FFFFFF;
+    font-size: 0.92rem;
+    font-weight: 600;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-subaction:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: var(--border-accent);
+}
+
+.btn-primary-action {
+    flex: 1.5 1 260px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    padding: 0.85rem 1.4rem;
+    background: linear-gradient(135deg, #10B981, #059669);
+    border: none;
+    color: #FFFFFF;
+    font-size: 0.95rem;
+    font-weight: 700;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35);
+    transition: all 0.2s ease;
+}
+
+.btn-primary-action:hover {
+    background: linear-gradient(135deg, #059669, #047857);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(16, 185, 129, 0.45);
+}
+
+.btn-whatsapp-direct {
+    flex: 1 1 180px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.85rem 1.2rem;
+    background: #25D366;
+    color: #FFFFFF;
+    border: none;
+    font-size: 0.92rem;
+    font-weight: 700;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(37, 211, 102, 0.35);
+    transition: all 0.2s ease;
+}
+
+.btn-whatsapp-direct:hover {
+    background: #20BA5A;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(37, 211, 102, 0.5);
+}
+
+.btn-whatsapp-direct .whatsapp-icon {
+    fill: #FFFFFF;
+}
+
+/* Step-by-Step Flow Banner */
+.whatsapp-flow-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(8, 22, 42, 0.85);
+    border: 1px solid rgba(37, 211, 102, 0.28);
+    border-radius: 14px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1.25rem;
+    gap: 0.5rem;
+}
+
+.flow-step {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.flow-num {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #10B981;
+    color: #FFFFFF;
+    font-size: 0.75rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.flow-text {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--sky-blue);
+    white-space: nowrap;
+}
+
+.flow-arrow {
+    color: #34D399;
+    font-size: 0.9rem;
+}
+
+@media (max-width: 580px) {
+    .whatsapp-flow-banner {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.4rem;
+    }
+    .flow-arrow {
+        display: none;
+    }
+}
+
+.btn-subaction:disabled,
+.btn-primary-action:disabled,
+.btn-whatsapp-direct:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* 6. WhatsApp Caption Box */
+.whatsapp-caption-box {
+    background: #08162A;
+    border: 1px solid rgba(37, 211, 102, 0.25);
+    border-radius: 16px;
+    padding: 1.1rem 1.25rem;
+}
+
+.caption-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.caption-title {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #34D399;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.btn-copy {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 0.8rem;
+    background: rgba(37, 211, 102, 0.15);
+    border: 1px solid rgba(37, 211, 102, 0.4);
+    color: #25D366;
+    font-size: 0.8rem;
+    font-weight: 700;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-copy:hover {
+    background: rgba(37, 211, 102, 0.3);
+    color: #FFFFFF;
+}
+
+.caption-text {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    line-height: 1.55;
+    white-space: pre-line;
+    background: rgba(11, 31, 58, 0.6);
+    padding: 0.9rem;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    user-select: all;
+    font-family: inherit;
+}
+
+/* 7. Toast Notification */
+.toast {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    background: #0F223D;
+    color: #FFFFFF;
+    border: 1px solid #10B981;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(16, 185, 129, 0.35);
+    padding: 0.9rem 1.4rem;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    animation: toastSlideUp 0.25s ease-out;
+    transition: opacity 0.3s ease;
+}
+
+.toast.hidden {
+    display: none !important;
+}
+
+@keyframes toastSlideUp {
+    0% { transform: translateY(20px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+}
+
+/* ==========================================================================
+   8. Dedicated High-Res 1080x1350 WhatsApp Share Card Templates
+   ========================================================================== */
+.render-stage {
+    position: fixed;
+    top: 0;
+    left: -9999px;
+    width: 1080px;
+    height: 1350px;
+    pointer-events: none;
+    z-index: -9999;
+    overflow: visible;
+}
+
+/* Core Card Shell: strictly 1080px x 1350px (4:5 ratio) */
+.share-card {
+    width: 1080px !important;
+    height: max-content !important;
+    min-width: 1080px !important;
+    min-height: max-content !important;
+    max-width: 1080px !important;
+    max-height: max-content !important;
+    background-color: #0B1F3A;
+    color: #FFFFFF;
+    padding: 68px 64px 64px 64px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-sizing: border-box !important;
+    font-family: 'Inter', sans-serif;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Distinct Atmospheric Glows */
+.card-bg-glow {
+    position: absolute;
+    top: -120px;
+    right: -120px;
+    width: 650px;
+    height: 650px;
+    background: radial-gradient(circle, rgba(37, 99, 235, 0.22) 0%, rgba(11, 31, 58, 0) 70%);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.card-bg-glow.emerald {
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.25) 0%, rgba(11, 31, 58, 0) 70%);
+}
+
+.share-card::after {
+    content: '';
+    position: absolute;
+    bottom: -150px;
+    left: -150px;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(30, 58, 138, 0.2) 0%, rgba(11, 31, 58, 0) 70%);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+/* Card Header Bar */
+.card-header-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+}
+
+.card-branding-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 22px;
+    background: rgba(15, 31, 58, 0.85);
+    border: 1.5px solid rgba(191, 219, 254, 0.25);
+    border-radius: 40px;
+}
+
+.brand-shield {
+    color: #60A5FA;
+    font-size: 20px;
+    line-height: 1;
+}
+
+.brand-shield.emerald {
+    color: #34D399;
+}
+
+.brand-name {
+    font-size: 19px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: #DBEAFE;
+    text-transform: uppercase;
+}
+
+.slide-badge {
+    font-size: 18px;
+    font-weight: 700;
+    color: #94A3B8;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1.5px solid rgba(255, 255, 255, 0.15);
+    padding: 10px 22px;
+    border-radius: 40px;
+    letter-spacing: 1.5px;
+}
+
+.slide-badge.offer {
+    color: #34D399;
+    background: rgba(16, 185, 129, 0.15);
+    border-color: rgba(16, 185, 129, 0.4);
+}
+
+/* Card Heading Section */
+.card-heading-section {
+    position: relative;
+    z-index: 2;
+    margin-top: 10px;
+}
+
+.card-main-title {
+    font-size: 56px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: #FFFFFF;
+    margin-bottom: 12px;
+    line-height: 1.15;
+}
+
+.card-subtitle {
+    font-size: 24px;
+    color: #94A3B8;
+    line-height: 1.4;
+    font-weight: 400;
+}
+
+/* CARD 1 Form Grid */
+.card-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    position: relative;
+    z-index: 2;
+    margin: 16px 0;
+}
+
+.form-field-card {
+    background: rgba(15, 31, 58, 0.85);
+    border: 1.5px solid rgba(191, 219, 254, 0.2);
+    border-radius: 22px;
+    padding: 26px 28px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35);
+}
+
+.form-field-card.highlight-field {
+    grid-column: span 2;
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.22), rgba(15, 31, 58, 0.95));
+    border-color: rgba(96, 165, 250, 0.45);
+    padding: 34px 34px;
+}
+
+.field-label-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.field-icon {
+    font-size: 22px;
+    color: #60A5FA;
+}
+
+.field-label {
+    font-size: 19px;
+    font-weight: 700;
+    color: #94A3B8;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+.field-hero-value {
+    font-size: 64px;
+    font-weight: 800;
+    color: #FFFFFF;
+    line-height: 1.1;
+    margin-bottom: 6px;
+}
+
+.field-value {
+    font-size: 38px;
+    font-weight: 800;
+    color: #FFFFFF;
+    line-height: 1.15;
+    margin-bottom: 6px;
+}
+
+.sub-unit {
+    font-size: 22px;
+    font-weight: 600;
+    color: #94A3B8;
+}
+
+.field-note {
+    font-size: 18px;
+    color: #94A3B8;
+}
+
+.field-rule-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(37, 99, 235, 0.25);
+    border: 1px solid rgba(96, 165, 250, 0.35);
+    color: #BFDBFE;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 20px;
+    margin-top: 4px;
+}
+
+.rule-bullet {
+    color: #60A5FA;
+    font-size: 12px;
+}
+
+/* CARD 2 Hero & Timeline */
+.card-outstanding-hero {
+    background: linear-gradient(145deg, rgba(37, 99, 235, 0.25), rgba(15, 31, 58, 0.95));
+    border: 2px solid rgba(96, 165, 250, 0.4);
+    border-radius: 28px;
+    padding: 40px 36px;
+    text-align: center;
+    box-shadow: 0 24px 50px rgba(0, 0, 0, 0.45);
+    position: relative;
+    z-index: 2;
+}
+
+.hero-tag {
+    font-size: 22px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: #BFDBFE;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.hero-amount {
+    font-size: 86px;
+    font-weight: 900;
+    color: #FFFFFF;
+    line-height: 1.05;
+    margin-bottom: 12px;
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.hero-supporting-group {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    background: rgba(11, 25, 48, 0.65);
+    padding: 10px 24px;
+    border-radius: 30px;
+    border: 1px solid rgba(191, 219, 254, 0.22);
+}
+
+.hero-subtitle {
+    font-size: 20px;
+    color: #94A3B8;
+}
+
+.hero-dot-sep {
+    color: #60A5FA;
+    font-size: 16px;
+}
+
+.hero-emis-callout {
+    font-size: 20px;
+    font-weight: 700;
+    color: #60A5FA;
+}
+
+.card-timeline-section {
+    background: rgba(15, 31, 58, 0.8);
+    border: 1.5px solid rgba(191, 219, 254, 0.2);
+    border-radius: 24px;
+    padding: 30px 36px;
+    position: relative;
+    z-index: 2;
+}
+
+.timeline-dates-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 22px;
+}
+
+.timeline-date-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.timeline-date-item.highlight .td-value {
+    color: #60A5FA;
+}
+
+.td-label {
+    font-size: 18px;
+    font-weight: 600;
+    color: #94A3B8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.td-value {
+    font-size: 30px;
+    font-weight: 800;
+    color: #FFFFFF;
+}
+
+.td-connector {
+    font-size: 24px;
+    color: #60A5FA;
+}
+
+.card-progress-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.progress-counts-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.count-paid {
+    font-size: 22px;
+    font-weight: 800;
+    color: #34D399;
+}
+
+.count-percent {
+    font-size: 18px;
+    font-weight: 600;
+    color: #94A3B8;
+}
+
+.count-left {
+    font-size: 22px;
+    font-weight: 800;
+    color: #60A5FA;
+}
+
+.card-progress-track {
+    width: 100%;
+    height: 18px;
+    background: rgba(11, 25, 48, 0.9);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(191, 219, 254, 0.2);
+}
+
+.card-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #2563EB, #10B981);
+    border-radius: 12px;
+    box-shadow: 0 0 16px rgba(16, 185, 129, 0.4);
+}
+
+.card-stats-triad {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 18px;
+    position: relative;
+    z-index: 2;
+}
+
+.stat-triad-card {
+    background: rgba(15, 31, 58, 0.85);
+    border: 1.5px solid rgba(191, 219, 254, 0.18);
+    border-radius: 20px;
+    padding: 24px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    text-align: center;
+}
+
+.st-label {
+    font-size: 17px;
+    font-weight: 700;
+    color: #94A3B8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.st-value {
+    font-size: 34px;
+    font-weight: 800;
+    color: #FFFFFF;
+}
+
+.st-sub {
+    font-size: 15px;
+    color: #64748B;
+}
+
+/* CARD 3 Comparison & Savings */
+.card-comparison-panel {
+    display: flex;
+    align-items: center;
+    background: rgba(15, 31, 58, 0.85);
+    border: 1.5px solid rgba(191, 219, 254, 0.2);
+    border-radius: 24px;
+    padding: 24px 28px;
+    position: relative;
+    z-index: 2;
+}
+
+.comp-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.comp-col.new-offer {
+    background: rgba(16, 185, 129, 0.12);
+    border: 1.5px solid rgba(16, 185, 129, 0.35);
+    border-radius: 20px;
+    padding: 18px 22px;
+    position: relative;
+}
+
+.comp-col-title {
+    font-size: 19px;
+    font-weight: 700;
+    color: #94A3B8;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.offer-pill-badge {
+    position: absolute;
+    top: -13px;
+    right: 18px;
+    background: #10B981;
+    color: #FFFFFF;
+    font-size: 14px;
+    font-weight: 800;
+    padding: 3px 12px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+.comp-metric-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.comp-metric-block {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.comp-metric-block .cm-val {
+    font-size: 34px;
+    font-weight: 800;
+    color: #FFFFFF;
+    line-height: 1.15;
+}
+
+.comp-metric-block .cm-label {
+    font-size: 15px;
+    font-weight: 600;
+    color: #94A3B8;
+}
+
+.rate-old {
+    color: #94A3B8;
+    text-decoration: line-through;
+    opacity: 0.85;
+}
+
+.rate-new {
+    color: #34D399;
+}
+
+.emi-new {
+    color: #34D399;
+}
+
+.comp-arrow-divider {
+    padding: 0 16px;
+}
+
+.arrow-circle {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #2563EB;
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    box-shadow: 0 8px 24px rgba(37, 99, 235, 0.5);
+}
+
+/* Rate Reduction Callout */
+.card-rate-reduction-callout {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    align-self: center;
+    background: rgba(16, 185, 129, 0.14);
+    border: 1.5px solid rgba(52, 211, 153, 0.4);
+    border-radius: 30px;
+    padding: 10px 24px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+}
+
+.rate-reduction-icon {
+    font-size: 20px;
+}
+
+.rate-reduction-text {
+    font-size: 20px;
+    font-weight: 800;
+    color: #34D399;
+    letter-spacing: 0.3px;
+}
+
+/* Savings Master Box */
+.card-savings-master {
+    background: linear-gradient(145deg, rgba(16, 185, 129, 0.18), rgba(15, 31, 58, 0.95));
+    border: 2px solid rgba(52, 211, 153, 0.45);
+    border-radius: 28px;
+    padding: 30px 34px;
+    box-shadow: 0 20px 48px rgba(0, 0, 0, 0.45), 0 0 30px rgba(16, 185, 129, 0.18);
+    position: relative;
+    z-index: 2;
+}
+
+.savings-headline {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 20px;
+    font-weight: 800;
+    color: #34D399;
+    letter-spacing: 1.5px;
+    margin-bottom: 18px;
+}
+
+.sparkle-icon {
+    font-size: 24px;
+}
+
+.savings-dual-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin-bottom: 18px;
+}
+
+.saving-hero-box {
+    background: rgba(11, 25, 48, 0.8);
+    border: 1.5px solid rgba(52, 211, 153, 0.25);
+    border-radius: 20px;
+    padding: 20px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.shb-label {
+    font-size: 16px;
+    font-weight: 700;
+    color: #94A3B8;
+    text-transform: uppercase;
+}
+
+.shb-amount {
+    font-size: 38px;
+    font-weight: 900;
+    color: #34D399;
+}
+
+.shb-friendly-note {
+    font-size: 17px;
+    font-weight: 600;
+    color: #6EE7B7;
+    margin-top: 2px;
+}
+
+.saving-total-banner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(90deg, rgba(16, 185, 129, 0.35), rgba(5, 150, 105, 0.35));
+    border: 1.5px solid rgba(52, 211, 153, 0.6);
+    border-radius: 20px;
+    padding: 20px 28px;
+}
+
+.stb-text-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 100%;
+}
+
+.stb-label {
+    font-size: 16px;
+    font-weight: 700;
+    color: #D1FAE5;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+.stb-amount {
+    font-size: 50px;
+    font-weight: 900;
+    color: #FFFFFF;
+    line-height: 1.1;
+    text-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.stb-subtext {
+    font-size: 18px;
+    color: #A7F3D0;
+    font-weight: 500;
+    margin-top: 4px;
+}
+
+/* Card 3 Refinance Terms Chips */
+.card-refinance-terms {
+    display: flex;
+    gap: 14px;
+    position: relative;
+    z-index: 2;
+}
+
+.term-chip {
+    flex: 1;
+    background: rgba(15, 31, 58, 0.8);
+    border: 1px solid rgba(191, 219, 254, 0.18);
+    border-radius: 16px;
+    padding: 14px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.tc-label {
+    font-size: 14px;
+    color: #94A3B8;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.tc-value {
+    font-size: 18px;
+    color: #FFFFFF;
+    font-weight: 700;
+}
+
+/* Card 3 Clean Non-Clickable Disclaimer / Clarity Line */
+.card-disclaimer-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 24px;
+    background: rgba(15, 31, 58, 0.65);
+    border: 1px solid rgba(191, 219, 254, 0.14);
+    border-radius: 16px;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+}
+
+.card-disclaimer-bar .disclaimer-text {
+    font-size: 18px;
+    font-weight: 500;
+    color: #94A3B8;
+    margin: 0;
+    letter-spacing: 0.2px;
+}
+
+

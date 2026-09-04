@@ -9,7 +9,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </head>
 <body>
     <div class="background-elements">
@@ -121,9 +122,9 @@
 
                 <!-- Hero Outstanding Principal Display -->
                 <div class="outstanding-hero">
-                    <span class="outstanding-title">Current Outstanding Amount</span>
+                    <span class="outstanding-title">Current Outstanding</span>
                     <div class="outstanding-value" id="display-outstanding-amount">₹0</div>
-                    <span class="outstanding-subtitle">Remaining principal balance to be cleared or refinanced</span>
+                    <span class="outstanding-subtitle">Remaining loan balance</span>
                 </div>
 
                 <!-- Sub-stats: Monthly EMI, Total Interest, Total Payment -->
@@ -154,7 +155,7 @@
                 </div>
 
                 <div class="offer-base-notice">
-                    <span>Calculated on <strong id="offer-calculated-principal">₹0</strong> Outstanding Principal</span>
+                    <span>Calculated on <strong id="offer-calculated-principal">₹0</strong> Balance to Refinance</span>
                 </div>
 
                 <!-- Live Rate & Tenure Adjuster in Results -->
@@ -225,19 +226,450 @@
                 </div>
             </div>
 
-            <!-- Download Button -->
-            <div class="action-buttons" style="margin-top: 24px; text-align: center;">
-                <button type="button" id="download-pdf-btn" class="calculate-btn" style="background: var(--primary-gradient); color: #ffffff; width: auto; padding: 12px 24px; display: inline-flex; justify-content: center; box-shadow: 0 4px 15px rgba(37, 99, 235, 0.35);">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;">
+            <!-- WhatsApp 3-Image Share Flow CTA -->
+            <div class="whatsapp-share-cta-card">
+                <div class="whatsapp-cta-header">
+                    <div class="whatsapp-cta-badge">
+                        <svg class="whatsapp-icon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.664-.698c.969.54 1.861.825 2.795.826h.005c3.179 0 5.766-2.587 5.767-5.766 0-3.18-2.587-5.813-5.772-5.813zm3.392 8.243c-.144.405-.837.774-1.17.824-.312.045-.694.073-2.127-.519-1.834-.757-3.003-2.617-3.094-2.738-.09-.122-.745-.989-.745-1.886 0-.898.469-1.339.636-1.52.167-.182.366-.228.487-.228.122 0 .244.001.35.007.112.005.263-.042.411.314.155.372.53 1.29.576 1.383.046.092.077.2.015.321-.061.121-.092.197-.183.303-.092.106-.194.237-.277.318-.092.091-.188.19-.081.374.107.182.474.781 1.018 1.265.701.623 1.292.816 1.475.907.183.092.29.076.398-.046.107-.121.458-.533.58-.716.122-.182.244-.152.411-.091.168.061 1.066.502 1.249.593.182.091.304.137.35.213.045.076.045.441-.099.846z"/>
+                        </svg>
+                        <span>WhatsApp Share Presentation</span>
+                    </div>
+                    <span class="dimensions-tag">1080 × 1350 px (4:5)</span>
+                </div>
+                <h3 class="whatsapp-cta-title">WhatsApp 3-Card Refinancing Story</h3>
+                <p class="whatsapp-cta-desc">Export 3 standalone images (<strong>01.png, 02.png, 03.png</strong>) directly to your device and open WhatsApp to share.</p>
+                <div class="whatsapp-action-buttons">
+                    <button type="button" id="quick-download-images-btn" class="whatsapp-primary-btn">
+                        <svg class="whatsapp-icon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.664-.698c.969.54 1.861.825 2.795.826h.005c3.179 0 5.766-2.587 5.767-5.766 0-3.18-2.587-5.813-5.772-5.813zm3.392 8.243c-.144.405-.837.774-1.17.824-.312.045-.694.073-2.127-.519-1.834-.757-3.003-2.617-3.094-2.738-.09-.122-.745-.989-.745-1.886 0-.898.469-1.339.636-1.52.167-.182.366-.228.487-.228.122 0 .244.001.35.007.112.005.263-.042.411.314.155.372.53 1.29.576 1.383.046.092.077.2.015.321-.061.121-.092.197-.183.303-.092.106-.194.237-.277.318-.092.091-.188.19-.081.374.107.182.474.781 1.018 1.265.701.623 1.292.816 1.475.907.183.092.29.076.398-.046.107-.121.458-.533.58-.716.122-.182.244-.152.411-.091.168.061 1.066.502 1.249.593.182.091.304.137.35.213.045.076.045.441-.099.846z"/>
+                        </svg>
+                        <span>Download 3 Images & Open WhatsApp</span>
+                    </button>
+                    <button type="button" id="open-whatsapp-modal-btn" class="whatsapp-secondary-btn">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                            <polyline points="21 15 16 10 5 21"></polyline>
+                        </svg>
+                        <span>Preview Slides</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- WhatsApp Share Modal -->
+    <div id="whatsapp-modal" class="modal-backdrop hidden" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <div class="modal-title-wrap">
+                    <div class="modal-badge">
+                        <span class="dot"></span> WhatsApp 3-Image Flow
+                    </div>
+                    <h2>WhatsApp Loan Refinance Flow</h2>
+                    <p>3 standalone 1080×1350 px presentation slides ready to share together on WhatsApp.</p>
+                </div>
+                <button type="button" id="close-modal-btn" class="modal-close-btn" aria-label="Close modal">✕</button>
+            </div>
+
+            <!-- Visual Flow Step Indicator -->
+            <div class="whatsapp-flow-banner">
+                <div class="flow-step">
+                    <span class="flow-num">1</span>
+                    <span class="flow-text">Download 01, 02, 03</span>
+                </div>
+                <span class="flow-arrow">➔</span>
+                <div class="flow-step">
+                    <span class="flow-num">2</span>
+                    <span class="flow-text">Open WhatsApp</span>
+                </div>
+                <span class="flow-arrow">➔</span>
+                <div class="flow-step">
+                    <span class="flow-num">3</span>
+                    <span class="flow-text">Select 3 Images</span>
+                </div>
+            </div>
+
+            <!-- Slide Switcher Tabs -->
+            <div class="slide-nav-tabs">
+                <button type="button" class="slide-tab-btn active" data-slide="1">
+                    <span class="slide-num">1</span>
+                    <span class="slide-name">Your Loan Details</span>
+                </button>
+                <button type="button" class="slide-tab-btn" data-slide="2">
+                    <span class="slide-num">2</span>
+                    <span class="slide-name">Your Loan Today</span>
+                </button>
+                <button type="button" class="slide-tab-btn" data-slide="3">
+                    <span class="slide-num">3</span>
+                    <span class="slide-name">Special Refinance Offer</span>
+                </button>
+            </div>
+
+            <!-- Preview Canvas Stage -->
+            <div class="preview-stage-container">
+                <div class="preview-card-viewport" id="preview-viewport">
+                    <!-- Live preview cloned slide injected here -->
+                </div>
+                
+                <div class="preview-nav-controls">
+                    <button type="button" id="prev-slide-btn" class="nav-arrow-btn" aria-label="Previous Slide">‹</button>
+                    <span class="slide-indicator-label" id="slide-indicator-label">Slide 1 of 3: 01.png</span>
+                    <button type="button" id="next-slide-btn" class="nav-arrow-btn" aria-label="Next Slide">›</button>
+                </div>
+            </div>
+
+            <!-- Actions Bar -->
+            <div class="modal-actions-bar">
+                <button type="button" id="modal-download-all-btn" class="btn-primary-action">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                         <polyline points="7 10 12 15 17 10"></polyline>
                         <line x1="12" y1="15" x2="12" y2="3"></line>
                     </svg>
-                    <span>Download PDF</span>
+                    <span>Download 3 Images (01, 02, 03)</span>
+                </button>
+                <button type="button" id="open-whatsapp-direct-btn" class="btn-whatsapp-direct">
+                    <svg class="whatsapp-icon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.664-.698c.969.54 1.861.825 2.795.826h.005c3.179 0 5.766-2.587 5.767-5.766 0-3.18-2.587-5.813-5.772-5.813zm3.392 8.243c-.144.405-.837.774-1.17.824-.312.045-.694.073-2.127-.519-1.834-.757-3.003-2.617-3.094-2.738-.09-.122-.745-.989-.745-1.886 0-.898.469-1.339.636-1.52.167-.182.366-.228.487-.228.122 0 .244.001.35.007.112.005.263-.042.411.314.155.372.53 1.29.576 1.383.046.092.077.2.015.321-.061.121-.092.197-.183.303-.092.106-.194.237-.277.318-.092.091-.188.19-.081.374.107.182.474.781 1.018 1.265.701.623 1.292.816 1.475.907.183.092.29.076.398-.046.107-.121.458-.533.58-.716.122-.182.244-.152.411-.091.168.061 1.066.502 1.249.593.182.091.304.137.35.213.045.076.045.441-.099.846z"/>
+                    </svg>
+                    <span>Open WhatsApp</span>
+                </button>
+                <button type="button" id="download-current-slide-btn" class="btn-subaction">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    <span id="download-single-label">Download 01.png</span>
                 </button>
             </div>
+
+            <!-- WhatsApp Companion Caption Box -->
+            <div class="whatsapp-caption-box">
+                <div class="caption-header">
+                    <div class="caption-title">
+                        <span class="copy-icon">💬</span> WhatsApp Companion Message
+                    </div>
+                    <button type="button" id="copy-caption-btn" class="btn-copy">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        </svg>
+                        <span id="copy-btn-text">Copy Caption</span>
+                    </button>
+                </div>
+                <div class="caption-text" id="whatsapp-caption-text">Want to know if your current loan is costing you more than it should?
+
+1️⃣ Enter your current loan details
+2️⃣ See your outstanding amount & remaining EMIs
+3️⃣ Compare a lower-interest refinance offer and see your potential savings
+
+Swipe through the 3 images to see how it works.</div>
+            </div>
         </div>
-    </main>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast hidden" role="alert"></div>
+
+    <!-- Offscreen 1080x1350 High-Res Render Stage (Not scaled, pixel-perfect 1080x1350) -->
+    <div id="whatsapp-render-stage" class="render-stage" aria-hidden="true">
+        <!-- ================= CARD 1 ================= -->
+                <div id="card-slide-1" class="share-card card-1-theme">
+            <div class="card-bg-glow"></div>
+            <!-- Header -->
+            <div class="card-header-bar">
+                <div class="card-branding-badge">
+                    <span class="brand-shield">◆</span>
+                    <span class="brand-name">FINANCIAL ADVISORY</span>
+                </div>
+            </div>
+
+            <!-- Main Heading -->
+            <div class="card-heading-section">
+                <h1 class="card-main-title">Your <span style="color: #60A5FA;">Loan Details</span></h1>
+                <p class="card-subtitle">Here’s a quick summary of your current loan.</p>
+            </div>
+
+            <!-- Form Details Display (5 fields) -->
+            <div class="card-form-grid">
+                <!-- Field 1: Loan Amount (Hero) -->
+                <div class="form-field-card highlight-field" style="position: relative;">
+                    <div class="field-label-wrap">
+                        <span class="field-icon">₹</span>
+                        <span class="field-label">TOTAL LOAN AMOUNT</span>
+                    </div>
+                    <div class="field-hero-value" id="card1-loan-amount">₹5,00,000</div>
+                    <div class="field-note">Loan amount</div>
+                    <div style="position: absolute; right: 30px; top: 50%; transform: translateY(-50%); opacity: 0.9;">
+                        <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#60A5FA" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+                            <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+                            <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Field 2: Loan Start Date -->
+                <div class="form-field-card">
+                    <div class="field-label-wrap">
+                        <span class="field-icon" style="color: #F87171;">📅</span>
+                        <span class="field-label">LOAN DATE</span>
+                    </div>
+                    <div class="field-value" id="card1-issue-date" style="font-size: 28px;">15 Sept 2025</div>
+                    <div class="field-note">Your loan was disbursed</div>
+                </div>
+
+                <!-- Field 3: First EMI -->
+                <div class="form-field-card">
+                    <div class="field-label-wrap">
+                        <span class="field-icon">📅</span>
+                        <span class="field-label">FIRST EMI</span>
+                    </div>
+                    <div class="field-value" id="card1-first-emi" style="font-size: 28px;">Oct 2025</div>
+                    <div class="field-note">Based on 21st day rule</div>
+                </div>
+
+                <!-- Field 4: Current Interest Rate -->
+                <div class="form-field-card" style="grid-column: span 2;">
+                    <div class="field-label-wrap">
+                        <span class="field-icon">%</span>
+                        <span class="field-label">CURRENT INTEREST RATE</span>
+                    </div>
+                    <div class="field-value" id="card1-interest-rate">14.50% p.a.</div>
+                    <div class="field-note">Your current loan rate</div>
+                </div>
+
+                <!-- Field 5: Loan Tenure -->
+                <div class="form-field-card" style="grid-column: span 2;">
+                    <div class="field-label-wrap">
+                        <span class="field-icon">⏱</span>
+                        <span class="field-label">LOAN TENURE</span>
+                    </div>
+                    <div class="field-value" id="card1-tenure">36 Months</div>
+                    <div class="field-note" id="card1-tenure-years">3 Years</div>
+                </div>
+            </div>
+
+            <!-- Bottom Note -->
+            <div style="background: rgba(15, 31, 58, 0.85); border: 1.5px solid rgba(191, 219, 254, 0.2); border-radius: 12px; padding: 16px 20px; display: flex; align-items: center; gap: 16px; margin-top: auto; z-index: 2; position: relative;">
+                <span style="background: #3B82F6; color: white; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-family: serif; flex-shrink: 0;">i</span>
+                <span style="color: #E2E8F0; font-size: 16px; font-weight: 500;">These details help us calculate your outstanding amount and potential savings.</span>
+            </div>
+        </div>
+
+        <!-- ================= CARD 2 ================= -->
+                <div id="card-slide-2" class="share-card card-2-theme">
+            <div class="card-bg-glow"></div>
+            <!-- Header -->
+            <div class="card-header-bar">
+                <div class="card-branding-badge">
+                    <span class="brand-shield">◆</span>
+                    <span class="brand-name">FINANCIAL ADVISORY</span>
+                </div>
+            </div>
+
+            <!-- Main Heading -->
+            <div class="card-heading-section">
+                <h1 class="card-main-title">Your <span style="color: #60A5FA;">Loan Today</span></h1>
+                <p class="card-subtitle">Here’s where you stand today.</p>
+            </div>
+
+            <!-- Primary Highlight: Outstanding Loan Balance -->
+            <div class="card-outstanding-hero" style="display: flex; flex-direction: column; align-items: flex-start; padding-left: 120px; position: relative;">
+                <div style="position: absolute; left: 30px; top: 50%; transform: translateY(-50%);">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#60A5FA" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4"></path>
+                        <path d="M4 6v12c0 1.1.9 2 2 2h14v-4"></path>
+                        <path d="M18 12a2 2 0 0 0-2 2c0 1.1.9 2 2 2h4v-4h-4z"></path>
+                    </svg>
+                </div>
+                <span class="hero-tag" style="text-align: left; margin: 0;">CURRENT OUTSTANDING AMOUNT</span>
+                <div class="hero-amount" id="card2-outstanding-amount" style="text-align: left; margin: 4px 0;">₹3,69,445</div>
+                <div class="hero-supporting-group" style="justify-content: flex-start;">
+                    <span class="hero-subtitle">Remaining loan balance</span>
+                </div>
+            </div>
+
+            <!-- Loan Timeline & Progress -->
+            <div class="card-timeline-section">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 20px; color: #E2E8F0; font-weight: 700; font-size: 14px; letter-spacing: 1px;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg>
+                    LOAN TIMELINE
+                </div>
+                <div class="timeline-dates-row" style="margin-top: 10px;">
+                    <div class="timeline-date-item">
+                        <span class="td-label" style="text-transform: none; font-size: 15px; color: #F1F5F9;">Loan Started</span>
+                        <strong class="td-value" id="card2-issue-month" style="color: #93C5FD; font-size: 18px;">Sept 2025</strong>
+                    </div>
+                    <div class="timeline-date-item">
+                        <span class="td-label" style="text-transform: none; font-size: 15px; color: #F1F5F9;">First EMI</span>
+                        <strong class="td-value" id="card2-first-emi-month" style="color: #93C5FD; font-size: 18px;">Oct 2025</strong>
+                    </div>
+                    <div class="timeline-date-item">
+                        <span class="td-label" style="text-transform: none; font-size: 15px; color: #F1F5F9;">Today</span>
+                        <strong class="td-value" id="card2-today-month" style="color: #F1F5F9; font-size: 18px;">Sept 2026</strong>
+                    </div>
+                </div>
+
+                <!-- Visual Progress Bar -->
+                <div class="card-progress-wrapper" style="margin-top: 25px;">
+                    <div class="progress-counts-header">
+                        <span class="count-paid" id="card2-emis-paid-label" style="color: #34D399;">11 EMIs PAID</span>
+                        <span class="count-percent" id="card2-progress-percent" style="color: #F8FAFC;">31% Completed</span>
+                        <span class="count-left" id="card2-emis-left-label" style="color: #F8FAFC;">25 EMIs LEFT</span>
+                    </div>
+                    <div class="card-progress-track">
+                        <div class="card-progress-fill" id="card2-progress-fill" style="width: 31%; background: linear-gradient(90deg, #3B82F6 0%, #34D399 100%);"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Supporting Statistics: 3 Cards -->
+            <div class="card-stats-triad" style="gap: 12px;">
+                <div class="stat-triad-card" style="padding: 20px 12px;">
+                    <div style="background: #2563EB; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; margin-left: auto; margin-right: auto; font-weight: bold; font-size: 20px;">₹</div>
+                    <span class="st-label">CURRENT EMI</span>
+                    <strong class="st-value" id="card2-current-emi">₹17,210</strong>
+                    <span class="st-sub">Monthly EMI</span>
+                </div>
+                <div class="stat-triad-card" style="padding: 20px 12px;">
+                    <div style="background: #2563EB; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; margin-left: auto; margin-right: auto; font-weight: bold; font-size: 20px;">%</div>
+                    <span class="st-label">TOTAL INTEREST</span>
+                    <strong class="st-value" id="card2-total-interest">₹1.2L</strong>
+                    <span class="st-sub">Interest over loan</span>
+                </div>
+                <div class="stat-triad-card" style="padding: 20px 12px;">
+                    <div style="background: #2563EB; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; margin-left: auto; margin-right: auto;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                    </div>
+                    <span class="st-label">TOTAL PAYMENT</span>
+                    <strong class="st-value" id="card2-total-payment">₹6.2L</strong>
+                    <span class="st-sub">Total paid over loan</span>
+                </div>
+            </div>
+            
+            <!-- Bottom Note -->
+            <div style="background: rgba(15, 31, 58, 0.85); border: 1.5px solid rgba(191, 219, 254, 0.2); border-radius: 12px; padding: 16px 20px; display: flex; align-items: center; gap: 16px; margin-top: auto; z-index: 2; position: relative;">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 12 11 14 15 10"></polyline></svg>
+                <div style="display: flex; flex-direction: column; gap: 4px;">
+                    <span style="color: #E2E8F0; font-size: 15px; font-weight: 500;" id="card2-bottom-note-1">You've completed 31% of your loan.</span>
+                    <span style="color: #E2E8F0; font-size: 15px; font-weight: 500;" id="card2-bottom-note-2">You still have 25 EMIs left.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= CARD 3 ================= -->
+                <div id="card-slide-3" class="share-card card-3-theme">
+            <div class="card-bg-glow emerald"></div>
+            <!-- Header -->
+            <div class="card-header-bar">
+                <div class="card-branding-badge">
+                    <span class="brand-shield emerald">◆</span>
+                    <span class="brand-name">FINANCIAL ADVISORY</span>
+                </div>
+            </div>
+
+            <!-- Main Heading -->
+            <div class="card-heading-section">
+                <h1 class="card-main-title">Special <span style="color: #34D399;">Refinance Offer</span></h1>
+                <p class="card-subtitle">See how much you could save.</p>
+            </div>
+
+            <!-- Current vs New Offer Comparison -->
+            <div class="card-comparison-panel">
+                <div class="comp-col current">
+                    <span class="comp-col-title" style="text-transform: none; font-size: 18px;">Current Loan</span>
+                    <div class="comp-metric-row">
+                        <div class="comp-metric-block">
+                            <span class="cm-label">Interest Rate</span>
+                            <span class="cm-val rate-old" id="card3-current-rate" style="margin-top: 4px;">14.50% p.a.</span>
+                        </div>
+                        <div class="comp-metric-block">
+                            <span class="cm-label">Monthly EMI</span>
+                            <span class="cm-val" id="card3-current-emi" style="margin-top: 4px;">₹17,210</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="comp-arrow-divider">
+                    <div class="arrow-circle">➔</div>
+                </div>
+
+                <div class="comp-col new-offer">
+                    <div class="offer-pill-badge">NEW OFFER</div>
+                    <div class="comp-metric-row">
+                        <div class="comp-metric-block">
+                            <span class="cm-label">Interest Rate</span>
+                            <span class="cm-val rate-new" id="card3-new-rate" style="margin-top: 4px;">9.99% p.a.</span>
+                        </div>
+                        <div class="comp-metric-block">
+                            <span class="cm-label">Monthly EMI</span>
+                            <span class="cm-val emi-new" id="card3-new-emi" style="margin-top: 4px;">₹16,430</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Savings Breakdown (Main Visual Focus) -->
+            <div class="card-savings-master" style="margin-top: 24px;">
+                <div class="savings-headline">
+                    <span class="sparkle-icon">✨</span>
+                    <span style="text-transform: none; font-size: 22px;">Your Potential Savings</span>
+                </div>
+
+                <div class="savings-dual-grid">
+                    <div class="saving-hero-box">
+                        <span class="shb-label">Monthly Savings</span>
+                        <div class="shb-amount" id="card3-monthly-savings">₹780</div>
+                        <span class="shb-friendly-note">Less EMI every month</span>
+                    </div>
+                    <div class="saving-hero-box">
+                        <span class="shb-label">Yearly Savings</span>
+                        <div class="shb-amount" id="card3-yearly-savings">₹9,365</div>
+                        <span class="shb-friendly-note">More money saved every year</span>
+                    </div>
+                </div>
+
+                <div class="saving-total-banner">
+                    <div class="stb-text-wrap" style="width: 100%; display: flex; align-items: center; justify-content: space-between;">
+                        <div>
+                            <span class="stb-label">Total Potential Savings</span>
+                            <div class="stb-amount" id="card3-total-savings">₹19,509+</div>
+                        </div>
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Refinance Details Note -->
+            <div class="card-refinance-terms" style="display: flex; gap: 10px; margin-top: 16px;">
+                <div class="term-chip" style="flex: 1; padding: 12px 6px; text-align: center; border-radius: 12px; background: rgba(15, 31, 58, 0.85); border: 1.5px solid rgba(52, 211, 153, 0.2);">
+                    <div style="margin-bottom: 6px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg></div>
+                    <span class="tc-label" style="font-size: 11px; text-transform: none;">Balance to Refinance</span>
+                    <strong class="tc-value" id="card3-refinance-principal" style="font-size: 15px;">₹3,69,445</strong>
+                </div>
+                <div class="term-chip" style="flex: 1; padding: 12px 6px; text-align: center; border-radius: 12px; background: rgba(15, 31, 58, 0.85); border: 1.5px solid rgba(52, 211, 153, 0.2);">
+                    <div style="margin-bottom: 6px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="5" x2="5" y2="19"></line><circle cx="6.5" cy="6.5" r="2.5"></circle><circle cx="17.5" cy="17.5" r="2.5"></circle></svg></div>
+                    <span class="tc-label" style="font-size: 11px; text-transform: none;">New Rate</span>
+                    <strong class="tc-value" id="card3-refinance-rate" style="font-size: 15px;">9.99% p.a.</strong>
+                </div>
+                <div class="term-chip" style="flex: 1; padding: 12px 6px; text-align: center; border-radius: 12px; background: rgba(15, 31, 58, 0.85); border: 1.5px solid rgba(52, 211, 153, 0.2);">
+                    <div style="margin-bottom: 6px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></div>
+                    <span class="tc-label" style="font-size: 11px; text-transform: none;">New Tenure</span>
+                    <strong class="tc-value" id="card3-refinance-tenure" style="font-size: 15px;">25 Months</strong>
+                </div>
+            </div>
+
+            <!-- Bottom Note -->
+            <div style="background: rgba(15, 31, 58, 0.85); border: 1.5px solid rgba(52, 211, 153, 0.2); border-radius: 12px; padding: 16px 20px; display: flex; align-items: center; gap: 16px; margin-top: auto; z-index: 2; position: relative;">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"></path></svg>
+                <span style="color: #E2E8F0; font-size: 15px; font-weight: 500;">By refinancing, you could reduce your interest cost and become debt-free faster.</span>
+            </div>
+        </div>
+    </div>
 
     <script src="app.js"></script>
 </body>

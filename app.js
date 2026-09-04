@@ -66,6 +66,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }).format(Math.round(amount));
     };
 
+    // Format Compact Lakh for stat badges (e.g. ₹4.1L, ₹14.1L)
+    const formatCompactLakh = (amount) => {
+        if (!amount || isNaN(amount) || amount <= 0) return '₹0';
+        if (amount >= 100000) {
+            const inLakhs = (amount / 100000).toFixed(1).replace(/\.0$/, '');
+            return `₹${inLakhs}L`;
+        }
+        return formatCurrency(amount);
+    };
+
     // Format Date for Clean Display (e.g. "15 Jan 2024")
     const formatDateDisplay = (dateObj) => {
         if (!dateObj || isNaN(dateObj.getTime())) return '-';
@@ -394,6 +404,111 @@ document.addEventListener('DOMContentLoaded', () => {
             totalDiffDisplay.style.color = 'var(--text-main)';
         }
 
+        // ==================================================================
+        // Synchronize Dedicated 1080x1350 WhatsApp Share Cards (Slide 1, 2, 3)
+        // ==================================================================
+
+        // --- Card 1: Your Loan Details ---
+        const card1LoanAmount = document.getElementById('card1-loan-amount');
+        const card1IssueDate = document.getElementById('card1-issue-date');
+        const card1FirstEmi = document.getElementById('card1-first-emi');
+        const card1InterestRate = document.getElementById('card1-interest-rate');
+        const card1MonthlyEmi = document.getElementById('card1-monthly-emi');
+        const card1Tenure = document.getElementById('card1-tenure');
+        const card1TenureYears = document.getElementById('card1-tenure-years');
+
+        if (card1LoanAmount) card1LoanAmount.textContent = formatCurrency(loanAmount);
+        if (card1IssueDate) card1IssueDate.textContent = formatDateDisplay(issueDate);
+        if (card1FirstEmi) {
+            card1FirstEmi.textContent = formatMonthYearDisplay(firstEmiDate);
+        }
+        if (card1InterestRate) card1InterestRate.textContent = `${interestRate.toFixed(2)}% p.a.`;
+        if (card1MonthlyEmi) card1MonthlyEmi.textContent = formatCurrency(amort.monthlyEmi);
+        if (card1Tenure) card1Tenure.textContent = `${totalMonths} Months`;
+        if (card1TenureYears) {
+            const tenureYears = (totalMonths / 12).toFixed(1).replace(/\.0$/, '');
+            card1TenureYears.textContent = `${tenureYears} Years`;
+        }
+
+        // --- Card 2: Your Loan Today ---
+        const card2Outstanding = document.getElementById('card2-outstanding-amount');
+        const card2EmisToGo = document.getElementById('card2-emis-to-go');
+        const card2IssueMonth = document.getElementById('card2-issue-month');
+        const card2FirstEmiMonth = document.getElementById('card2-first-emi-month');
+        const card2TodayMonth = document.getElementById('card2-today-month');
+        const card2EmisPaidLabel = document.getElementById('card2-emis-paid-label');
+        const card2ProgressPercent = document.getElementById('card2-progress-percent');
+        const card2EmisLeftLabel = document.getElementById('card2-emis-left-label');
+        const card2ProgressFill = document.getElementById('card2-progress-fill');
+        const card2BottomNote1 = document.getElementById('card2-bottom-note-1');
+        const card2BottomNote2 = document.getElementById('card2-bottom-note-2');
+        const card2CurrentEmi = document.getElementById('card2-current-emi');
+        const card2TotalInterest = document.getElementById('card2-total-interest');
+        const card2TotalPayment = document.getElementById('card2-total-payment');
+
+        if (card2Outstanding) card2Outstanding.textContent = formatCurrency(amort.outstandingBalance);
+        if (card2EmisToGo) card2EmisToGo.textContent = `You still have ${amort.remainingMonths} EMIs to go.`;
+        if (card2IssueMonth) card2IssueMonth.textContent = formatMonthYearDisplay(issueDate);
+        if (card2FirstEmiMonth) card2FirstEmiMonth.textContent = formatMonthYearDisplay(firstEmiDate);
+        if (card2TodayMonth) card2TodayMonth.textContent = formatMonthYearDisplay(todayDate);
+        if (card2EmisPaidLabel) card2EmisPaidLabel.textContent = `${elapsedEMIs} EMIs PAID`;
+        if (card2ProgressPercent) card2ProgressPercent.textContent = `${percentPaid}% COMPLETED`;
+        if (card2EmisLeftLabel) card2EmisLeftLabel.textContent = `${amort.remainingMonths} EMIs LEFT`;
+        if (card2ProgressFill) card2ProgressFill.style.width = `${percentPaid}%`;
+        if (card2CurrentEmi) card2CurrentEmi.textContent = formatCurrency(amort.monthlyEmi);
+        if (card2TotalInterest) card2TotalInterest.textContent = formatCompactLakh(totalOriginalInterest);
+        if (card2TotalPayment) card2TotalPayment.textContent = formatCompactLakh(totalOriginalPayment);
+
+        // --- Card 3: Special Refinance Offer ---
+        const card3CurrentRate = document.getElementById('card3-current-rate');
+        const card3CurrentEmi = document.getElementById('card3-current-emi');
+        const card3NewRate = document.getElementById('card3-new-rate');
+        const card3NewEmi = document.getElementById('card3-new-emi');
+        const card3RateDrop = document.getElementById('card3-rate-drop');
+        const card3MonthlySavings = document.getElementById('card3-monthly-savings');
+        const card3YearlySavings = document.getElementById('card3-yearly-savings');
+        const card3TotalSavings = document.getElementById('card3-total-savings');
+        const card3RefinancePrincipal = document.getElementById('card3-refinance-principal');
+        const card3RefinanceRate = document.getElementById('card3-refinance-rate');
+        const card3RefinanceTenure = document.getElementById('card3-refinance-tenure');
+
+        if (card3CurrentRate) card3CurrentRate.textContent = `${interestRate.toFixed(2)}%`;
+        if (card3CurrentEmi) card3CurrentEmi.textContent = formatCurrency(amort.monthlyEmi);
+        if (card3NewRate) card3NewRate.textContent = `${specialRate.toFixed(2)}%`;
+        if (card3NewEmi) card3NewEmi.textContent = formatCurrency(specialEMI);
+
+        const rateDiff = interestRate - specialRate;
+        if (card3RateDrop) {
+            if (rateDiff > 0) {
+                card3RateDrop.textContent = `${rateDiff.toFixed(2)}% lower interest rate`;
+                if (card3RateDrop.parentElement) card3RateDrop.parentElement.style.display = 'inline-flex';
+            } else {
+                if (card3RateDrop.parentElement) card3RateDrop.parentElement.style.display = 'none';
+            }
+        }
+
+        if (card3MonthlySavings) {
+            card3MonthlySavings.textContent = monthlyDiff > 0 
+                ? `${formatCurrency(monthlyDiff)} / month` 
+                : `₹0 / month`;
+        }
+        if (card3YearlySavings) {
+            card3YearlySavings.textContent = yearlyDiff > 0 
+                ? `${formatCurrency(yearlyDiff)} / year` 
+                : `₹0 / year`;
+        }
+        if (card3TotalSavings) {
+            card3TotalSavings.textContent = totalDiff > 0 
+                ? `${formatCurrency(totalDiff)}+` 
+                : `₹0`;
+        }
+        if (card3RefinancePrincipal) card3RefinancePrincipal.textContent = formatCurrency(refinancePrincipal);
+        if (card3RefinanceRate) card3RefinanceRate.textContent = `${specialRate.toFixed(2)}% p.a.`;
+        if (card3RefinanceTenure) card3RefinanceTenure.textContent = `${specialMonths} Months`;
+
+        // If modal preview is open, update the visible preview
+        updateModalPreview();
+
         return true;
     };
 
@@ -433,132 +548,354 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Download PDF functionality
-    const downloadPdfBtn = document.getElementById('download-pdf-btn');
-    if (downloadPdfBtn) {
-        downloadPdfBtn.addEventListener('click', async () => {
-            let originalScrollY = window.scrollY;
+    // ==========================================================================
+    // WhatsApp 3-Image Flow: Modal, Preview, and High-Res PNG Exports
+    // ==========================================================================
+    let currentPreviewSlide = 1;
+
+    // Toast Notification helper
+    const showToast = (message) => {
+        const toast = document.getElementById('toast');
+        if (!toast) return;
+        toast.textContent = message;
+        toast.classList.remove('hidden');
+        toast.style.opacity = '1';
+        clearTimeout(toast._timeout);
+        toast._timeout = setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => toast.classList.add('hidden'), 300);
+        }, 3200);
+    };
+
+    // Update live preview in modal
+    const updateModalPreview = () => {
+        const previewViewport = document.getElementById('preview-viewport');
+        const indicatorLabel = document.getElementById('slide-indicator-label');
+        const singleLabel = document.getElementById('download-single-label');
+        if (!previewViewport) return;
+
+        const targetCard = document.getElementById(`card-slide-${currentPreviewSlide}`);
+        if (!targetCard) return;
+
+        previewViewport.innerHTML = '';
+        const cloned = targetCard.cloneNode(true);
+        cloned.id = `preview-clone-${currentPreviewSlide}`;
+        previewViewport.appendChild(cloned);
+        
+        // Dynamically adjust viewport height and scale to match container width
+        setTimeout(() => {
+            const viewportWidth = previewViewport.clientWidth || 320;
+            const scale = viewportWidth / 1080;
+            cloned.style.transform = `scale(${scale})`;
+            
+            const cardHeight = cloned.scrollHeight;
+            if (cardHeight > 0) {
+                previewViewport.style.height = (cardHeight * scale) + 'px';
+            }
+        }, 50);
+
+        // Update tabs
+        document.querySelectorAll('.slide-tab-btn').forEach(btn => {
+            if (parseInt(btn.dataset.slide, 10) === currentPreviewSlide) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+
+        // Update labels
+        const fileNames = {
+            1: '01.png',
+            2: '02.png',
+            3: '03.png'
+        };
+        if (indicatorLabel) {
+            indicatorLabel.textContent = `Slide ${currentPreviewSlide} of 3: ${fileNames[currentPreviewSlide]}`;
+        }
+        if (singleLabel) {
+            singleLabel.textContent = `Download ${fileNames[currentPreviewSlide]}`;
+        }
+    };
+
+    // Helper: Open WhatsApp Web/App with Pre-filled Caption Text
+    const openWhatsAppWithCaption = () => {
+        const captionText = (document.getElementById('whatsapp-caption-text') || {}).innerText || '';
+        if (captionText) {
             try {
-                const btnTextSpan = downloadPdfBtn.querySelector('span');
-                if (btnTextSpan) btnTextSpan.innerText = 'Generating PDF...';
-                downloadPdfBtn.disabled = true;
-                downloadPdfBtn.style.opacity = '0.7';
-
-                // Ensure html2pdf is loaded
-                if (typeof html2pdf === 'undefined') {
-                    alert('PDF generation library is not loaded. Please try again later.');
-                    return;
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(captionText);
                 }
+            } catch (e) {
+                console.warn('Clipboard write error:', e);
+            }
+        }
+        const encoded = encodeURIComponent(captionText);
+        const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+        const waUrl = isMobile 
+            ? `https://api.whatsapp.com/send?text=${encoded}` 
+            : `https://web.whatsapp.com/send?text=${encoded}`;
+        
+        window.open(waUrl, '_blank');
+        showToast('WhatsApp opened! Select a chat, paste caption & attach 01.png, 02.png, 03.png.');
+    };
 
-                // Temporarily hide parts we don't want in the PDF
-                const actionButtons = document.querySelector('.action-buttons');
-                if (actionButtons) actionButtons.style.display = 'none';
+    // Generate exact 1080x1350 PNG Blob via html2canvas
+    const generateCardBlob = async (cardElementId) => {
+        const element = document.getElementById(cardElementId);
+        if (!element) throw new Error(`Card element ${cardElementId} not found`);
 
-                // Select the results container
-                const element = document.getElementById('results');
-                
-                // Temporarily apply solid background and disable animations to prevent blank/transparent renders
-                element.style.background = '#0B1F3A';
-                element.style.padding = '0';
-                element.style.borderRadius = '0';
-                element.style.animation = 'none';
-                element.style.transform = 'none';
+        if (typeof html2canvas === 'undefined') {
+            throw new Error('html2canvas library is not loaded');
+        }
 
-                // Stretch cards to beautifully fill the A4 pages
-                const cards = element.querySelectorAll('.result-card');
-                const originalCardStyles = [];
-                cards.forEach(card => {
-                    originalCardStyles.push({
-                        display: card.style.display,
-                        flexDirection: card.style.flexDirection,
-                        justifyContent: card.style.justifyContent,
-                        minHeight: card.style.minHeight,
-                        padding: card.style.padding,
-                        marginBottom: card.style.marginBottom
-                    });
-                    
-                    card.style.display = 'flex';
-                    card.style.flexDirection = 'column';
-                    card.style.justifyContent = 'space-evenly';
-                    card.style.minHeight = '800px'; // A4 printable area relative height
-                    card.style.padding = '3rem'; // Add luxurious breathing room
-                    card.style.marginBottom = '0'; // Remove margin to prevent accidental spillover
-                });
+        // Render card at fixed 1080x1350 with pristine quality
+        const canvas = await html2canvas(element, {
+            scale: 1,
+            backgroundColor: '#0B1F3A',
+            useCORS: true,
+            logging: false
+        });
 
-                // Force page break before the second card
-                const secondaryCard = document.querySelector('.result-card.secondary');
-                if (secondaryCard) {
-                    secondaryCard.style.pageBreakBefore = 'always';
+        return new Promise((resolve) => {
+            canvas.toBlob((blob) => resolve(blob), 'image/png', 1.0);
+        });
+    };
+
+    // Download Single Slide (01.png, 02.png, or 03.png)
+    const downloadSingleSlide = async (slideNum) => {
+        const fileNames = {
+            1: '01.png',
+            2: '02.png',
+            3: '03.png'
+        };
+        const fileName = fileNames[slideNum];
+        const cardId = `card-slide-${slideNum}`;
+        const singleBtn = document.getElementById('download-current-slide-btn');
+
+        try {
+            if (singleBtn) {
+                singleBtn.disabled = true;
+                singleBtn.style.opacity = '0.7';
+            }
+            showToast(`Rendering ${fileName}...`);
+            const blob = await generateCardBlob(cardId);
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(() => URL.revokeObjectURL(url), 1500);
+            showToast(`Downloaded ${fileName}!`);
+        } catch (err) {
+            console.error('Error downloading slide:', err);
+            alert('Failed to generate image: ' + err.message);
+        } finally {
+            if (singleBtn) {
+                singleBtn.disabled = false;
+                singleBtn.style.opacity = '1';
+            }
+        }
+    };
+
+    // Direct Flow: Download 3 Images (01.png, 02.png, 03.png) -> Auto-Copy Caption -> Open WhatsApp
+    const download3ImagesAndOpenWhatsApp = async (triggerBtn, shouldOpenWhatsApp = true) => {
+        const originalText = triggerBtn ? triggerBtn.innerHTML : '';
+        try {
+            if (triggerBtn) {
+                triggerBtn.disabled = true;
+                triggerBtn.style.opacity = '0.7';
+                triggerBtn.innerHTML = '<span>Rendering 01, 02, 03.png...</span>';
+            }
+            showToast('Generating 01.png, 02.png, 03.png...');
+
+            // 1. Render all 3 cards in parallel
+            const [blob1, blob2, blob3] = await Promise.all([
+                generateCardBlob('card-slide-1'),
+                generateCardBlob('card-slide-2'),
+                generateCardBlob('card-slide-3')
+            ]);
+
+            // 2. Direct automatic sequential downloads to browser's Downloads folder
+            const triggerSave = (blob, filename) => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                setTimeout(() => URL.revokeObjectURL(url), 2000);
+            };
+
+            triggerSave(blob1, '01.png');
+            await new Promise(r => setTimeout(r, 350));
+            triggerSave(blob2, '02.png');
+            await new Promise(r => setTimeout(r, 350));
+            triggerSave(blob3, '03.png');
+
+            // 3. Automatically copy companion message to clipboard
+            const captionEl = document.getElementById('whatsapp-caption-text');
+            const captionText = captionEl ? (captionEl.innerText || captionEl.textContent) : '';
+            if (captionText && navigator.clipboard && navigator.clipboard.writeText) {
+                try {
+                    await navigator.clipboard.writeText(captionText);
+                } catch (e) {
+                    console.warn('Clipboard write warning:', e);
                 }
+            }
 
-                // Ensure we capture from the top to avoid scroll-related blank pages
-                window.scrollTo(0, 0);
+            // 4. If requested, automatically open WhatsApp after starting download
+            if (shouldOpenWhatsApp) {
+                showToast('✅ 01.png, 02.png, 03.png downloaded! Caption copied! Opening WhatsApp...');
+                setTimeout(() => {
+                    openWhatsAppWithCaption();
+                }, 700);
+            } else {
+                showToast('✅ Downloaded 01.png, 02.png, 03.png & copied caption!');
+            }
 
-                // Configure PDF options
-                const opt = {
-                    margin:       [0.5, 0.5, 0.5, 0.5],
-                    filename:     'emi_calculator_details.pdf',
-                    image:        { type: 'jpeg', quality: 1.0 },
-                    html2canvas:  { 
-                        scale: 2, 
-                        backgroundColor: '#0B1F3A', 
-                        useCORS: true,
-                        scrollY: 0
-                    },
-                    pagebreak:    { mode: 'css' },
-                    jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
-                };
+        } catch (err) {
+            console.error('Error in 3-image download flow:', err);
+            alert('Failed to generate images: ' + err.message);
+        } finally {
+            if (triggerBtn) {
+                triggerBtn.disabled = false;
+                triggerBtn.style.opacity = '1';
+                triggerBtn.innerHTML = originalText;
+            }
+        }
+    };
 
-                // Generate and download PDF
-                await html2pdf().set(opt).from(element).save();
-                
-            } catch (err) {
-                console.error('Error during PDF generation:', err);
-                alert('An error occurred while generating the PDF.');
-            } finally {
-                const btnTextSpan = downloadPdfBtn.querySelector('span');
-                if (btnTextSpan) btnTextSpan.innerText = 'Download PDF';
-                downloadPdfBtn.disabled = false;
-                downloadPdfBtn.style.opacity = '1';
-                
-                // Restore original styles to the results container
-                const element = document.getElementById('results');
-                if (element) {
-                    element.style.background = '';
-                    element.style.padding = '';
-                    element.style.borderRadius = '';
-                    element.style.animation = '';
-                    element.style.transform = '';
-                }
+    // Modal & Button Event Listeners
+    const modal = document.getElementById('whatsapp-modal');
+    const openModalBtn = document.getElementById('open-whatsapp-modal-btn');
+    const closeModalBtn = document.getElementById('close-modal-btn');
+    const quickDownloadImagesBtn = document.getElementById('quick-download-images-btn');
+    const modalDownloadAllBtn = document.getElementById('modal-download-all-btn');
+    const openWhatsappDirectBtn = document.getElementById('open-whatsapp-direct-btn');
+    const downloadCurrentSlideBtn = document.getElementById('download-current-slide-btn');
+    const prevSlideBtn = document.getElementById('prev-slide-btn');
+    const nextSlideBtn = document.getElementById('next-slide-btn');
+    const slideTabs = document.querySelectorAll('.slide-tab-btn');
+    const copyCaptionBtn = document.getElementById('copy-caption-btn');
+    const whatsappCaptionText = document.getElementById('whatsapp-caption-text');
 
-                // Restore card styles
-                const cards = element.querySelectorAll('.result-card');
-                cards.forEach((card, index) => {
-                    if (originalCardStyles[index]) {
-                        card.style.display = originalCardStyles[index].display;
-                        card.style.flexDirection = originalCardStyles[index].flexDirection;
-                        card.style.justifyContent = originalCardStyles[index].justifyContent;
-                        card.style.minHeight = originalCardStyles[index].minHeight;
-                        card.style.padding = originalCardStyles[index].padding;
-                        card.style.marginBottom = originalCardStyles[index].marginBottom;
-                    }
-                });
+    if (openModalBtn && modal) {
+        openModalBtn.addEventListener('click', () => {
+            performCalculation(false);
+            modal.classList.remove('hidden');
+            modal.setAttribute('aria-hidden', 'false');
+            updateModalPreview();
+        });
+    }
 
-                // Restore page break rule
-                const secondaryCard = document.querySelector('.result-card.secondary');
-                if (secondaryCard) {
-                    secondaryCard.style.pageBreakBefore = '';
-                }
-                
-                window.scrollTo(0, originalScrollY);
-                
-                // Restore visibility
-                const actionButtons = document.querySelector('.action-buttons');
-                if (actionButtons) actionButtons.style.display = '';
+    if (closeModalBtn && modal) {
+        closeModalBtn.addEventListener('click', () => {
+            modal.classList.add('hidden');
+            modal.setAttribute('aria-hidden', 'true');
+        });
+    }
+
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.add('hidden');
+                modal.setAttribute('aria-hidden', 'true');
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+                modal.classList.add('hidden');
+                modal.setAttribute('aria-hidden', 'true');
             }
         });
     }
 
-    // Initialize default date
+    slideTabs.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const slide = parseInt(btn.dataset.slide, 10);
+            if (!isNaN(slide)) {
+                currentPreviewSlide = slide;
+                updateModalPreview();
+            }
+        });
+    });
+
+    if (prevSlideBtn) {
+        prevSlideBtn.addEventListener('click', () => {
+            currentPreviewSlide = currentPreviewSlide === 1 ? 3 : currentPreviewSlide - 1;
+            updateModalPreview();
+        });
+    }
+
+    if (nextSlideBtn) {
+        nextSlideBtn.addEventListener('click', () => {
+            currentPreviewSlide = currentPreviewSlide === 3 ? 1 : currentPreviewSlide + 1;
+            updateModalPreview();
+        });
+    }
+
+    if (downloadCurrentSlideBtn) {
+        downloadCurrentSlideBtn.addEventListener('click', () => {
+            downloadSingleSlide(currentPreviewSlide);
+        });
+    }
+
+    // Modal download button: Downloads 01.png, 02.png, 03.png automatically and opens WhatsApp
+    if (modalDownloadAllBtn) {
+        modalDownloadAllBtn.addEventListener('click', () => {
+            download3ImagesAndOpenWhatsApp(modalDownloadAllBtn, true);
+        });
+    }
+
+    // Direct Open WhatsApp button in modal
+    if (openWhatsappDirectBtn) {
+        openWhatsappDirectBtn.addEventListener('click', () => {
+            openWhatsAppWithCaption();
+        });
+    }
+
+    // Main page quick download button: Downloads 01.png, 02.png, 03.png automatically and opens WhatsApp
+    if (quickDownloadImagesBtn) {
+        quickDownloadImagesBtn.addEventListener('click', () => {
+            performCalculation(false);
+            download3ImagesAndOpenWhatsApp(quickDownloadImagesBtn, true);
+        });
+    }
+
+    // Copy Caption to Clipboard
+    if (copyCaptionBtn && whatsappCaptionText) {
+        copyCaptionBtn.addEventListener('click', async () => {
+            const textToCopy = whatsappCaptionText.innerText || whatsappCaptionText.textContent;
+            try {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    await navigator.clipboard.writeText(textToCopy);
+                } else {
+                    const textarea = document.createElement('textarea');
+                    textarea.value = textToCopy;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textarea);
+                }
+                const btnText = document.getElementById('copy-btn-text');
+                if (btnText) btnText.textContent = 'Copied! ✓';
+                showToast('WhatsApp caption copied to clipboard!');
+                setTimeout(() => {
+                    if (btnText) btnText.textContent = 'Copy Caption';
+                }, 2000);
+            } catch (err) {
+                console.error('Failed to copy caption:', err);
+                showToast('Please manually select and copy text.');
+            }
+        });
+    }
+
+    // Initialize default date and initial calculation
     setDefaultIssueDate();
+    performCalculation(false);
 });
+
