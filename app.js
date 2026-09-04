@@ -460,11 +460,21 @@ document.addEventListener('DOMContentLoaded', () => {
         if (card2TotalPayment) card2TotalPayment.textContent = formatCompactLakh(totalOriginalPayment);
 
         // --- Card 3: Special Refinance Offer ---
-        const card3CurrentRate = document.getElementById('card3-current-rate');
-        const card3CurrentEmi = document.getElementById('card3-current-emi');
-        const card3NewRate = document.getElementById('card3-new-rate');
+        const card3CutRate1 = document.getElementById('card3-cut-rate-1');
+        const card3CutEmi = document.getElementById('card3-cut-emi');
+        const card3CutRate2 = document.getElementById('card3-cut-rate-2');
+        const card3CutInterest = document.getElementById('card3-cut-interest');
+        const card3CutRate3 = document.getElementById('card3-cut-rate-3');
+        const card3CutPayment = document.getElementById('card3-cut-payment');
+
         const card3NewEmi = document.getElementById('card3-new-emi');
-        const card3RateDrop = document.getElementById('card3-rate-drop');
+        const card3NewInterest = document.getElementById('card3-new-interest');
+        const card3NewPayment = document.getElementById('card3-new-payment');
+
+        const card3EmiSub = document.getElementById('card3-emi-sub');
+        const card3InterestSub = document.getElementById('card3-interest-sub');
+        const card3PaymentSub = document.getElementById('card3-payment-sub');
+
         const card3MonthlySavings = document.getElementById('card3-monthly-savings');
         const card3YearlySavings = document.getElementById('card3-yearly-savings');
         const card3TotalSavings = document.getElementById('card3-total-savings');
@@ -472,20 +482,23 @@ document.addEventListener('DOMContentLoaded', () => {
         const card3RefinanceRate = document.getElementById('card3-refinance-rate');
         const card3RefinanceTenure = document.getElementById('card3-refinance-tenure');
 
-        if (card3CurrentRate) card3CurrentRate.textContent = `${interestRate.toFixed(2)}%`;
-        if (card3CurrentEmi) card3CurrentEmi.textContent = formatCurrency(amort.monthlyEmi);
-        if (card3NewRate) card3NewRate.textContent = `${specialRate.toFixed(2)}%`;
-        if (card3NewEmi) card3NewEmi.textContent = formatCurrency(specialEMI);
+        // Populate Cut (Old) Values with Strikethrough
+        if (card3CutRate1) card3CutRate1.textContent = `${interestRate.toFixed(2)}%`;
+        if (card3CutEmi) card3CutEmi.textContent = formatCurrency(amort.monthlyEmi);
+        if (card3CutRate2) card3CutRate2.textContent = `${interestRate.toFixed(2)}%`;
+        if (card3CutInterest) card3CutInterest.textContent = formatCompactLakh(totalOriginalInterest);
+        if (card3CutRate3) card3CutRate3.textContent = `${interestRate.toFixed(2)}%`;
+        if (card3CutPayment) card3CutPayment.textContent = formatCompactLakh(totalOriginalPayment);
 
-        const rateDiff = interestRate - specialRate;
-        if (card3RateDrop) {
-            if (rateDiff > 0) {
-                card3RateDrop.textContent = `${rateDiff.toFixed(2)}% lower interest rate`;
-                if (card3RateDrop.parentElement) card3RateDrop.parentElement.style.display = 'inline-flex';
-            } else {
-                if (card3RateDrop.parentElement) card3RateDrop.parentElement.style.display = 'none';
-            }
-        }
+        // Populate New Offer Values & Subtitles
+        if (card3NewEmi) card3NewEmi.textContent = formatCurrency(specialEMI);
+        if (card3EmiSub) card3EmiSub.textContent = `New EMI @ ${specialRate.toFixed(2)}%`;
+
+        if (card3NewInterest) card3NewInterest.textContent = formatCompactLakh(specialTotalInterest);
+        if (card3InterestSub) card3InterestSub.textContent = `Interest @ ${specialRate.toFixed(2)}%`;
+
+        if (card3NewPayment) card3NewPayment.textContent = formatCompactLakh(specialTotalRepayment);
+        if (card3PaymentSub) card3PaymentSub.textContent = `Total Over Loan`;
 
         if (card3MonthlySavings) {
             card3MonthlySavings.textContent = monthlyDiff > 0 
@@ -661,16 +674,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    // Download Single Slide (01.png, 02.png, or 03.png)
-    const downloadSingleSlide = async (slideNum) => {
-        const fileNames = {
-            1: '01.png',
-            2: '02.png',
-            3: '03.png'
-        };
-        const fileName = fileNames[slideNum];
+    // Download Single Slide
+    const downloadSingleSlide = async (slideNum, btnElement) => {
+        const now = new Date();
+        const timestamp = now.toISOString().replace(/T/, '_').replace(/:/g, '-').split('.')[0];
+        const fileName = `image_${slideNum}_${timestamp}.png`;
         const cardId = `card-slide-${slideNum}`;
-        const singleBtn = document.getElementById('download-current-slide-btn');
+        const singleBtn = btnElement || document.getElementById('download-current-slide-btn');
 
         try {
             if (singleBtn) {
@@ -772,7 +782,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById('whatsapp-modal');
     const openModalBtn = document.getElementById('open-whatsapp-modal-btn');
     const closeModalBtn = document.getElementById('close-modal-btn');
-    const quickDownloadImagesBtn = document.getElementById('quick-download-images-btn');
+    const downloadImage1Btn = document.getElementById('download-image-1-btn');
+    const downloadImage2Btn = document.getElementById('download-image-2-btn');
+    const downloadImage3Btn = document.getElementById('download-image-3-btn');
     const modalDownloadAllBtn = document.getElementById('modal-download-all-btn');
     const openWhatsappDirectBtn = document.getElementById('open-whatsapp-direct-btn');
     const downloadCurrentSlideBtn = document.getElementById('download-current-slide-btn');
@@ -782,35 +794,52 @@ document.addEventListener('DOMContentLoaded', () => {
     const copyCaptionBtn = document.getElementById('copy-caption-btn');
     const whatsappCaptionText = document.getElementById('whatsapp-caption-text');
 
+    const closeModal = () => {
+        if (!modal) return;
+        modal.classList.add('hidden');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+    };
+
+    const openModal = () => {
+        if (!modal) return;
+        performCalculation(false);
+        modal.classList.remove('hidden');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+        updateModalPreview();
+    };
+
     if (openModalBtn && modal) {
-        openModalBtn.addEventListener('click', () => {
-            performCalculation(false);
-            modal.classList.remove('hidden');
-            modal.setAttribute('aria-hidden', 'false');
-            updateModalPreview();
-        });
+        openModalBtn.addEventListener('click', openModal);
     }
 
     if (closeModalBtn && modal) {
-        closeModalBtn.addEventListener('click', () => {
-            modal.classList.add('hidden');
-            modal.setAttribute('aria-hidden', 'true');
-        });
+        closeModalBtn.addEventListener('click', closeModal);
     }
 
     if (modal) {
         modal.addEventListener('click', (e) => {
             if (e.target === modal) {
-                modal.classList.add('hidden');
-                modal.setAttribute('aria-hidden', 'true');
+                closeModal();
             }
         });
 
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
-                modal.classList.add('hidden');
-                modal.setAttribute('aria-hidden', 'true');
+                closeModal();
             }
+        });
+
+        // Re-scale live preview on window resize or device orientation change
+        let resizeDebounce;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeDebounce);
+            resizeDebounce = setTimeout(() => {
+                if (!modal.classList.contains('hidden')) {
+                    updateModalPreview();
+                }
+            }, 100);
         });
     }
 
@@ -858,11 +887,23 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Main page quick download button: Downloads 01.png, 02.png, 03.png automatically and opens WhatsApp
-    if (quickDownloadImagesBtn) {
-        quickDownloadImagesBtn.addEventListener('click', () => {
+    // Main page individual download buttons
+    if (downloadImage1Btn) {
+        downloadImage1Btn.addEventListener('click', () => {
             performCalculation(false);
-            download3ImagesAndOpenWhatsApp(quickDownloadImagesBtn, true);
+            downloadSingleSlide(1, downloadImage1Btn);
+        });
+    }
+    if (downloadImage2Btn) {
+        downloadImage2Btn.addEventListener('click', () => {
+            performCalculation(false);
+            downloadSingleSlide(2, downloadImage2Btn);
+        });
+    }
+    if (downloadImage3Btn) {
+        downloadImage3Btn.addEventListener('click', () => {
+            performCalculation(false);
+            downloadSingleSlide(3, downloadImage3Btn);
         });
     }
 

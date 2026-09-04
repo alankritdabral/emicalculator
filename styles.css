@@ -138,6 +138,8 @@ header p {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 0.5rem;
+    flex-wrap: wrap;
+    gap: 0.35rem;
 }
 
 .label-with-toggle label, .label-with-hint label {
@@ -369,6 +371,27 @@ input[type=number] {
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
 }
 
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.85rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.card-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.25rem 0.65rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    border: 1px solid rgba(191, 219, 254, 0.25);
+}
+
 .card-tag.tag-cyan {
     color: var(--sky-blue);
     background: rgba(37, 99, 235, 0.2);
@@ -379,9 +402,12 @@ input[type=number] {
     color: var(--text-muted);
     background: rgba(11, 31, 58, 0.8);
     border: 1px solid var(--card-border);
-    padding: 0.2rem 0.6rem;
-    border-radius: 10px;
+    padding: 0.25rem 0.65rem;
+    border-radius: 20px;
     font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
 }
 
 .timeline-grid {
@@ -981,16 +1007,56 @@ input[type=number] {
         grid-template-columns: 1fr;
     }
 
+    .modal-backdrop {
+        padding: 0.75rem 0.5rem;
+    }
+
     .modal-dialog {
         padding: 1.25rem 1rem;
+        border-radius: 18px;
+        max-height: 94vh;
     }
 
     .whatsapp-share-cta-card {
         padding: 1.25rem;
     }
 
+    .whatsapp-action-buttons,
+    .modal-actions-bar {
+        flex-direction: column;
+    }
+
+    .whatsapp-primary-btn, 
+    .whatsapp-secondary-btn,
+    .btn-subaction, 
+    .btn-primary-action, 
+    .btn-whatsapp-direct {
+        width: 100%;
+        flex: 1 1 100%;
+    }
+
+    .slide-nav-tabs {
+        gap: 0.35rem;
+        padding: 0.3rem;
+    }
+
+    .slide-tab-btn {
+        padding: 0.5rem 0.35rem;
+        font-size: 0.76rem;
+        gap: 0.35rem;
+    }
+
+    .slide-tab-btn .slide-num {
+        width: 18px;
+        height: 18px;
+        font-size: 0.7rem;
+        flex-shrink: 0;
+    }
+
     .preview-card-viewport {
-        max-width: 100%;
+        width: 100%;
+        max-width: 320px;
+        margin: 0 auto;
     }
 }
 
@@ -1005,24 +1071,63 @@ input[type=number] {
     
     .modal-dialog {
         padding: 1rem 0.75rem;
+        border-radius: 16px;
     }
-    
-    .whatsapp-action-buttons,
-    .modal-actions-bar {
+
+    .slide-tab-btn {
         flex-direction: column;
-    }
-    
-    .whatsapp-primary-btn, 
-    .whatsapp-secondary-btn,
-    .btn-subaction, 
-    .btn-primary-action, 
-    .btn-whatsapp-direct {
-        width: 100%;
-        flex: 1 1 100%;
+        padding: 0.45rem 0.2rem;
+        font-size: 0.72rem;
+        gap: 0.25rem;
+        text-align: center;
     }
     
     .preview-card-viewport {
-        width: 280px;
+        max-width: 280px;
+    }
+}
+
+@media (max-width: 360px) {
+    body {
+        padding: 1rem 0.5rem;
+    }
+
+    .calculator-container {
+        padding: 1.1rem 0.65rem;
+        border-radius: 16px;
+    }
+
+    header h1 {
+        font-size: 1.55rem;
+    }
+
+    header p {
+        font-size: 0.84rem;
+    }
+
+    .outstanding-value {
+        font-size: 1.65rem;
+    }
+
+    .cutoff-hint {
+        font-size: 0.72rem;
+        padding: 0.12rem 0.45rem;
+    }
+
+    .preview-stage-container {
+        padding: 0.85rem 0.5rem;
+    }
+
+    .preview-card-viewport {
+        max-width: 240px;
+    }
+
+    .sub-stats-grid .stat-box {
+        padding: 0.5rem 0.35rem;
+    }
+
+    .stat-value {
+        font-size: 0.82rem;
     }
 }
 
@@ -1174,7 +1279,7 @@ input[type=number] {
     justify-content: center;
     align-items: center;
     padding: 1.5rem;
-    overflow-y: auto;
+    overflow: hidden;
 }
 
 .modal-backdrop.hidden {
@@ -1193,7 +1298,26 @@ input[type=number] {
     padding: 2rem;
     box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(37, 99, 235, 0.2);
     overflow-y: auto;
+    overscroll-behavior: contain;
     animation: modalPopIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal-dialog::-webkit-scrollbar {
+    width: 6px;
+}
+
+.modal-dialog::-webkit-scrollbar-track {
+    background: rgba(11, 25, 48, 0.5);
+    border-radius: 4px;
+}
+
+.modal-dialog::-webkit-scrollbar-thumb {
+    background: rgba(191, 219, 254, 0.25);
+    border-radius: 4px;
+}
+
+.modal-dialog::-webkit-scrollbar-thumb:hover {
+    background: rgba(191, 219, 254, 0.45);
 }
 
 @keyframes modalPopIn {
@@ -1337,6 +1461,7 @@ input[type=number] {
 
 .preview-card-viewport {
     width: 320px;
+    max-width: 100%;
     height: 400px;
     border-radius: 16px;
     box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6), 0 0 24px rgba(37, 99, 235, 0.15);
@@ -1344,6 +1469,7 @@ input[type=number] {
     position: relative;
     background: #0B1F3A;
     border: 1px solid rgba(191, 219, 254, 0.25);
+    margin: 0 auto;
 }
 
 /* Scaled Preview Frame containing the 1080x1350 card scaled down */
@@ -2045,110 +2171,106 @@ input[type=number] {
     color: #64748B;
 }
 
-/* CARD 3 Comparison & Savings */
-.card-comparison-panel {
-    display: flex;
-    align-items: center;
-    background: rgba(15, 31, 58, 0.85);
-    border: 1.5px solid rgba(191, 219, 254, 0.2);
-    border-radius: 24px;
-    padding: 24px 28px;
+/* CARD 3 Comparison Triad & Stat Cards */
+.card3-triad {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 14px;
     position: relative;
     z-index: 2;
+    margin-top: 14px;
+    margin-bottom: 6px;
 }
 
-.comp-col {
-    flex: 1;
+.card3-stat-card {
+    background: rgba(15, 31, 58, 0.9);
+    border: 1.5px solid rgba(52, 211, 153, 0.28);
+    border-radius: 20px;
+    padding: 20px 12px;
     display: flex;
     flex-direction: column;
-    gap: 14px;
-}
-
-.comp-col.new-offer {
-    background: rgba(16, 185, 129, 0.12);
-    border: 1.5px solid rgba(16, 185, 129, 0.35);
-    border-radius: 20px;
-    padding: 18px 22px;
+    align-items: center;
+    text-align: center;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
     position: relative;
 }
 
-.comp-col-title {
-    font-size: 19px;
-    font-weight: 700;
-    color: #94A3B8;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.offer-pill-badge {
-    position: absolute;
-    top: -13px;
-    right: 18px;
-    background: #10B981;
-    color: #FFFFFF;
-    font-size: 14px;
-    font-weight: 800;
-    padding: 3px 12px;
-    border-radius: 20px;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
-}
-
-.comp-metric-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-}
-
-.comp-metric-block {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
-
-.comp-metric-block .cm-val {
-    font-size: 34px;
-    font-weight: 800;
-    color: #FFFFFF;
-    line-height: 1.15;
-}
-
-.comp-metric-block .cm-label {
-    font-size: 15px;
-    font-weight: 600;
-    color: #94A3B8;
-}
-
-.rate-old {
-    color: #94A3B8;
-    text-decoration: line-through;
-    opacity: 0.85;
-}
-
-.rate-new {
-    color: #34D399;
-}
-
-.emi-new {
-    color: #34D399;
-}
-
-.comp-arrow-divider {
-    padding: 0 16px;
-}
-
-.arrow-circle {
-    width: 48px;
-    height: 48px;
+.card3-icon-bubble {
+    background: rgba(16, 185, 129, 0.2);
+    border: 1.5px solid rgba(52, 211, 153, 0.4);
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
-    background: #2563EB;
-    color: #FFFFFF;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
-    box-shadow: 0 8px 24px rgba(37, 99, 235, 0.5);
+    margin-bottom: 8px;
+    font-weight: 800;
+    font-size: 20px;
+    color: #34D399;
+}
+
+.card3-stat-card .st-label {
+    font-size: 15px;
+    font-weight: 700;
+    color: #94A3B8;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+}
+
+.stat-cut-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 8px;
+    margin-bottom: 2px;
+    flex-wrap: nowrap;
+}
+
+.cut-rate-tag {
+    background: rgba(239, 68, 68, 0.15);
+    color: #F87171;
+    border: 1px solid rgba(239, 68, 68, 0.35);
+    font-size: 13px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 8px;
+    text-decoration: line-through;
+    text-decoration-color: #EF4444;
+    text-decoration-thickness: 1.5px;
+}
+
+.cut-amount-val {
+    font-size: 22px;
+    font-weight: 700;
+    color: #94A3B8;
+    text-decoration: line-through;
+    text-decoration-color: #EF4444;
+    text-decoration-thickness: 2.5px;
+    opacity: 0.85;
+}
+
+.stat-cut-arrow {
+    color: #34D399;
+    font-size: 15px;
+    margin: 2px 0;
+    opacity: 0.9;
+}
+
+.st-new-value {
+    font-size: 32px;
+    font-weight: 800;
+    color: #34D399;
+    letter-spacing: -0.5px;
+    line-height: 1.15;
+}
+
+.st-new-sub {
+    font-size: 13px;
+    font-weight: 600;
+    color: #93C5FD;
+    margin-top: 4px;
 }
 
 /* Rate Reduction Callout */

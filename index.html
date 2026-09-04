@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=3">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </head>
@@ -238,21 +238,16 @@
                     <span class="dimensions-tag">1080 × 1350 px (4:5)</span>
                 </div>
                 <h3 class="whatsapp-cta-title">WhatsApp 3-Card Refinancing Story</h3>
-                <p class="whatsapp-cta-desc">Export 3 standalone images (<strong>01.png, 02.png, 03.png</strong>) directly to your device and open WhatsApp to share.</p>
-                <div class="whatsapp-action-buttons">
-                    <button type="button" id="quick-download-images-btn" class="whatsapp-primary-btn">
-                        <svg class="whatsapp-icon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.664-.698c.969.54 1.861.825 2.795.826h.005c3.179 0 5.766-2.587 5.767-5.766 0-3.18-2.587-5.813-5.772-5.813zm3.392 8.243c-.144.405-.837.774-1.17.824-.312.045-.694.073-2.127-.519-1.834-.757-3.003-2.617-3.094-2.738-.09-.122-.745-.989-.745-1.886 0-.898.469-1.339.636-1.52.167-.182.366-.228.487-.228.122 0 .244.001.35.007.112.005.263-.042.411.314.155.372.53 1.29.576 1.383.046.092.077.2.015.321-.061.121-.092.197-.183.303-.092.106-.194.237-.277.318-.092.091-.188.19-.081.374.107.182.474.781 1.018 1.265.701.623 1.292.816 1.475.907.183.092.29.076.398-.046.107-.121.458-.533.58-.716.122-.182.244-.152.411-.091.168.061 1.066.502 1.249.593.182.091.304.137.35.213.045.076.045.441-.099.846z"/>
-                        </svg>
-                        <span>Download 3 Images & Open WhatsApp</span>
+                <p class="whatsapp-cta-desc">Export each standalone image individually to your device.</p>
+                <div class="whatsapp-action-buttons" style="display: flex; flex-direction: column; gap: 8px;">
+                    <button type="button" id="download-image-1-btn" class="whatsapp-primary-btn" style="width: 100%;">
+                        <span>Download Image 1</span>
                     </button>
-                    <button type="button" id="open-whatsapp-modal-btn" class="whatsapp-secondary-btn">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                            <polyline points="21 15 16 10 5 21"></polyline>
-                        </svg>
-                        <span>Preview Slides</span>
+                    <button type="button" id="download-image-2-btn" class="whatsapp-primary-btn" style="width: 100%;">
+                        <span>Download Image 2</span>
+                    </button>
+                    <button type="button" id="download-image-3-btn" class="whatsapp-primary-btn" style="width: 100%;">
+                        <span>Download Image 3</span>
                     </button>
                 </div>
             </div>
@@ -578,38 +573,68 @@ Swipe through the 3 images to see how it works.</div>
                 <p class="card-subtitle">See how much you could save.</p>
             </div>
 
-            <!-- Current vs New Offer Comparison -->
-            <div class="card-comparison-panel">
-                <div class="comp-col current">
-                    <span class="comp-col-title" style="text-transform: none; font-size: 18px;">Current Loan</span>
-                    <div class="comp-metric-row">
-                        <div class="comp-metric-block">
-                            <span class="cm-label">Interest Rate</span>
-                            <span class="cm-val rate-old" id="card3-current-rate" style="margin-top: 4px;">14.50% p.a.</span>
-                        </div>
-                        <div class="comp-metric-block">
-                            <span class="cm-label">Monthly EMI</span>
-                            <span class="cm-val" id="card3-current-emi" style="margin-top: 4px;">₹17,210</span>
-                        </div>
+            <!-- 3 Comparison Stats: Current (Cut) vs New Offer (Like Image 2) -->
+            <div class="card-stats-triad card3-triad">
+                <!-- 1. MONTHLY EMI -->
+                <div class="stat-triad-card card3-stat-card">
+                    <div class="card3-icon-bubble">₹</div>
+                    <span class="st-label">MONTHLY EMI</span>
+                    
+                    <!-- Previously paying (Cut) -->
+                    <div class="stat-cut-box">
+                        <span class="cut-rate-tag" id="card3-cut-rate-1">14.50%</span>
+                        <span class="cut-amount-val" id="card3-cut-emi">₹17,210</span>
                     </div>
+
+                    <div class="stat-cut-arrow">↓</div>
+
+                    <!-- New Offer Value -->
+                    <div class="stat-new-wrapper">
+                        <strong class="st-new-value" id="card3-new-emi">₹16,430</strong>
+                    </div>
+                    <span class="st-new-sub" id="card3-emi-sub">New EMI @ 9.99%</span>
                 </div>
 
-                <div class="comp-arrow-divider">
-                    <div class="arrow-circle">➔</div>
+                <!-- 2. TOTAL INTEREST -->
+                <div class="stat-triad-card card3-stat-card">
+                    <div class="card3-icon-bubble">%</div>
+                    <span class="st-label">TOTAL INTEREST</span>
+                    
+                    <!-- Previously paying (Cut) -->
+                    <div class="stat-cut-box">
+                        <span class="cut-rate-tag" id="card3-cut-rate-2">14.50%</span>
+                        <span class="cut-amount-val" id="card3-cut-interest">₹1.2L</span>
+                    </div>
+
+                    <div class="stat-cut-arrow">↓</div>
+
+                    <!-- New Offer Value -->
+                    <div class="stat-new-wrapper">
+                        <strong class="st-new-value" id="card3-new-interest">₹41,308</strong>
+                    </div>
+                    <span class="st-new-sub" id="card3-interest-sub">Interest @ 9.99%</span>
                 </div>
 
-                <div class="comp-col new-offer">
-                    <div class="offer-pill-badge">NEW OFFER</div>
-                    <div class="comp-metric-row">
-                        <div class="comp-metric-block">
-                            <span class="cm-label">Interest Rate</span>
-                            <span class="cm-val rate-new" id="card3-new-rate" style="margin-top: 4px;">9.99% p.a.</span>
-                        </div>
-                        <div class="comp-metric-block">
-                            <span class="cm-label">Monthly EMI</span>
-                            <span class="cm-val emi-new" id="card3-new-emi" style="margin-top: 4px;">₹16,430</span>
-                        </div>
+                <!-- 3. TOTAL PAYMENT -->
+                <div class="stat-triad-card card3-stat-card">
+                    <div class="card3-icon-bubble">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
                     </div>
+                    <span class="st-label">TOTAL PAYMENT</span>
+                    
+                    <!-- Previously paying (Cut) -->
+                    <div class="stat-cut-box">
+                        <span class="cut-rate-tag" id="card3-cut-rate-3">14.50%</span>
+                        <span class="cut-amount-val" id="card3-cut-payment">₹6.2L</span>
+                    </div>
+
+                    <div class="stat-cut-arrow">↓</div>
+
+                    <!-- New Offer Value -->
+                    <div class="stat-new-wrapper">
+                        <strong class="st-new-value" id="card3-new-payment">₹4.1L</strong>
+                    </div>
+                    <span class="st-new-sub" id="card3-payment-sub">Total Over Loan</span>
                 </div>
             </div>
 
