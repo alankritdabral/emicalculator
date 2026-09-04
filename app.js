@@ -433,6 +433,132 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // Download PDF functionality
+    const downloadPdfBtn = document.getElementById('download-pdf-btn');
+    if (downloadPdfBtn) {
+        downloadPdfBtn.addEventListener('click', async () => {
+            let originalScrollY = window.scrollY;
+            try {
+                const btnTextSpan = downloadPdfBtn.querySelector('span');
+                if (btnTextSpan) btnTextSpan.innerText = 'Generating PDF...';
+                downloadPdfBtn.disabled = true;
+                downloadPdfBtn.style.opacity = '0.7';
+
+                // Ensure html2pdf is loaded
+                if (typeof html2pdf === 'undefined') {
+                    alert('PDF generation library is not loaded. Please try again later.');
+                    return;
+                }
+
+                // Temporarily hide parts we don't want in the PDF
+                const actionButtons = document.querySelector('.action-buttons');
+                if (actionButtons) actionButtons.style.display = 'none';
+
+                // Select the results container
+                const element = document.getElementById('results');
+                
+                // Temporarily apply solid background and disable animations to prevent blank/transparent renders
+                element.style.background = '#ffffff';
+                element.style.padding = '0';
+                element.style.borderRadius = '0';
+                element.style.animation = 'none';
+                element.style.transform = 'none';
+
+                // Stretch cards to beautifully fill the A4 pages
+                const cards = element.querySelectorAll('.result-card');
+                const originalCardStyles = [];
+                cards.forEach(card => {
+                    originalCardStyles.push({
+                        display: card.style.display,
+                        flexDirection: card.style.flexDirection,
+                        justifyContent: card.style.justifyContent,
+                        minHeight: card.style.minHeight,
+                        padding: card.style.padding,
+                        marginBottom: card.style.marginBottom
+                    });
+                    
+                    card.style.display = 'flex';
+                    card.style.flexDirection = 'column';
+                    card.style.justifyContent = 'space-evenly';
+                    card.style.minHeight = '800px'; // A4 printable area relative height
+                    card.style.padding = '3rem'; // Add luxurious breathing room
+                    card.style.marginBottom = '0'; // Remove margin to prevent accidental spillover
+                });
+
+                // Force page break before the second card
+                const secondaryCard = document.querySelector('.result-card.secondary');
+                if (secondaryCard) {
+                    secondaryCard.style.pageBreakBefore = 'always';
+                }
+
+                // Ensure we capture from the top to avoid scroll-related blank pages
+                window.scrollTo(0, 0);
+
+                // Configure PDF options
+                const opt = {
+                    margin:       [0.5, 0.5, 0.5, 0.5],
+                    filename:     'emi_calculator_details.pdf',
+                    image:        { type: 'jpeg', quality: 1.0 },
+                    html2canvas:  { 
+                        scale: 2, 
+                        backgroundColor: '#ffffff', 
+                        useCORS: true,
+                        scrollY: 0
+                    },
+                    pagebreak:    { mode: 'css' },
+                    jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+                };
+
+                // Generate and download PDF
+                await html2pdf().set(opt).from(element).save();
+                
+            } catch (err) {
+                console.error('Error during PDF generation:', err);
+                alert('An error occurred while generating the PDF.');
+            } finally {
+                const btnTextSpan = downloadPdfBtn.querySelector('span');
+                if (btnTextSpan) btnTextSpan.innerText = 'Download PDF';
+                downloadPdfBtn.disabled = false;
+                downloadPdfBtn.style.opacity = '1';
+                
+                // Restore original styles to the results container
+                const element = document.getElementById('results');
+                if (element) {
+                    element.style.background = '';
+                    element.style.padding = '';
+                    element.style.borderRadius = '';
+                    element.style.animation = '';
+                    element.style.transform = '';
+                }
+
+                // Restore card styles
+                const cards = element.querySelectorAll('.result-card');
+                cards.forEach((card, index) => {
+                    if (originalCardStyles[index]) {
+                        card.style.display = originalCardStyles[index].display;
+                        card.style.flexDirection = originalCardStyles[index].flexDirection;
+                        card.style.justifyContent = originalCardStyles[index].justifyContent;
+                        card.style.minHeight = originalCardStyles[index].minHeight;
+                        card.style.padding = originalCardStyles[index].padding;
+                        card.style.marginBottom = originalCardStyles[index].marginBottom;
+                    }
+                });
+
+                // Restore page break rule
+                const secondaryCard = document.querySelector('.result-card.secondary');
+                if (secondaryCard) {
+                    secondaryCard.style.pageBreakBefore = '';
+                }
+                
+                window.scrollTo(0, originalScrollY);
+                
+                // Restore visibility
+                const actionButtons = document.querySelector('.action-buttons');
+                if (actionButtons) actionButtons.style.display = '';
+            }
+        });
+    }
+
     // Initialize default date
     setDefaultIssueDate();
 });

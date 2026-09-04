@@ -1,23 +1,23 @@
 :root {
-    --bg-color: #0b1120;
-    --card-bg: rgba(22, 32, 54, 0.75);
-    --card-border: rgba(255, 255, 255, 0.12);
-    --primary: #3b82f6;
-    --primary-gradient: linear-gradient(135deg, #3b82f6, #6366f1);
-    --primary-hover: #2563eb;
-    --secondary: #10b981;
-    --secondary-gradient: linear-gradient(135deg, #10b981, #06b6d4);
-    --cyan: #06b6d4;
-    --cyan-gradient: linear-gradient(135deg, #06b6d4, #3b82f6);
+    --bg-color: #f8fafc;
+    --card-bg: #ffffff;
+    --card-border: #e2e8f0;
+    --primary: #1e3a8a; /* Deep Navy / Financial Blue */
+    --primary-gradient: linear-gradient(135deg, #1e3a8a, #2563eb);
+    --primary-hover: #1e40af;
+    --secondary: #10b981; /* Emerald Green */
+    --secondary-gradient: linear-gradient(135deg, #10b981, #059669);
+    --cyan: #0284c7;
+    --cyan-gradient: linear-gradient(135deg, #0284c7, #2563eb);
     --warning: #f59e0b;
     --danger: #ef4444;
-    --text-main: #f8fafc;
-    --text-muted: #94a3b8;
-    --input-bg: rgba(15, 23, 42, 0.65);
-    --glass-shadow: 0 12px 36px 0 rgba(0, 0, 0, 0.45);
-    --accent-glow: rgba(59, 130, 246, 0.4);
-    --emerald-glow: rgba(16, 185, 129, 0.35);
-    --cyan-glow: rgba(6, 182, 212, 0.35);
+    --text-main: #0f172a; /* Dark Navy / Charcoal */
+    --text-muted: #475569;
+    --input-bg: #ffffff;
+    --glass-shadow: 0 4px 24px -4px rgba(15, 23, 42, 0.08);
+    --accent-glow: rgba(30, 58, 138, 0.15);
+    --emerald-glow: rgba(16, 185, 129, 0.2);
+    --cyan-glow: rgba(2, 132, 199, 0.15);
 }
 
 * {
@@ -27,7 +27,7 @@
 }
 
 body {
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Inter', sans-serif;
     background-color: var(--bg-color);
     color: var(--text-main);
     min-height: 100vh;
@@ -64,7 +64,7 @@ body {
     left: -10%;
     width: 55vw;
     height: 55vw;
-    background: radial-gradient(circle, rgba(59, 130, 246, 0.6) 0%, rgba(99, 102, 241, 0) 70%);
+    background: radial-gradient(circle, rgba(30, 58, 138, 0.03) 0%, rgba(255, 255, 255, 0) 70%);
 }
 
 .blob-2 {
@@ -72,7 +72,7 @@ body {
     right: -10%;
     width: 45vw;
     height: 45vw;
-    background: radial-gradient(circle, rgba(16, 185, 129, 0.5) 0%, rgba(6, 182, 212, 0) 70%);
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.03) 0%, rgba(255, 255, 255, 0) 70%);
     animation-delay: -6s;
 }
 
@@ -84,8 +84,6 @@ body {
 /* Container */
 .calculator-container {
     background: var(--card-bg);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
     border: 1px solid var(--card-border);
     border-radius: 24px;
     padding: 2.25rem;
@@ -96,7 +94,7 @@ body {
 }
 
 .calculator-container:hover {
-    box-shadow: 0 20px 48px 0 rgba(0, 0, 0, 0.5);
+    box-shadow: 0 20px 48px -12px rgba(15, 23, 42, 0.15);
 }
 
 header {
@@ -107,9 +105,7 @@ header {
 header h1 {
     font-size: 2.1rem;
     font-weight: 700;
-    background: linear-gradient(135deg, #60a5fa 0%, #34d399 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: var(--primary);
     margin-bottom: 0.4rem;
     letter-spacing: -0.5px;
 }
@@ -147,9 +143,9 @@ header p {
 
 .cutoff-hint {
     font-size: 0.75rem;
-    color: #38bdf8;
-    background: rgba(56, 189, 248, 0.12);
-    border: 1px solid rgba(56, 189, 248, 0.25);
+    color: var(--primary);
+    background: #e0f2fe;
+    border: 1px solid var(--cyan);
     padding: 0.15rem 0.55rem;
     border-radius: 12px;
     font-weight: 500;
@@ -157,7 +153,7 @@ header p {
 
 .unit-switch {
     display: flex;
-    background: rgba(15, 23, 42, 0.8);
+    background: #f8fafc;
     border: 1px solid var(--card-border);
     border-radius: 6px;
     padding: 2px;
@@ -179,7 +175,7 @@ header p {
 .unit-btn.active {
     background: var(--primary);
     color: #fff;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
 }
 
 label {
@@ -216,7 +212,7 @@ label {
     color: var(--text-muted);
     font-weight: 600;
     font-size: 0.9rem;
-    background: rgba(0, 0, 0, 0.25);
+    background: #ffffff;
     white-space: nowrap;
 }
 
@@ -235,17 +231,17 @@ input[type="date"] {
     color-scheme: dark;
     cursor: pointer;
     font-weight: 500;
-    color: #38bdf8;
+    color: var(--primary);
 }
 
 input[type="date"]::-webkit-calendar-picker-indicator {
-    filter: invert(0.8) sepia(100%) hue-rotate(170deg) brightness(1.2);
+    filter: none;
     cursor: pointer;
     padding-right: 0.5rem;
 }
 
 input[type="number"]::placeholder {
-    color: rgba(148, 163, 184, 0.4);
+    color: #94a3b8;
 }
 
 input[type="number"]:focus, input[type="date"]:focus {
@@ -272,30 +268,30 @@ input[type=number] {
     display: flex;
     align-items: flex-start;
     gap: 0.4rem;
-    background: rgba(15, 23, 42, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: #f8fafc;
+    border: 1px solid var(--card-border);
     color: var(--text-muted);
     transition: all 0.3s ease;
 }
 
 .date-rule-explanation.before-21 {
-    background: rgba(16, 185, 129, 0.08);
-    border-color: rgba(16, 185, 129, 0.25);
-    color: #a7f3d0;
+    background: #ecfdf5;
+    border-color: #065f46;
+    color: #065f46;
 }
 
 .date-rule-explanation.before-21 strong {
-    color: #34d399;
+    color: #059669;
 }
 
 .date-rule-explanation.after-21 {
-    background: rgba(245, 158, 11, 0.08);
-    border-color: rgba(245, 158, 11, 0.25);
-    color: #fde68a;
+    background: #fffbeb;
+    border-color: #92400e;
+    color: #92400e;
 }
 
 .date-rule-explanation.after-21 strong {
-    color: #fbbf24;
+    color: #d97706;
 }
 
 /* Calculate Button */
@@ -315,13 +311,13 @@ input[type=number] {
     align-items: center;
     gap: 0.5rem;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 18px rgba(59, 130, 246, 0.45);
+    box-shadow: 0 4px 12px rgba(30, 58, 138, 0.25);
     margin-top: 0.75rem;
 }
 
 .calculate-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 26px rgba(59, 130, 246, 0.65);
+    box-shadow: 0 6px 16px rgba(30, 58, 138, 0.35);
 }
 
 .calculate-btn:active {
@@ -354,7 +350,7 @@ input[type=number] {
 }
 
 .result-card {
-    background: rgba(0, 0, 0, 0.25);
+    background: #ffffff;
     border-radius: 18px;
     padding: 1.4rem;
     margin-bottom: 1.25rem;
@@ -365,20 +361,20 @@ input[type=number] {
 
 /* 1. Outstanding Amount & Timeline Card */
 .result-card.outstanding-card {
-    background: linear-gradient(135deg, rgba(6, 182, 212, 0.12), rgba(59, 130, 246, 0.08));
-    border: 1px solid rgba(6, 182, 212, 0.35);
-    box-shadow: 0 8px 24px rgba(6, 182, 212, 0.12);
+    background: #ffffff;
+    border: 1px solid var(--card-border);
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
 }
 
 .card-tag.tag-cyan {
-    color: #38bdf8;
-    background: rgba(56, 189, 248, 0.15);
+    color: var(--primary);
+    background: #e0f2fe;
 }
 
 .as-of-badge {
     font-size: 0.75rem;
     color: var(--text-muted);
-    background: rgba(15, 23, 42, 0.6);
+    background: #f8fafc;
     border: 1px solid var(--card-border);
     padding: 0.2rem 0.6rem;
     border-radius: 10px;
@@ -391,8 +387,8 @@ input[type=number] {
     justify-content: space-between;
     gap: 0.4rem;
     margin: 1rem 0;
-    background: rgba(15, 23, 42, 0.55);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: #f8fafc;
+    border: 1px solid var(--card-border);
     border-radius: 12px;
     padding: 0.75rem 0.85rem;
 }
@@ -419,11 +415,11 @@ input[type=number] {
 }
 
 .timeline-step.highlight .step-value {
-    color: #38bdf8;
+    color: var(--primary);
 }
 
 .timeline-arrow {
-    color: rgba(255, 255, 255, 0.25);
+    color: var(--card-border);
     font-size: 0.9rem;
     user-select: none;
 }
@@ -436,10 +432,10 @@ input[type=number] {
 .progress-bar-track {
     width: 100%;
     height: 8px;
-    background: rgba(15, 23, 42, 0.8);
+    background: #f8fafc;
     border-radius: 6px;
     overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--card-border);
 }
 
 .progress-bar-fill {
@@ -461,8 +457,8 @@ input[type=number] {
 .outstanding-hero {
     text-align: center;
     padding: 0.9rem 0;
-    border-top: 1px dashed rgba(255, 255, 255, 0.1);
-    border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+    border-top: 1px dashed var(--card-border);
+    border-bottom: 1px dashed var(--card-border);
     margin-bottom: 1rem;
 }
 
@@ -477,8 +473,8 @@ input[type=number] {
 .outstanding-value {
     font-size: 2.3rem;
     font-weight: 800;
-    color: #38bdf8;
-    text-shadow: 0 0 24px var(--cyan-glow);
+    color: var(--primary);
+    text-shadow: none;
     margin: 0.2rem 0;
     letter-spacing: -0.5px;
 }
@@ -497,8 +493,8 @@ input[type=number] {
 }
 
 .stat-box {
-    background: rgba(15, 23, 42, 0.5);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: #f8fafc;
+    border: 1px solid var(--card-border);
     border-radius: 10px;
     padding: 0.6rem 0.5rem;
     text-align: center;
@@ -520,8 +516,8 @@ input[type=number] {
 
 /* 2. Secondary Offer Card */
 .result-card.secondary {
-    background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(6, 182, 212, 0.05));
-    border: 1px solid rgba(16, 185, 129, 0.3);
+    background: #f8fafc;
+    border: 1px solid var(--card-border);
 }
 
 .result-card.secondary .card-header {
@@ -546,29 +542,29 @@ input[type=number] {
 }
 
 .badge {
-    background: rgba(16, 185, 129, 0.2);
+    background: #d1fae5;
     color: var(--secondary);
     padding: 0.2rem 0.6rem;
     border-radius: 20px;
     font-size: 0.72rem;
     font-weight: 600;
-    border: 1px solid rgba(16, 185, 129, 0.35);
+    border: 1px solid #6ee7b7;
 }
 
 .offer-tenure-pill {
     font-size: 0.78rem;
-    color: #38bdf8;
-    background: rgba(56, 189, 248, 0.12);
+    color: var(--primary);
+    background: #e0f2fe;
     padding: 0.25rem 0.65rem;
     border-radius: 8px;
-    border: 1px solid rgba(56, 189, 248, 0.25);
+    border: 1px solid var(--cyan);
     font-weight: 500;
 }
 
 .offer-base-notice {
     font-size: 0.8rem;
     color: var(--text-muted);
-    background: rgba(16, 185, 129, 0.08);
+    background: #ecfdf5;
     border: 1px solid rgba(16, 185, 129, 0.2);
     border-radius: 8px;
     padding: 0.4rem 0.75rem;
@@ -576,7 +572,7 @@ input[type=number] {
 }
 
 .offer-base-notice strong {
-    color: #34d399;
+    color: #059669;
 }
 
 /* Result Live Adjusters (Rate + Tenure) */
@@ -584,7 +580,7 @@ input[type=number] {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
-    background: rgba(15, 23, 42, 0.6);
+    background: #f8fafc;
     border: 1px solid var(--card-border);
     border-radius: 14px;
     padding: 0.85rem;
@@ -608,7 +604,7 @@ input[type=number] {
 .input-wrapper.mini {
     max-width: 130px;
     height: 36px;
-    background: rgba(30, 41, 59, 0.8);
+    background: #f1f5f9;
     border-radius: 8px;
 }
 
@@ -617,7 +613,7 @@ input[type=number] {
     font-size: 0.9rem;
     text-align: right;
     font-weight: 600;
-    color: #38bdf8;
+    color: var(--primary);
 }
 
 .input-wrapper.mini .percent {
@@ -650,8 +646,8 @@ input[type=number] {
     align-items: center;
     justify-content: space-between;
     gap: 0.75rem;
-    background: rgba(15, 23, 42, 0.7);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: #f8fafc;
+    border: 1px solid var(--card-border);
     border-radius: 12px;
     padding: 0.65rem 0.85rem;
     margin: 0.35rem 0 0.5rem 0;
@@ -673,23 +669,23 @@ input[type=number] {
 .tenure-input-wrapper {
     max-width: 130px;
     height: 40px;
-    background: rgba(30, 41, 59, 0.85);
+    background: #f1f5f9;
     border-radius: 8px;
 }
 
 .tenure-input-wrapper input {
     font-size: 1.05rem;
     font-weight: 700;
-    color: #38bdf8;
+    color: var(--primary);
     text-align: right;
     padding: 0.35rem 0.6rem;
 }
 
 .tenure-conversion-badge {
     font-size: 0.82rem;
-    color: #34d399;
-    background: rgba(16, 185, 129, 0.12);
-    border: 1px solid rgba(16, 185, 129, 0.25);
+    color: #059669;
+    background: #d1fae5;
+    border: 1px solid #6ee7b7;
     padding: 0.35rem 0.75rem;
     border-radius: 8px;
     font-weight: 600;
@@ -724,10 +720,10 @@ input[type=number] {
 }
 
 .saving-card {
-    background: rgba(15, 23, 42, 0.65);
+    background: #f8fafc;
     border-radius: 14px;
     padding: 0.9rem;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--card-border);
     display: flex;
     flex-direction: column;
     gap: 0.3rem;
@@ -741,7 +737,7 @@ input[type=number] {
 
 .saving-card.yearly-saving {
     background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(6, 182, 212, 0.1));
-    border: 1px solid rgba(16, 185, 129, 0.4);
+    border: 1px solid #6ee7b7;
     box-shadow: 0 4px 14px rgba(16, 185, 129, 0.15);
 }
 
@@ -756,7 +752,7 @@ input[type=number] {
 .saving-amount {
     font-size: 1.3rem;
     font-weight: 700;
-    color: #34d399;
+    color: #059669;
 }
 
 .saving-badge {
@@ -768,11 +764,11 @@ input[type=number] {
 
 .detail-row.highlight {
     padding-top: 0.9rem;
-    border-top: 1px dashed rgba(255, 255, 255, 0.12);
+    border-top: 1px dashed var(--card-border);
 }
 
 .detail-row.highlight strong {
-    color: #34d399;
+    color: #059669;
     font-size: 1.15rem;
     font-weight: 700;
 }
@@ -785,7 +781,7 @@ input[type=number] {
 
 .breakdown-btn {
     width: 100%;
-    background: rgba(30, 41, 59, 0.5);
+    background: #f1f5f9;
     border: 1px solid var(--card-border);
     color: var(--text-muted);
     padding: 0.75rem 1rem;
@@ -802,9 +798,9 @@ input[type=number] {
 }
 
 .breakdown-btn:hover {
-    background: rgba(30, 41, 59, 0.8);
+    background: #f1f5f9;
     color: var(--text-main);
-    border-color: rgba(255, 255, 255, 0.2);
+    border-color: var(--card-border);
 }
 
 .chevron-icon {
@@ -840,17 +836,17 @@ input[type=number] {
     width: 100%;
     border-collapse: collapse;
     font-size: 0.85rem;
-    background: rgba(15, 23, 42, 0.7);
+    background: #f8fafc;
     text-align: right;
 }
 
 .breakdown-table th, .breakdown-table td {
     padding: 0.7rem 0.8rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    border-bottom: 1px solid var(--card-border);
 }
 
 .breakdown-table th {
-    background: rgba(30, 41, 59, 0.9);
+    background: #f1f5f9;
     color: var(--text-muted);
     font-weight: 600;
     font-size: 0.78rem;
@@ -865,8 +861,8 @@ input[type=number] {
 
 .breakdown-table tfoot tr,
 .breakdown-table tr.total-row {
-    background: rgba(30, 41, 59, 0.95);
-    border-top: 2px solid rgba(255, 255, 255, 0.18);
+    background: #f1f5f9;
+    border-top: 2px solid var(--card-border);
 }
 
 .breakdown-table tfoot td,
@@ -878,7 +874,7 @@ input[type=number] {
 
 .breakdown-table tfoot td:first-child,
 .breakdown-table tr.total-row td:first-child {
-    color: #60a5fa;
+    color: var(--primary);
     font-weight: 700;
     text-transform: uppercase;
     font-size: 0.8rem;
@@ -886,12 +882,12 @@ input[type=number] {
 }
 
 .diff-positive {
-    color: #34d399;
+    color: #059669;
     font-weight: 600;
 }
 
 .diff-negative {
-    color: #f87171;
+    color: var(--danger);
     font-weight: 600;
 }
 
