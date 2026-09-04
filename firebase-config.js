@@ -211,16 +211,22 @@ const AuthSystem = {
                         await firebaseAuth.signOut();
                         return {
                             success: false,
-                            message: "Access denied. This account does not have administrator privileges."
+                            message: `Access denied. Your account UID (${cred.user.uid}) is not registered in the Firestore 'admins' collection with role: 'admin'. Please add it in your Firebase Console.`
                         };
                     }
                 }
                 return { success: true, user: cred.user };
             } catch (error) {
                 console.error("Admin sign-in error:", error);
+                let msg = error.message;
+                if (error.code === "auth/invalid-credential" || error.code === "auth/user-not-found" || error.code === "auth/wrong-password") {
+                    msg = "Invalid email or password. Please verify the credentials you created in Firebase Authentication.";
+                } else if (error.code === "auth/too-many-requests") {
+                    msg = "Too many failed attempts. Please wait a moment before trying again.";
+                }
                 return {
                     success: false,
-                    message: error.message || "Authentication failed. Check your email and password."
+                    message: msg || "Authentication failed. Check your email and password."
                 };
             }
         }

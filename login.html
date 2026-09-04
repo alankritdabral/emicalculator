@@ -116,14 +116,15 @@
             document.getElementById("demo-banner").style.display = "flex";
         }
 
-        // Auto-redirect if already authenticated
+        // Support direct #admin hash in URL
+        if (window.location.hash === "#admin") {
+            switchTab("admin");
+        }
+
+        // Auto-redirect ONLY if authenticated as Admin
         window.AuthSystem.onAuthStateChanged((user) => {
-            if (user) {
-                if (user.role === "admin") {
-                    window.location.href = "admin.html";
-                } else {
-                    window.location.href = "index.html";
-                }
+            if (user && user.role === "admin") {
+                window.location.href = "admin.html";
             }
         });
 
