@@ -252,12 +252,11 @@ const AuthSystem = {
                 const doc = await firestoreDb.collection("settings").doc("accessCode").get();
                 if (doc.exists) {
                     const d = doc.data();
-                    const expStr = d.expiresAt ? (d.expiresAt.toDate ? d.expiresAt.toDate().toISOString() : d.expiresAt) : calculateNext12AmIST().toISOString();
                     return {
                         success: true,
                         code: d.code,
                         type: d.type || "random",
-                        expiresAt: expStr
+                        expiresAt: calculateNext12AmIST().toISOString()
                     };
                 }
             } catch (err) {

@@ -177,15 +177,13 @@
 
             function update() {
                 const now = Date.now();
-                if (!expiryTimestamp || expiryTimestamp <= now) {
-                    // Recalculate target to next 12:00 AM IST
-                    const nextDate = typeof calculateNext12AmIST === "function" 
-                        ? calculateNext12AmIST().getTime()
-                        : (window.calculateNext12AmIST ? window.calculateNext12AmIST().getTime() : Date.now() + 3600000);
-                    expiryTimestamp = nextDate;
-                }
+                // Target is ALWAYS the upcoming 12:00 AM IST (Midnight)
+                const getTarget = typeof calculateNext12AmIST === "function"
+                    ? calculateNext12AmIST
+                    : (window.calculateNext12AmIST ? window.calculateNext12AmIST : (() => new Date(now + 3600000)));
 
-                const diff = Math.max(0, expiryTimestamp - now);
+                const targetTimestamp = getTarget().getTime();
+                const diff = Math.max(0, targetTimestamp - now);
                 const hours = Math.floor(diff / (1000 * 60 * 60));
                 const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
                 const seconds = Math.floor((diff % (1000 * 60)) / 1000);
