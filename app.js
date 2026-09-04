@@ -458,7 +458,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const element = document.getElementById('results');
                 
                 // Temporarily apply solid background and disable animations to prevent blank/transparent renders
-                element.style.background = '#ffffff';
+                element.style.background = '#0B1F3A';
                 element.style.padding = '0';
                 element.style.borderRadius = '0';
                 element.style.animation = 'none';
@@ -501,7 +501,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     image:        { type: 'jpeg', quality: 1.0 },
                     html2canvas:  { 
                         scale: 2, 
-                        backgroundColor: '#ffffff', 
+                        backgroundColor: '#0B1F3A', 
                         useCORS: true,
                         scrollY: 0
                     },
