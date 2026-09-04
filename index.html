@@ -254,6 +254,21 @@
         </div>
     </main>
 
+    <!-- Bank Selection Modal -->
+    <div id="bank-select-modal" class="modal-backdrop hidden" aria-hidden="true" style="z-index: 9999; display: flex; align-items: center; justify-content: center; position: fixed; inset: 0; background: rgba(0,0,0,0.7);">
+        <div class="modal-dialog" style="max-width: 400px; width: 100%; margin: auto;">
+            <div class="modal-header">
+                <h2>Select Bank</h2>
+            </div>
+            <div class="modal-body" style="display: flex; flex-direction: column; gap: 12px; padding: 24px;">
+                <button type="button" class="bank-option-btn btn-primary-action" style="padding: 12px;" data-bank="Poonawalla Fincorp Bank">Poonawalla Fincorp Bank</button>
+                <button type="button" class="bank-option-btn btn-primary-action" style="padding: 12px;" data-bank="Aditya Birla Capital Bank">Aditya Birla Capital Bank</button>
+                <button type="button" class="bank-option-btn btn-primary-action" style="padding: 12px;" data-bank="Bajaj Finance Limited">Bajaj Finance Limited</button>
+                <button type="button" class="bank-option-btn btn-subaction" style="padding: 12px; justify-content: center;" data-bank="None">None (Default)</button>
+            </div>
+        </div>
+    </div>
+
     <!-- WhatsApp Share Modal -->
     <div id="whatsapp-modal" class="modal-backdrop hidden" aria-hidden="true">
         <div class="modal-dialog">
@@ -377,8 +392,8 @@ Swipe through the 3 images to see how it works.</div>
             <!-- Header -->
             <div class="card-header-bar">
                 <div class="card-branding-badge">
-                    <span class="brand-shield">◆</span>
-                    <span class="brand-name">FINANCIAL ADVISORY</span>
+                    <span class="brand-shield" id="card1-brand-icon">◆</span>
+                    <span class="brand-name" id="card1-brand-name">FINANCIAL ADVISORY</span>
                 </div>
             </div>
 
@@ -461,8 +476,8 @@ Swipe through the 3 images to see how it works.</div>
             <!-- Header -->
             <div class="card-header-bar">
                 <div class="card-branding-badge">
-                    <span class="brand-shield">◆</span>
-                    <span class="brand-name">FINANCIAL ADVISORY</span>
+                    <span class="brand-shield" id="card2-brand-icon">◆</span>
+                    <span class="brand-name" id="card2-brand-name">FINANCIAL ADVISORY</span>
                 </div>
             </div>
 

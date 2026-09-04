@@ -533,23 +533,76 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Bank Selection Modal Logic
+    const bankSelectModal = document.getElementById('bank-select-modal');
+    const bankOptionBtns = document.querySelectorAll('.bank-option-btn');
+
+    const bankLogos = {
+        'Poonawalla Fincorp Bank': `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="vertical-align: middle; margin-right: 4px;"><rect width="24" height="24" rx="4" fill="#D32F2F"/><path d="M7 6H14C16.2091 6 18 7.79086 18 10C18 12.2091 16.2091 14 14 14H10V18H7V6ZM10 11H14C14.5523 11 15 10.5523 15 10C15 9.44772 14.5523 9 14 9H10V11Z" fill="white"/></svg>`,
+        'Aditya Birla Capital Bank': `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="vertical-align: middle; margin-right: 4px;"><circle cx="12" cy="12" r="10" fill="#D32F2F"/><path d="M12 4L14.4721 9.52786L20 12L14.4721 14.4721L12 20L9.52786 14.4721L4 12L9.52786 9.52786L12 4Z" fill="#FBC02D"/></svg>`,
+        'Bajaj Finance Limited': `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="vertical-align: middle; margin-right: 4px;"><rect width="24" height="24" rx="4" fill="#1976D2"/><path d="M7 6H13.5C15.9853 6 18 8.01472 18 10.5C18 11.5835 17.6166 12.5776 16.9806 13.3421C17.6534 14.0722 18 15.0116 18 16C18 18.2091 16.2091 20 14 20H7V6ZM10 11.5H13.5C14.0523 11.5 14.5 11.0523 14.5 10.5C14.5 9.94772 14.0523 9.5 13.5 9.5H10V11.5ZM10 16.5H14C14.5523 16.5 15 16.0523 15 15.5C15 14.9477 14.5523 14.5 14 14.5H10V16.5Z" fill="white"/></svg>`,
+        'None': `◆`
+    };
+
+    bankOptionBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const selectedBank = btn.dataset.bank;
+            // Get original elements from the stage directly to avoid clones if any
+            const stage = document.getElementById('whatsapp-render-stage');
+            const getBrandEl = (id) => stage ? stage.querySelector('#' + id) : document.getElementById(id);
+            
+            const card1Brand = getBrandEl('card1-brand-name');
+            const card2Brand = getBrandEl('card2-brand-name');
+            const card1Icon = getBrandEl('card1-brand-icon');
+            const card2Icon = getBrandEl('card2-brand-icon');
+            
+            const displayText = (selectedBank === 'None') ? 'FINANCIAL ADVISORY' : selectedBank;
+            const displayLogo = bankLogos[selectedBank] || bankLogos['None'];
+            
+            if (card1Brand) card1Brand.textContent = displayText;
+            if (card2Brand) card2Brand.textContent = displayText;
+            
+            if (card1Icon) card1Icon.innerHTML = displayLogo;
+            if (card2Icon) card2Icon.innerHTML = displayLogo;
+
+            bankSelectModal.classList.add('hidden');
+            bankSelectModal.setAttribute('aria-hidden', 'true');
+
+            // Automatically default Refinance Tenure to the exact remaining months left!
+            const success = performCalculation(true);
+            if (success) {
+                resultsSection.classList.remove('hidden');
+                
+                // Re-trigger animation
+                resultsSection.style.animation = 'none';
+                resultsSection.offsetHeight; /* trigger reflow */
+                resultsSection.style.animation = null;
+
+                // Smooth scroll into results if needed
+                resultsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        });
+    });
+
     // Form Submit Listener
     form.addEventListener('submit', (e) => {
         e.preventDefault();
+        
+        // Validate inputs first before showing modal
+        const loanAmount = parseFloat(loanAmountInput.value);
+        const interestRate = parseFloat(interestRateInput.value);
+        const tenureValue = parseFloat(tenureInput.value);
+        const issueDateValue = loanIssueDateInput.value;
 
-        // Automatically default Refinance Tenure to the exact remaining months left!
-        const success = performCalculation(true);
-        if (success) {
-            resultsSection.classList.remove('hidden');
-            
-            // Re-trigger animation
-            resultsSection.style.animation = 'none';
-            resultsSection.offsetHeight; /* trigger reflow */
-            resultsSection.style.animation = null;
-
-            // Smooth scroll into results if needed
-            resultsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        if (isNaN(loanAmount) || isNaN(interestRate) || isNaN(tenureValue) || !issueDateValue || loanAmount <= 0 || tenureValue <= 0) {
+            // Let it fail normally
+            performCalculation(true); 
+            return;
         }
+
+        // Show the bank selection modal instead of calculating immediately
+        bankSelectModal.classList.remove('hidden');
+        bankSelectModal.setAttribute('aria-hidden', 'false');
     });
 
     // Auto calculate if inputs change while results are open
@@ -593,6 +646,10 @@ document.addEventListener('DOMContentLoaded', () => {
         previewViewport.innerHTML = '';
         const cloned = targetCard.cloneNode(true);
         cloned.id = `preview-clone-${currentPreviewSlide}`;
+        
+        // Remove IDs from cloned elements to prevent document.getElementById collisions
+        cloned.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
+        
         previewViewport.appendChild(cloned);
         
         // Dynamically adjust viewport height and scale to match container width
