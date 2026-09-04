@@ -76,9 +76,9 @@
 
                 <!-- Expiry Countdown -->
                 <div class="expiry-box">
-                    <div class="expiry-title">Time Remaining Until Next 12:00 PM IST Reset</div>
+                    <div class="expiry-title">Time Remaining Until Next 12:00 AM IST Reset (Midnight)</div>
                     <div class="countdown-timer" id="countdown-timer">--:--:--</div>
-                    <div class="expiry-footnote">The server will automatically generate a new code at or after 12:00 PM IST.</div>
+                    <div class="expiry-footnote">The code automatically expires every night at 12:00 AM IST (Midnight).</div>
                 </div>
             </div>
 
@@ -171,17 +171,17 @@
             }
         }
 
-        // Live Countdown to 12:00 PM IST
+        // Live Countdown to 12:00 AM IST (Midnight)
         function startCountdown() {
             if (countdownInterval) clearInterval(countdownInterval);
 
             function update() {
                 const now = Date.now();
                 if (!expiryTimestamp || expiryTimestamp <= now) {
-                    // Recalculate target
-                    const nextDate = window.AuthSystem.isLive 
-                        ? calculateNext12PmIST().getTime()
-                        : new Date(calculateNext12PmIST()).getTime();
+                    // Recalculate target to next 12:00 AM IST
+                    const nextDate = typeof calculateNext12AmIST === "function" 
+                        ? calculateNext12AmIST().getTime()
+                        : (window.calculateNext12AmIST ? window.calculateNext12AmIST().getTime() : Date.now() + 3600000);
                     expiryTimestamp = nextDate;
                 }
 

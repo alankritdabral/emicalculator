@@ -5,9 +5,9 @@ admin.initializeApp();
 const db = admin.firestore();
 
 /**
- * Calculates the next 12:00 PM IST expiration timestamp.
+ * Calculates the next 12:00 AM IST (Midnight) expiration timestamp.
  * IST is UTC + 5:30.
- * 12:00 PM IST is 06:30:00 UTC.
+ * 12:00 AM IST is 18:30:00 UTC of the current IST date.
  */
 function getNext12PmIST() {
   const now = new Date();
@@ -17,18 +17,9 @@ function getNext12PmIST() {
   const istYear = istTime.getUTCFullYear();
   const istMonth = istTime.getUTCMonth();
   const istDate = istTime.getUTCDate();
-  const istHours = istTime.getUTCHours();
-  const istMinutes = istTime.getUTCMinutes();
 
-  // If current IST time is before 12:00 PM IST (noon), expires today at 12:00 PM IST (06:30 UTC).
-  // If current IST time is at or after 12:00 PM IST, expires tomorrow at 12:00 PM IST.
-  let targetIstDate = istDate;
-  if (istHours > 12 || (istHours === 12 && istMinutes >= 0)) {
-    targetIstDate += 1;
-  }
-
-  // 12:00 PM IST = 06:30 AM UTC
-  return new Date(Date.UTC(istYear, istMonth, targetIstDate, 6, 30, 0, 0));
+  // 12:00 AM IST = 18:30:00 UTC
+  return new Date(Date.UTC(istYear, istMonth, istDate, 18, 30, 0, 0));
 }
 
 /**

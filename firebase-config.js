@@ -53,26 +53,24 @@ if (isConfigured && typeof firebase !== "undefined") {
 }
 
 // =============================================================================
-// 3. IST (12:00 PM) TIME UTILITIES
+// 3. IST (12:00 AM MIDNIGHT) TIME UTILITIES
 // =============================================================================
-function calculateNext12PmIST() {
+function calculateNext12AmIST() {
     const now = new Date();
     // IST is UTC + 5.5 hours (+330 minutes)
     const istTime = new Date(now.getTime() + (5.5 * 60 * 60 * 1000));
     const istYear = istTime.getUTCFullYear();
     const istMonth = istTime.getUTCMonth();
     const istDate = istTime.getUTCDate();
-    const istHours = istTime.getUTCHours();
-    const istMinutes = istTime.getUTCMinutes();
 
-    let targetIstDate = istDate;
-    if (istHours > 12 || (istHours === 12 && istMinutes >= 0)) {
-        targetIstDate += 1;
-    }
-
-    // 12:00 PM IST is 06:30 AM UTC
-    return new Date(Date.UTC(istYear, istMonth, targetIstDate, 6, 30, 0, 0));
+    // 12:00 AM IST (Midnight) corresponds to 18:30:00 UTC of the current IST calendar date
+    return new Date(Date.UTC(istYear, istMonth, istDate, 18, 30, 0, 0));
 }
+
+// Global and legacy aliases
+const calculateNext12PmIST = calculateNext12AmIST;
+window.calculateNext12AmIST = calculateNext12AmIST;
+window.calculateNext12PmIST = calculateNext12AmIST;
 
 // =============================================================================
 // 4. DEMO / SIMULATION MODE STORAGE HELPERS
@@ -90,7 +88,7 @@ const DEMO_STORAGE = {
         localStorage.setItem("cei_demo_code", code);
         localStorage.setItem("cei_demo_type", type || "custom");
         localStorage.setItem("cei_demo_created", new Date().toISOString());
-        localStorage.setItem("cei_demo_expiry", calculateNext12PmIST().toISOString());
+        localStorage.setItem("cei_demo_expiry", calculateNext12AmIST().toISOString());
     },
     getType: function () {
         return localStorage.getItem("cei_demo_type") || "random";
@@ -98,7 +96,7 @@ const DEMO_STORAGE = {
     getExpiry: function () {
         let expiry = localStorage.getItem("cei_demo_expiry");
         if (!expiry || new Date(expiry) <= new Date()) {
-            expiry = calculateNext12PmIST().toISOString();
+            expiry = calculateNext12AmIST().toISOString();
             localStorage.setItem("cei_demo_expiry", expiry);
         }
         return expiry;
@@ -163,7 +161,7 @@ const AuthSystem = {
                     if (Date.now() >= expTime) {
                         return {
                             success: false,
-                            message: "Today's access code has expired (12:00 PM IST reset). Please obtain today's new code."
+                            message: "Today's access code has expired (12:00 AM IST reset). Please obtain today's new code."
                         };
                     }
                 }
@@ -254,7 +252,7 @@ const AuthSystem = {
                 const doc = await firestoreDb.collection("settings").doc("accessCode").get();
                 if (doc.exists) {
                     const d = doc.data();
-                    const expStr = d.expiresAt ? (d.expiresAt.toDate ? d.expiresAt.toDate().toISOString() : d.expiresAt) : calculateNext12PmIST().toISOString();
+                    const expStr = d.expiresAt ? (d.expiresAt.toDate ? d.expiresAt.toDate().toISOString() : d.expiresAt) : calculateNext12AmIST().toISOString();
                     return {
                         success: true,
                         code: d.code,
@@ -282,7 +280,7 @@ const AuthSystem = {
      */
     adminGenerateCode: async function () {
         const newCode = Math.floor(100000 + Math.random() * 900000).toString();
-        const nextExpiry = calculateNext12PmIST();
+        const nextExpiry = calculateNext12AmIST();
 
         if (this.isLive && firestoreDb && firebaseAuth && firebaseAuth.currentUser) {
             try {
@@ -351,7 +349,7 @@ const AuthSystem = {
             return { success: false, message: "Code must be between 4 and 10 characters." };
         }
 
-        const nextExpiry = calculateNext12PmIST();
+        const nextExpiry = calculateNext12AmIST();
 
         if (this.isLive && firestoreDb && firebaseAuth && firebaseAuth.currentUser) {
             try {
