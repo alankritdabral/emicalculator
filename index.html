@@ -8,17 +8,48 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=3">
+    <link rel="stylesheet" href="styles.css?v=4">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+    <!-- Firebase Compat SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-functions-compat.js"></script>
+    <script src="firebase-config.js"></script>
 </head>
 <body>
+    <!-- Demo Banner -->
+    <div id="demo-banner" class="demo-mode-banner" style="display: none;">
+        <div class="banner-content">
+            <span class="badge-pill">Demo Mode</span>
+            <span>Running with simulated backend. Connect live Firebase in <code>firebase-config.js</code>.</span>
+        </div>
+    </div>
+
+    <!-- Floating Session Bar -->
+    <aside class="session-pill-bar" id="session-bar" style="display: none;">
+        <span class="session-dot"></span>
+        <span class="session-text" id="session-user-role">Access Active</span>
+        <a href="admin.html" id="admin-shortcut-link" style="display: none; color: #93C5FD; font-size: 12px; font-weight: 600; text-decoration: none; margin-left: 4px; padding: 2px 8px; border-radius: 6px; background: rgba(37, 99, 235, 0.2);">Admin Panel</a>
+        <button type="button" class="session-logout-btn" onclick="window.AuthSystem.logout()">Sign Out</button>
+    </aside>
+
+    <!-- Auth Verification Loading Veil -->
+    <div id="auth-loading-screen" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #0B1F3A; z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px;">
+        <div class="auth-btn" style="width: auto; background: transparent; border: none; box-shadow: none;">
+            <div class="spinner" style="width: 32px; height: 32px; border-width: 3px; border-top-color: #38BDF8;"></div>
+        </div>
+        <p style="color: #94A3B8; font-size: 14px; font-weight: 500;">Verifying daily access authorization...</p>
+    </div>
+
     <div class="background-elements">
         <div class="blob blob-1"></div>
         <div class="blob blob-2"></div>
     </div>
 
-    <main class="calculator-container">
+    <main class="calculator-container" id="calculator-main" style="display: none;">
         <header>
             <h1>EMI & Refinance Calculator</h1>
             <p>Calculate your outstanding loan balance & compare with special offer rates</p>
@@ -712,5 +743,46 @@ Swipe through the 3 images to see how it works.</div>
     </div>
 
     <script src="app.js"></script>
+
+    <!-- Authentication Guard & Session Controller -->
+    <script>
+        (function() {
+            // Display demo banner if live Firebase keys are not populated
+            if (!window.AuthSystem.isLive) {
+                const banner = document.getElementById("demo-banner");
+                if (banner) banner.style.display = "flex";
+            }
+
+            // Listen for Auth status
+            window.AuthSystem.onAuthStateChanged((user) => {
+                const loadingScreen = document.getElementById("auth-loading-screen");
+                const mainContent = document.getElementById("calculator-main");
+                const sessionBar = document.getElementById("session-bar");
+                const adminLink = document.getElementById("admin-shortcut-link");
+                const sessionText = document.getElementById("session-user-role");
+
+                if (!user) {
+                    // Not authenticated -> redirect to login immediately
+                    window.location.replace("login.html");
+                } else {
+                    // Authenticated
+                    if (loadingScreen) {
+                        loadingScreen.style.opacity = "0";
+                        loadingScreen.style.transition = "opacity 0.25s ease";
+                        setTimeout(() => { loadingScreen.style.display = "none"; }, 250);
+                    }
+                    if (mainContent) mainContent.style.display = "block";
+                    if (sessionBar) sessionBar.style.display = "flex";
+
+                    if (user.role === "admin") {
+                        if (adminLink) adminLink.style.display = "inline-block";
+                        if (sessionText) sessionText.textContent = "Admin Active";
+                    } else {
+                        if (sessionText) sessionText.textContent = "Daily Pass Active";
+                    }
+                }
+            });
+        })();
+    </script>
 </body>
 </html>

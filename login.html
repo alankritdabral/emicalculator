@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Access Control - Credit Expert India</title>
+    <meta name="description" content="Secure Daily Access Verification for Credit Expert India EMI & Refinance Calculator.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=4">
+</head>
+<body>
+    <!-- Background Animated Blobs -->
+    <div class="background-elements">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+
+    <!-- Demo Banner (Auto-shown if Firebase keys are not yet configured) -->
+    <div id="demo-banner" class="demo-mode-banner" style="display: none;">
+        <div class="banner-content">
+            <span class="badge-pill">Demo Mode</span>
+            <span>Firebase keys not configured yet. <strong>Demo Code:</strong> <code style="background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px; color: #FDE68A;">482731</code> | <strong>Admin:</strong> <code style="background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px; color: #FDE68A;">admin@creditexpertindia.com</code> / <code style="background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px; color: #FDE68A;">admin123</code></span>
+        </div>
+    </div>
+
+    <!-- Main Auth Card -->
+    <div class="auth-wrapper">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="auth-badge">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    CREDIT EXPERT INDIA
+                </div>
+                <h1>Secure Portal Access</h1>
+                <p>Enter today's 6-digit access code to enter the EMI Calculator, or sign in as administrator.</p>
+            </div>
+
+            <!-- Segmented Switcher -->
+            <div class="auth-tabs" role="tablist">
+                <button type="button" class="auth-tab active" id="tab-user" onclick="switchTab('user')">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    Daily Access Code
+                </button>
+                <button type="button" class="auth-tab" id="tab-admin" onclick="switchTab('admin')">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    Admin Login
+                </button>
+            </div>
+
+            <!-- Alert Box -->
+            <div id="auth-alert" class="auth-alert" style="display: none;"></div>
+
+            <!-- 1. USER ACCESS CODE VIEW -->
+            <form id="user-code-form" onsubmit="handleUserSubmit(event)">
+                <div class="pin-input-group">
+                    <label class="pin-label">ENTER 6-DIGIT CODE</label>
+                    <div class="pin-inputs" id="pin-container">
+                        <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-digit" data-idx="0" autofocus autocomplete="off">
+                        <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-digit" data-idx="1" autocomplete="off">
+                        <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-digit" data-idx="2" autocomplete="off">
+                        <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-digit" data-idx="3" autocomplete="off">
+                        <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-digit" data-idx="4" autocomplete="off">
+                        <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-digit" data-idx="5" autocomplete="off">
+                    </div>
+                </div>
+
+                <button type="submit" class="auth-btn primary" id="btn-verify-user">
+                    <span>Unlock Calculator</span>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                </button>
+            </form>
+
+            <!-- 2. ADMIN LOGIN VIEW -->
+            <form id="admin-login-form" style="display: none;" onsubmit="handleAdminSubmit(event)">
+                <div class="input-group" style="margin-bottom: 16px;">
+                    <label for="admin-email" style="display: block; font-size: 13px; font-weight: 600; color: #CBD5E1; margin-bottom: 8px;">Admin Email</label>
+                    <div class="input-wrapper" style="border-radius: 12px; border: 1.5px solid var(--card-border); background: var(--input-bg); padding: 4px 12px;">
+                        <input type="email" id="admin-email" placeholder="admin@creditexpertindia.com" required style="width: 100%; background: transparent; border: none; outline: none; color: #FFFFFF; font-size: 15px; padding: 10px 0;">
+                    </div>
+                </div>
+
+                <div class="input-group" style="margin-bottom: 24px;">
+                    <label for="admin-password" style="display: block; font-size: 13px; font-weight: 600; color: #CBD5E1; margin-bottom: 8px;">Password</label>
+                    <div class="input-wrapper" style="border-radius: 12px; border: 1.5px solid var(--card-border); background: var(--input-bg); padding: 4px 12px;">
+                        <input type="password" id="admin-password" placeholder="••••••••" required style="width: 100%; background: transparent; border: none; outline: none; color: #FFFFFF; font-size: 15px; padding: 10px 0;">
+                    </div>
+                </div>
+
+                <button type="submit" class="auth-btn primary" id="btn-login-admin">
+                    <span>Sign In to Dashboard</span>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                </button>
+            </form>
+
+            <div class="auth-footer">
+                Daily code resets automatically at <strong>12:00 PM IST</strong> every day.<br>
+                For access requests, please contact management.
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase Compat SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-functions-compat.js"></script>
+
+    <!-- App Configuration & Authentication Gateway -->
+    <script src="firebase-config.js"></script>
+
+    <script>
+        // Check if Demo Mode banner should be shown
+        if (!window.AuthSystem.isLive) {
+            document.getElementById("demo-banner").style.display = "flex";
+        }
+
+        // Auto-redirect if already authenticated
+        window.AuthSystem.onAuthStateChanged((user) => {
+            if (user) {
+                if (user.role === "admin") {
+                    window.location.href = "admin.html";
+                } else {
+                    window.location.href = "index.html";
+                }
+            }
+        });
+
+        // Tab Switching Logic
+        function switchTab(tab) {
+            clearAlert();
+            const tabUser = document.getElementById("tab-user");
+            const tabAdmin = document.getElementById("tab-admin");
+            const formUser = document.getElementById("user-code-form");
+            const formAdmin = document.getElementById("admin-login-form");
+
+            if (tab === "user") {
+                tabUser.classList.add("active");
+                tabAdmin.classList.remove("active");
+                formUser.style.display = "block";
+                formAdmin.style.display = "none";
+                pinDigits[0].focus();
+            } else {
+                tabAdmin.classList.add("active");
+                tabUser.classList.remove("active");
+                formUser.style.display = "none";
+                formAdmin.style.display = "block";
+                document.getElementById("admin-email").focus();
+            }
+        }
+
+        // PIN Inputs Navigation & Auto-jump
+        const pinDigits = document.querySelectorAll(".pin-digit");
+        pinDigits.forEach((input, index) => {
+            input.addEventListener("input", (e) => {
+                const val = e.target.value.replace(/[^0-9]/g, "");
+                e.target.value = val ? val[0] : "";
+                if (val) {
+                    input.classList.add("filled");
+                    if (index < pinDigits.length - 1) {
+                        pinDigits[index + 1].focus();
+                    }
+                } else {
+                    input.classList.remove("filled");
+                }
+
+                // Check if all 6 digits entered
+                const fullPin = getEnteredPin();
+                if (fullPin.length === 6) {
+                    document.getElementById("user-code-form").dispatchEvent(new Event("submit"));
+                }
+            });
+
+            input.addEventListener("keydown", (e) => {
+                if (e.key === "Backspace" && !input.value && index > 0) {
+                    pinDigits[index - 1].focus();
+                } else if (e.key === "ArrowLeft" && index > 0) {
+                    pinDigits[index - 1].focus();
+                } else if (e.key === "ArrowRight" && index < pinDigits.length - 1) {
+                    pinDigits[index + 1].focus();
+                }
+            });
+
+            // Support pasting 6-digit code directly
+            input.addEventListener("paste", (e) => {
+                e.preventDefault();
+                const pasteData = (e.clipboardData || window.clipboardData).getData("text").replace(/[^0-9]/g, "");
+                if (pasteData.length >= 6) {
+                    for (let i = 0; i < 6; i++) {
+                        pinDigits[i].value = pasteData[i];
+                        pinDigits[i].classList.add("filled");
+                    }
+                    pinDigits[5].focus();
+                    document.getElementById("user-code-form").dispatchEvent(new Event("submit"));
+                }
+            });
+        });
+
+        function getEnteredPin() {
+            let pin = "";
+            pinDigits.forEach(input => pin += input.value);
+            return pin;
+        }
+
+        // Rate Limiting & Cooldown Protection (5 failed attempts -> 60s cooldown)
+        let failedAttempts = parseInt(localStorage.getItem("cei_failed_attempts") || "0", 10);
+        let cooldownUntil = parseInt(localStorage.getItem("cei_cooldown_until") || "0", 10);
+
+        function checkCooldown() {
+            const now = Date.now();
+            if (cooldownUntil > now) {
+                const remainingSecs = Math.ceil((cooldownUntil - now) / 1000);
+                showAlert(`Too many failed attempts. Please wait ${remainingSecs} seconds before trying again.`, "warning");
+                document.getElementById("btn-verify-user").disabled = true;
+                setTimeout(checkCooldown, 1000);
+                return true;
+            }
+            document.getElementById("btn-verify-user").disabled = false;
+            return false;
+        }
+        checkCooldown();
+
+        // Alert banner handler
+        function showAlert(message, type) {
+            const alertBox = document.getElementById("auth-alert");
+            alertBox.className = "auth-alert " + (type || "error");
+            alertBox.innerHTML = `
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
+                    ${type === "success" 
+                        ? '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>'
+                        : '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>'}
+                </svg>
+                <span>${message}</span>
+            `;
+            alertBox.style.display = "flex";
+        }
+
+        function clearAlert() {
+            const alertBox = document.getElementById("auth-alert");
+            alertBox.style.display = "none";
+        }
+
+        // Form Submission: User Access Code
+        async function handleUserSubmit(e) {
+            e.preventDefault();
+            if (checkCooldown()) return;
+
+            const code = getEnteredPin();
+            if (code.length < 6) {
+                showAlert("Please enter all 6 digits of the daily access code.", "error");
+                return;
+            }
+
+            const btn = document.getElementById("btn-verify-user");
+            btn.disabled = true;
+            btn.innerHTML = `<span class="spinner"></span><span>Verifying Access...</span>`;
+            clearAlert();
+
+            try {
+                const res = await window.AuthSystem.validateAccessCode(code);
+                if (res.success) {
+                    localStorage.removeItem("cei_failed_attempts");
+                    showAlert("Access verified! Redirecting to calculator...", "success");
+                    setTimeout(() => {
+                        window.location.href = "index.html";
+                    }, 500);
+                } else {
+                    failedAttempts += 1;
+                    localStorage.setItem("cei_failed_attempts", failedAttempts);
+                    if (failedAttempts >= 5) {
+                        cooldownUntil = Date.now() + 60000;
+                        localStorage.setItem("cei_cooldown_until", cooldownUntil);
+                        checkCooldown();
+                    } else {
+                        showAlert(res.message || "Invalid access code. Please check and try again.", "error");
+                        // Clear PIN digits
+                        pinDigits.forEach(input => { input.value = ""; input.classList.remove("filled"); });
+                        pinDigits[0].focus();
+                    }
+                    btn.disabled = false;
+                    btn.innerHTML = `<span>Unlock Calculator</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>`;
+                }
+            } catch (err) {
+                showAlert("Error communicating with server: " + err.message, "error");
+                btn.disabled = false;
+                btn.innerHTML = `<span>Unlock Calculator</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>`;
+            }
+        }
+
+        // Form Submission: Admin Login
+        async function handleAdminSubmit(e) {
+            e.preventDefault();
+            const email = document.getElementById("admin-email").value.trim();
+            const password = document.getElementById("admin-password").value;
+            const btn = document.getElementById("btn-login-admin");
+
+            btn.disabled = true;
+            btn.innerHTML = `<span class="spinner"></span><span>Authenticating Admin...</span>`;
+            clearAlert();
+
+            try {
+                const res = await window.AuthSystem.adminLogin(email, password);
+                if (res.success) {
+                    showAlert("Authentication successful. Opening dashboard...", "success");
+                    setTimeout(() => {
+                        window.location.href = "admin.html";
+                    }, 500);
+                } else {
+                    showAlert(res.message || "Admin authentication failed.", "error");
+                    btn.disabled = false;
+                    btn.innerHTML = `<span>Sign In to Dashboard</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>`;
+                }
+            } catch (err) {
+                showAlert("Error: " + err.message, "error");
+                btn.disabled = false;
+                btn.innerHTML = `<span>Sign In to Dashboard</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>`;
+            }
+        }
+    </script>
+</body>
+</html>

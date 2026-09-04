@@ -2457,4 +2457,635 @@ input[type=number] {
     letter-spacing: 0.2px;
 }
 
+/* ==========================================================================
+   AUTHENTICATION & ACCESS CONTROL (LOGIN & ADMIN STYLES)
+   ========================================================================== */
+
+/* Demo / Simulation Mode Top Notification Banner */
+.demo-mode-banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: linear-gradient(90deg, #1E3A8A, #2563EB, #1D4ED8);
+    color: #DBEAFE;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 9999;
+    border-bottom: 1px solid rgba(191, 219, 254, 0.3);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.demo-mode-banner .banner-content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.demo-mode-banner .badge-pill {
+    background: #F59E0B;
+    color: #0F172A;
+    font-weight: 700;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Auth Cards Container (Fully Responsive) */
+.auth-wrapper {
+    width: 100%;
+    max-width: 480px;
+    margin: auto;
+    padding: 0.5rem;
+    position: relative;
+    z-index: 10;
+}
+
+.auth-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: clamp(18px, 4vw, 24px);
+    padding: clamp(1.25rem, 5vw, 2.5rem);
+    box-shadow: var(--glass-shadow);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: clamp(1.25rem, 4vw, 2rem);
+}
+
+.auth-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: 999px;
+    background: rgba(37, 99, 235, 0.15);
+    border: 1px solid rgba(191, 219, 254, 0.25);
+    color: #93C5FD;
+    font-size: clamp(11px, 3vw, 13px);
+    font-weight: 600;
+    margin-bottom: 12px;
+    letter-spacing: 0.5px;
+}
+
+.auth-header h1 {
+    font-size: clamp(20px, 5.5vw, 26px);
+    font-weight: 700;
+    color: #FFFFFF;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, #FFFFFF 40%, #BFDBFE 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1.25;
+}
+
+.auth-header p {
+    color: var(--text-muted);
+    font-size: clamp(12.5px, 3.5vw, 14px);
+    line-height: 1.5;
+}
+
+/* Segmented Tabs (Responsive) */
+.auth-tabs {
+    display: flex;
+    background: rgba(11, 31, 58, 0.85);
+    border: 1px solid rgba(191, 219, 254, 0.15);
+    border-radius: 14px;
+    padding: 4px;
+    margin-bottom: clamp(18px, 4vw, 24px);
+    position: relative;
+    gap: 4px;
+}
+
+.auth-tab {
+    flex: 1;
+    padding: clamp(8px, 2.2vw, 10px) clamp(6px, 2vw, 14px);
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: clamp(12px, 3.2vw, 14px);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.auth-tab svg {
+    flex-shrink: 0;
+    width: clamp(14px, 3.5vw, 16px);
+    height: clamp(14px, 3.5vw, 16px);
+}
+
+.auth-tab.active {
+    background: var(--primary);
+    color: #FFFFFF;
+    box-shadow: 0 4px 14px var(--accent-glow);
+}
+
+.auth-tab:hover:not(.active) {
+    color: #FFFFFF;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* PIN 6-Digit Inputs (Fluid CSS Grid - Always Fits Any Mobile Screen) */
+.pin-input-group {
+    margin-bottom: clamp(18px, 4vw, 24px);
+    width: 100%;
+}
+
+.pin-label {
+    display: block;
+    font-size: clamp(11px, 2.8vw, 13px);
+    font-weight: 600;
+    color: #CBD5E1;
+    margin-bottom: 12px;
+    text-align: center;
+    letter-spacing: 0.5px;
+}
+
+.pin-inputs {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: clamp(6px, 1.8vw, 10px);
+    width: 100%;
+    max-width: 380px;
+    margin: 0 auto;
+    justify-items: center;
+}
+
+.pin-digit {
+    width: 100%;
+    max-width: 54px;
+    aspect-ratio: 5 / 6;
+    min-height: 48px;
+    background: var(--input-bg);
+    border: 2px solid var(--card-border);
+    border-radius: clamp(8px, 2vw, 12px);
+    color: #FFFFFF;
+    font-size: clamp(18px, 5.5vw, 26px);
+    font-weight: 700;
+    font-family: 'Inter', monospace, sans-serif;
+    text-align: center;
+    outline: none;
+    transition: all 0.2s ease;
+    caret-color: #38BDF8;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.pin-digit:focus {
+    border-color: #38BDF8;
+    box-shadow: 0 0 16px rgba(56, 189, 248, 0.4);
+    background: rgba(15, 31, 58, 0.95);
+    transform: translateY(-2px);
+}
+
+.pin-digit.filled {
+    border-color: var(--primary);
+}
+
+/* Alert / Toast Messages */
+.auth-alert {
+    padding: clamp(10px, 3vw, 14px) clamp(12px, 3vw, 16px);
+    border-radius: 12px;
+    font-size: clamp(12.5px, 3.2vw, 14px);
+    font-weight: 500;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: fadeIn 0.3s ease;
+}
+
+.auth-alert.error {
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #FCA5A5;
+}
+
+.auth-alert.success {
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: #6EE7B7;
+}
+
+.auth-alert.warning {
+    background: rgba(245, 158, 11, 0.15);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    color: #FDE68A;
+}
+
+/* Action Buttons */
+.auth-btn {
+    width: 100%;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.25s ease;
+}
+
+.auth-btn.primary {
+    background: var(--primary-gradient);
+    color: #FFFFFF;
+    box-shadow: 0 4px 16px var(--accent-glow);
+}
+
+.auth-btn.primary:hover:not(:disabled) {
+    background: var(--primary-hover);
+    box-shadow: 0 6px 20px var(--accent-glow);
+    transform: translateY(-1px);
+}
+
+.auth-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.auth-btn .spinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #FFFFFF;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Auth Footer */
+.auth-footer {
+    margin-top: 24px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(191, 219, 254, 0.12);
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.auth-footer a {
+    color: #60A5FA;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.auth-footer a:hover {
+    text-decoration: underline;
+}
+
+/* Floating Session Pill on Main Calculator */
+.session-pill-bar {
+    position: fixed;
+    top: 16px;
+    right: 20px;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(15, 31, 58, 0.85);
+    border: 1px solid rgba(191, 219, 254, 0.2);
+    backdrop-filter: blur(16px);
+    border-radius: 999px;
+    padding: 6px 14px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.session-dot {
+    width: 8px;
+    height: 8px;
+    background: #10B981;
+    border-radius: 50%;
+    box-shadow: 0 0 8px #10B981;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(1.15); }
+}
+
+.session-text {
+    font-size: 13px;
+    font-weight: 500;
+    color: #E2E8F0;
+}
+
+.session-logout-btn {
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #F87171;
+    border-radius: 999px;
+    padding: 4px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.session-logout-btn:hover {
+    background: rgba(239, 68, 68, 0.3);
+    color: #FFFFFF;
+}
+
+/* ==========================================================================
+   ADMIN DASHBOARD STYLES
+   ========================================================================== */
+
+.admin-layout {
+    width: 100%;
+    max-width: 960px;
+    margin: 40px auto;
+    position: relative;
+    z-index: 10;
+}
+
+.admin-navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: 16px 24px;
+    margin-bottom: 24px;
+    backdrop-filter: blur(20px);
+}
+
+.admin-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.admin-brand h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #FFFFFF;
+}
+
+.admin-user-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.admin-email-tag {
+    font-size: 13px;
+    color: #94A3B8;
+    background: rgba(11, 31, 58, 0.8);
+    border: 1px solid rgba(191, 219, 254, 0.15);
+    padding: 6px 12px;
+    border-radius: 8px;
+}
+
+.admin-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+@media (max-width: 768px) {
+    .admin-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.admin-panel-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: 24px;
+    backdrop-filter: blur(20px);
+    box-shadow: var(--glass-shadow);
+}
+
+.admin-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.admin-card-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #CBD5E1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.active-code-display {
+    text-align: center;
+    padding: 24px 16px;
+    background: rgba(11, 31, 58, 0.9);
+    border: 2px dashed rgba(56, 189, 248, 0.35);
+    border-radius: 16px;
+    margin-bottom: 20px;
+}
+
+.code-number {
+    font-size: 48px;
+    font-weight: 800;
+    letter-spacing: 6px;
+    color: #38BDF8;
+    text-shadow: 0 0 24px rgba(56, 189, 248, 0.4);
+    font-family: 'Inter', monospace, sans-serif;
+}
+
+.code-meta-chips {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.meta-chip {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 999px;
+}
+
+.meta-chip.status-active {
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: #34D399;
+}
+
+.meta-chip.type-random {
+    background: rgba(37, 99, 235, 0.15);
+    border: 1px solid rgba(37, 99, 235, 0.3);
+    color: #93C5FD;
+}
+
+.meta-chip.type-custom {
+    background: rgba(168, 85, 247, 0.15);
+    border: 1px solid rgba(168, 85, 247, 0.3);
+    color: #C084FC;
+}
+
+/* Expiry Countdown Box */
+.expiry-box {
+    background: rgba(15, 31, 58, 0.7);
+    border: 1px solid rgba(191, 219, 254, 0.15);
+    border-radius: 14px;
+    padding: 16px;
+    text-align: center;
+    margin-top: 16px;
+}
+
+.expiry-title {
+    font-size: 13px;
+    color: #94A3B8;
+    margin-bottom: 6px;
+}
+
+.countdown-timer {
+    font-size: 22px;
+    font-weight: 700;
+    color: #F59E0B;
+    font-family: 'Inter', monospace, sans-serif;
+}
+
+.expiry-footnote {
+    font-size: 11px;
+    color: #64748B;
+    margin-top: 4px;
+}
+
+/* ==========================================================================
+   MOBILE & TABLET RESPONSIVENESS FOR AUTH & LOGIN
+   ========================================================================== */
+
+@media (max-width: 600px) {
+    .demo-mode-banner {
+        font-size: 11.5px;
+        padding: 6px 12px;
+    }
+
+    .demo-mode-banner .banner-content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 1.25rem 0.65rem;
+    }
+
+    .auth-wrapper {
+        padding: 0;
+        margin: auto;
+    }
+
+    .auth-card {
+        padding: 1.5rem 1.15rem;
+        border-radius: 18px;
+    }
+
+    .pin-inputs {
+        gap: 6px;
+        max-width: 100%;
+    }
+
+    .pin-digit {
+        min-height: 48px;
+        font-size: 20px;
+    }
+
+    .auth-tabs {
+        padding: 3px;
+        gap: 3px;
+    }
+
+    .auth-tab {
+        padding: 8px 6px;
+        font-size: 12px;
+        letter-spacing: -0.2px;
+    }
+
+    .admin-navbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 14px;
+        padding: 16px;
+    }
+
+    .admin-user-info {
+        width: 100%;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+}
+
+@media (max-width: 360px) {
+    body {
+        padding: 1rem 0.4rem;
+    }
+
+    .auth-card {
+        padding: 1.25rem 0.85rem;
+        border-radius: 16px;
+    }
+
+    .pin-inputs {
+        gap: 4px;
+    }
+
+    .pin-digit {
+        min-height: 42px;
+        font-size: 18px;
+        border-width: 1.5px;
+    }
+
+    .auth-tab {
+        font-size: 11px;
+        padding: 7px 4px;
+        gap: 4px;
+    }
+
+    .auth-tab svg {
+        display: none;
+    }
+}
+
+
+
 
