@@ -1,0 +1,50 @@
+[
+  {
+    "id": "hdfc-pl-bt",
+    "lenderId": "hdfc-bank",
+    "destinationLoanType": "Personal Loan",
+    "acceptedSourceLoanTypes": ["Personal Loan", "Credit Card", "App Loan"],
+    "mergeAllowed": true,
+    "minimumROI": 10.99,
+    "maximumROI": 14.50,
+    "minimumTenureMonths": 12,
+    "maximumTenureMonths": 60,
+    "minimumAmount": 50000,
+    "maximumAmount": 4000000,
+    "processingFee": 1999,
+    "foreclosureCharge": 0,
+    "active": true
+  },
+  {
+    "id": "icici-pl",
+    "lenderId": "icici-bank",
+    "destinationLoanType": "Personal Loan",
+    "acceptedSourceLoanTypes": ["Personal Loan", "Credit Card"],
+    "mergeAllowed": true,
+    "minimumROI": 11.25,
+    "maximumROI": 15.00,
+    "minimumTenureMonths": 12,
+    "maximumTenureMonths": 72,
+    "minimumAmount": 100000,
+    "maximumAmount": 5000000,
+    "processingFee": 2500,
+    "foreclosureCharge": 0,
+    "active": true
+  },
+  {
+    "id": "bajaj-pl",
+    "lenderId": "bajaj-finance",
+    "destinationLoanType": "Personal Loan",
+    "acceptedSourceLoanTypes": ["Personal Loan", "Overdraft", "App Loan", "Credit Card"],
+    "mergeAllowed": true,
+    "minimumROI": 11.50,
+    "maximumROI": 18.00,
+    "minimumTenureMonths": 6,
+    "maximumTenureMonths": 60,
+    "minimumAmount": 30000,
+    "maximumAmount": 2500000,
+    "processingFee": 1500,
+    "foreclosureCharge": 0,
+    "active": true
+  }
+]

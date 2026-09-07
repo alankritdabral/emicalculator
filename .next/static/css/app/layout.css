@@ -224,7 +224,7 @@ label {
     white-space: nowrap;
 }
 
-input[type="number"], input[type="date"] {
+input[type="number"], input[type="date"], input[type="text"] {
     flex: 1 1;
     background: transparent;
     border: none;

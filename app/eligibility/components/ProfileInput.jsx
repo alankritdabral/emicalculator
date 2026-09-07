@@ -1,0 +1,262 @@
+import { INDIAN_CITIES } from './indianCities';
+import { EMPLOYERS } from './employers';
+import { useState, useRef, useEffect } from 'react';
+
+export default function ProfileInput({ 
+  netSalary, 
+  onSalaryChange,
+  cibil,
+  onCibilChange,
+  city,
+  onCityChange,
+  dob,
+  onDobChange,
+  employer,
+  onEmployerChange,
+  employmentVintage,
+  onEmploymentVintageChange
+}) {
+  const [showCityDropdown, setShowCityDropdown] = useState(false);
+  const [citySearch, setCitySearch] = useState(city || '');
+  const cityDropdownRef = useRef(null);
+
+  const [showEmployerDropdown, setShowEmployerDropdown] = useState(false);
+  const [employerSearch, setEmployerSearch] = useState(employer || '');
+  const employerDropdownRef = useRef(null);
+
+  // Sync external changes (e.g. from localStorage) to local search states
+  useEffect(() => {
+    setCitySearch(city || '');
+  }, [city]);
+
+  useEffect(() => {
+    setEmployerSearch(employer || '');
+  }, [employer]);
+
+  // Handle clicking outside to close dropdowns
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (cityDropdownRef.current && !cityDropdownRef.current.contains(event.target)) {
+        setShowCityDropdown(false);
+      }
+      if (employerDropdownRef.current && !employerDropdownRef.current.contains(event.target)) {
+        setShowEmployerDropdown(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // --- Employer Async Search (Debounced) ---
+  const [debouncedEmployerSearch, setDebouncedEmployerSearch] = useState(employerSearch);
+  const [asyncEmployers, setAsyncEmployers] = useState(EMPLOYERS);
+  const [isSearchingEmployer, setIsSearchingEmployer] = useState(false);
+
+  // 1. Debounce the search input
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedEmployerSearch(employerSearch);
+    }, 300); // 300ms debounce delay
+    return () => clearTimeout(handler);
+  }, [employerSearch]);
+
+  // 2. Mock Database Search API
+  useEffect(() => {
+    const fetchEmployersFromDB = async () => {
+      setIsSearchingEmployer(true);
+      
+      // Simulate network/DB delay
+      await new Promise(resolve => setTimeout(resolve, 400));
+      
+      // Mock DB query logic
+      const results = EMPLOYERS.filter(e => 
+        e.toLowerCase().includes(debouncedEmployerSearch.toLowerCase()) || e.includes("Other")
+      );
+      
+      setAsyncEmployers(results);
+      setIsSearchingEmployer(false);
+    };
+
+    fetchEmployersFromDB();
+  }, [debouncedEmployerSearch]);
+
+  const filteredCities = INDIAN_CITIES.filter(c => 
+    c.toLowerCase().includes(citySearch.toLowerCase())
+  );
+
+  return (
+    <div className="input-group" style={{ marginBottom: '2rem' }}>
+      <h3 style={{ marginBottom: '1.5rem', fontSize: '1.2rem', color: 'var(--text)' }}>Step 1: Basic Eligibility</h3>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem' }}>
+        
+        {/* Salary */}
+        <div>
+          <div className="label-with-hint">
+            <label htmlFor="net-salary">Monthly Net Salary</label>
+          </div>
+          <div className="input-wrapper">
+            <span className="currency">₹</span>
+            <input
+              type="number"
+              id="net-salary"
+              placeholder="e.g. 50000"
+              required
+              min={1}
+              step="any"
+              value={netSalary}
+              onChange={(e) => onSalaryChange(e.target.value)}
+            />
+          </div>
+        </div>
+
+        {/* CIBIL Score */}
+        <div>
+          <div className="label-with-hint">
+            <label htmlFor="cibil">CIBIL Score</label>
+          </div>
+          <div className="input-wrapper">
+            <input
+              type="number"
+              id="cibil"
+              placeholder="e.g. 750"
+              required
+              min={300}
+              max={900}
+              value={cibil}
+              onChange={(e) => onCibilChange(e.target.value)}
+            />
+          </div>
+        </div>
+
+        {/* City (Custom Dropdown) */}
+        <div ref={cityDropdownRef} style={{ position: 'relative' }}>
+          <div className="label-with-hint">
+            <label htmlFor="city">City</label>
+          </div>
+          <div className="input-wrapper">
+            <input
+              type="text"
+              id="city"
+              placeholder="Search city..."
+              required
+              value={citySearch}
+              onChange={(e) => {
+                setCitySearch(e.target.value);
+                setShowCityDropdown(true);
+              }}
+              onFocus={() => setShowCityDropdown(true)}
+              autoComplete="off"
+            />
+          </div>
+          
+          {showCityDropdown && (
+            <div style={{
+              position: 'absolute', top: '100%', left: 0, right: 0, maxHeight: '200px', overflowY: 'auto',
+              background: 'var(--card-bg)', border: '1px solid var(--border)', borderRadius: '8px',
+              marginTop: '4px', zIndex: 10, boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+            }}>
+              {filteredCities.length > 0 ? (
+                filteredCities.map(c => (
+                  <div key={c}
+                    onClick={() => { setCitySearch(c); onCityChange(c); setShowCityDropdown(false); }}
+                    style={{ padding: '0.8rem 1rem', cursor: 'pointer', borderBottom: '1px solid var(--border)', color: 'var(--text)' }}
+                    onMouseOver={(e) => e.target.style.background = 'var(--bg-secondary)'}
+                    onMouseOut={(e) => e.target.style.background = 'transparent'}
+                  >{c}</div>
+                ))
+              ) : (
+                <div style={{ padding: '0.8rem 1rem', color: 'var(--text-muted)' }}>No cities found</div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* DOB */}
+        <div>
+          <div className="label-with-hint">
+            <label htmlFor="dob">Date of Birth</label>
+          </div>
+          <div className="input-wrapper">
+            <input
+              type="date"
+              id="dob"
+              required
+              max={new Date(new Date().setFullYear(new Date().getFullYear() - 18)).toISOString().split('T')[0]} // Max date = 18 years ago
+              value={dob}
+              onChange={(e) => onDobChange(e.target.value)}
+            />
+          </div>
+        </div>
+
+        {/* Employer (Custom Dropdown) */}
+        <div ref={employerDropdownRef} style={{ position: 'relative' }}>
+          <div className="label-with-hint">
+            <label htmlFor="employer">Employer Name</label>
+          </div>
+          <div className="input-wrapper">
+            <input
+              type="text"
+              id="employer"
+              placeholder="Search your company..."
+              required
+              value={employerSearch}
+              onChange={(e) => {
+                setEmployerSearch(e.target.value);
+                setShowEmployerDropdown(true);
+              }}
+              onFocus={() => setShowEmployerDropdown(true)}
+              autoComplete="off"
+            />
+          </div>
+          
+          {showEmployerDropdown && (
+            <div style={{
+              position: 'absolute', top: '100%', left: 0, right: 0, maxHeight: '200px', overflowY: 'auto',
+              background: 'var(--card-bg)', border: '1px solid var(--border)', borderRadius: '8px',
+              marginTop: '4px', zIndex: 10, boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+            }}>
+              {isSearchingEmployer ? (
+                <div style={{ padding: '0.8rem 1rem', color: 'var(--text-muted)' }}>Searching database...</div>
+              ) : asyncEmployers.length > 0 ? (
+                asyncEmployers.map(e => (
+                  <div key={e}
+                    onClick={() => { setEmployerSearch(e); onEmployerChange(e); setShowEmployerDropdown(false); }}
+                    style={{ padding: '0.8rem 1rem', cursor: 'pointer', borderBottom: '1px solid var(--border)', color: 'var(--text)' }}
+                    onMouseOver={(ev) => ev.target.style.background = 'var(--bg-secondary)'}
+                    onMouseOut={(ev) => ev.target.style.background = 'transparent'}
+                  >{e}</div>
+                ))
+              ) : (
+                <div style={{ padding: '0.8rem 1rem', color: 'var(--text-muted)' }}>Type to specify company</div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Employment Vintage */}
+        <div>
+          <div className="label-with-hint">
+            <label htmlFor="employment-vintage">Job Vintage (Months)</label>
+          </div>
+          <div className="input-wrapper">
+            <input
+              type="number"
+              id="employment-vintage"
+              placeholder="Months in current job (e.g. 24)"
+              required
+              min={0}
+              value={employmentVintage}
+              onChange={(e) => onEmploymentVintageChange(e.target.value)}
+            />
+          </div>
+        </div>
+
+      </div>
+      
+      <div className="date-rule-explanation" style={{ marginTop: '1.5rem', background: 'var(--card-bg)', border: 'none' }}>
+        <span className="rule-icon">💡</span>
+        <span>Enter your accurate profile details. These are required by lenders to determine eligibility and rates.</span>
+      </div>
+    </div>
+  );
+}
