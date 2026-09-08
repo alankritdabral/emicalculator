@@ -229,27 +229,117 @@ export default function EligibilityPage() {
   const currentEmiB = catBLoans.reduce((sum, l) => sum + (l.calculatedEmi || 0), 0);
   const currentEmiA = catALoans.reduce((sum, l) => sum + (l.calculatedEmi || 0), 0);
   
-  // Phase 5: Eligibility Engine
+  // Phase 5 & 6: Engine & Savings Options Computation
   const profile = {
     cibil, netSalary, employer, hasBounce, hasLatePayment, hasActiveOverdue, wantsTopUp, topUpAmount
   };
-  const eligibleLenders = analyzeLenderEligibility({ profile, catBLoans });
-  const topLender = eligibleLenders.length > 0 ? eligibleLenders[0] : null;
-
-  // Phase 6: Savings Computation
-  const NEW_RATE = topLender ? topLender.headlineRate : 11.99; // Dynamic ROI based on lender
-  const NEW_TENURE = topLender ? topLender.maxTenure : 60;  // Dynamic tenure based on lender
   
   const additionalAmount = (wantsTopUp === 'yes' && Number(topUpAmount) > 0) ? Number(topUpAmount) : 0;
-  const newPrincipal = totalOutB + additionalAmount;
+  
+  let topOptions = [];
+  let globalIneligible = [];
+  let globalEligible = [];
+  if (catBLoans.length > 0) {
+    // Generate all combinations of loans to transfer
+    const subsets = [];
+    const max = 1 << catBLoans.length;
+    for (let i = 1; i < max; i++) {
+      const subset = [];
+      for (let j = 0; j < catBLoans.length; j++) {
+        if ((i & (1 << j)) > 0) subset.push(catBLoans[j]);
+      }
+      subsets.push(subset);
+    }
+    
+    const options = [];
+    const currentTotalInterestB = catBLoans.reduce((sum, l) => sum + (l.calculatedEmi * l.emisRemaining), 0) - totalOutB;
+    
+    // Get globally eligible/ineligible lenders for the full combination
+    const analysis = analyzeLenderEligibility({ profile, catBLoans });
+    globalIneligible = analysis.ineligibleLenders;
+    globalEligible = analysis.eligibleLenders;
 
-  const newEmiB = calculateEMI(newPrincipal, NEW_RATE, NEW_TENURE);
-  const monthlySaving = currentEmiB - newEmiB; // Can be negative if top-up is large
-  const annualSaving = monthlySaving * 12;
+    subsets.forEach(subset => {
+      // Analyze lenders for this specific combo of loans
+      const { eligibleLenders } = analyzeLenderEligibility({ profile, catBLoans: subset });
+      const subsetOut = subset.reduce((sum, l) => sum + (l.calculatedOutstanding || 0), 0);
+      
+      const nonTransferred = catBLoans.filter(l => !subset.includes(l));
+      const nonTransferredEmi = nonTransferred.reduce((sum, l) => sum + (l.calculatedEmi || 0), 0);
+      const nonTransferredInterest = nonTransferred.reduce((sum, l) => sum + (l.calculatedEmi * l.emisRemaining), 0) - nonTransferred.reduce((sum, l) => sum + (l.calculatedOutstanding || 0), 0);
 
-  const currentTotalInterestB = catBLoans.reduce((sum, l) => sum + (l.calculatedEmi * l.emisRemaining), 0) - totalOutB;
-  const newTotalInterestB = (newEmiB * NEW_TENURE) - newPrincipal;
-  const interestSaving = currentTotalInterestB - newTotalInterestB; // Can be negative
+      eligibleLenders.forEach(lender => {
+        const NEW_RATE = lender.headlineRate;
+        const maxRemainingInSubset = Math.max(...subset.map(l => l.emisRemaining));
+        const baseTenure = Math.min(lender.maxTenure, maxRemainingInSubset) || 12; // fallback to 12 if somehow 0
+        const maxTenure = lender.maxTenure;
+        
+        const newPrincipal = subsetOut + additionalAmount;
+        
+        // --- Calculate for Base Tenure (Keep same months) ---
+        const newEmiBase = calculateEMI(newPrincipal, NEW_RATE, baseTenure);
+        const newInterestBase = (newEmiBase * baseTenure) - newPrincipal;
+        const proposedTotalEmiBase = nonTransferredEmi + newEmiBase;
+        const proposedTotalInterestBase = nonTransferredInterest + newInterestBase;
+        const monthlySavingBase = currentEmiB - proposedTotalEmiBase;
+        const interestSavingBase = currentTotalInterestB - proposedTotalInterestBase;
+        
+        // --- Calculate for Max Tenure (Minimize EMI) ---
+        const newEmiMax = calculateEMI(newPrincipal, NEW_RATE, maxTenure);
+        const newInterestMax = (newEmiMax * maxTenure) - newPrincipal;
+        const proposedTotalEmiMax = nonTransferredEmi + newEmiMax;
+        const proposedTotalInterestMax = nonTransferredInterest + newInterestMax;
+        const monthlySavingMax = currentEmiB - proposedTotalEmiMax;
+        const interestSavingMax = currentTotalInterestB - proposedTotalInterestMax;
+
+        options.push({
+          subset, lender, newPrincipal, 
+          NEW_RATE, additionalAmount, subsetOut,
+          
+          nonTransferredEmi,
+          nonTransferredInterest,
+          currentTotalInterestB,
+          currentEmiB,
+          
+          // Sort primary by the maximum interest savings possible in this combination
+          interestSaving: interestSavingBase, 
+          
+          base: {
+            tenure: baseTenure,
+            newEmi: newEmiBase,
+            totalEmi: proposedTotalEmiBase,
+            monthlySaving: monthlySavingBase,
+            interestSaving: interestSavingBase,
+            totalInterest: newInterestBase,
+            totalPayment: newEmiBase * baseTenure
+          },
+          max: {
+            tenure: maxTenure,
+            newEmi: newEmiMax,
+            totalEmi: proposedTotalEmiMax,
+            monthlySaving: monthlySavingMax,
+            interestSaving: interestSavingMax,
+            totalInterest: newInterestMax,
+            totalPayment: newEmiMax * maxTenure
+          }
+        });
+      });
+    });
+
+    // Sort options to maximize interest savings (profit)
+    options.sort((a, b) => b.interestSaving - a.interestSaving);
+
+    // Pick top 3 distinct options
+    const seen = new Set();
+    for (const opt of options) {
+      const key = opt.subset.map(l => l.id).sort().join(',') + '_' + opt.lender.id;
+      if (!seen.has(key)) {
+        seen.add(key);
+        topOptions.push(opt);
+        if (topOptions.length === 3) break;
+      }
+    }
+  }
 
   const handleAnalyze = (e) => {
     e.preventDefault();
@@ -336,15 +426,9 @@ export default function EligibilityPage() {
               catBLoans={catBLoans}
               catALoans={catALoans}
               currentEmiB={currentEmiB}
-              newEmiB={newEmiB}
-              interestSaving={interestSaving}
-              monthlySaving={monthlySaving}
-              annualSaving={annualSaving}
-              totalOutB={totalOutB}
-              eligibleLenders={eligibleLenders}
-              NEW_RATE={NEW_RATE}
-              NEW_TENURE={NEW_TENURE}
-              additionalAmount={additionalAmount}
+              topOptions={topOptions}
+              ineligibleLenders={globalIneligible}
+              eligibleLenders={globalEligible}
             />
           </div>
         )}
