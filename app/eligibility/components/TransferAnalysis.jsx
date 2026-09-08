@@ -97,7 +97,7 @@ export default function TransferAnalysis({ catBLoans, catALoans, currentEmiB, to
                <div style={{ background: 'var(--bg-main)', padding: '1.25rem', borderRadius: '8px', border: '1px solid var(--card-border)', marginBottom: '1rem' }}>
                  <h4 style={{ fontSize: '0.9rem', marginBottom: '1rem', color: 'var(--text-main)', borderBottom: '1px solid var(--card-border)', paddingBottom: '0.5rem' }}>New Loan Calculations</h4>
                  
-                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
+                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 150px), 1fr))', gap: '1rem', marginBottom: '1rem' }}>
                    <div>
                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Loan Amount</div>
                      <div style={{ fontSize: '1.05rem', fontWeight: 'bold', color: 'var(--text-main)' }}>₹{opt.newPrincipal.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</div>
@@ -112,7 +112,7 @@ export default function TransferAnalysis({ catBLoans, catALoans, currentEmiB, to
                    </div>
                  </div>
 
-                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '1rem', background: 'var(--card-bg)', padding: '1rem', borderRadius: '6px' }}>
+                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 150px), 1fr))', gap: '1rem', background: 'var(--card-bg)', padding: '1rem', borderRadius: '6px' }}>
                    <div>
                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>New Loan EMI</div>
                      <div style={{ fontSize: '1.1rem', fontWeight: 'bold', color: 'var(--secondary)' }}>₹{currentScenario.newEmi.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</div>
@@ -130,7 +130,7 @@ export default function TransferAnalysis({ catBLoans, catALoans, currentEmiB, to
                
                {/* Impact & Savings Summary */}
                <h4 style={{ fontSize: '0.9rem', marginBottom: '0.75rem', color: 'var(--text-main)' }}>Overall Impact (Including Non-Transferred Loans)</h4>
-               <div className="savings-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '10px', display: 'grid' }}>
+               <div className="savings-grid">
                  <div className="saving-card" style={{ background: 'var(--bg-main)', padding: '10px', borderRadius: '8px', border: `1px solid ${currentScenario.monthlySaving < 0 ? 'var(--danger)' : 'var(--success)'}` }}>
                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Proposed Total EMI*</div>
                    <div style={{ fontSize: '1.1rem', fontWeight: 'bold', color: 'var(--text-main)' }}>₹{currentScenario.totalEmi.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</div>
@@ -180,7 +180,7 @@ export default function TransferAnalysis({ catBLoans, catALoans, currentEmiB, to
           <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: 1.4, marginBottom: '1rem' }}>
             The following {eligibleLenders.length} lenders have approved your profile for a full debt transfer. The Top 3 options above were mathematically selected from this list.
           </p>
-          <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '0.75rem' }}>
+          <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 200px), 1fr))', gap: '0.75rem' }}>
             {eligibleLenders.map((lender, i) => (
               <li key={i} style={{ padding: '0.75rem', background: 'var(--bg-main)', borderRadius: '8px', border: '1px solid var(--card-border)', display: 'flex', flexDirection: 'column', gap: '4px' }}>
                 <strong style={{ color: 'var(--text-main)', fontSize: '0.9rem' }}>{lender.name}</strong>

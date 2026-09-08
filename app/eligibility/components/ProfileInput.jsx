@@ -87,7 +87,7 @@ export default function ProfileInput({
   return (
     <div className="input-group" style={{ marginBottom: '2rem' }}>
       <h3 style={{ marginBottom: '1.5rem', fontSize: '1.2rem', color: 'var(--text)' }}>Step 1: Basic Eligibility</h3>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 250px), 1fr))', gap: '1.5rem' }}>
         
         {/* Salary */}
         <div>
@@ -146,27 +146,28 @@ export default function ProfileInput({
               onFocus={() => setShowEmployerDropdown(true)}
               autoComplete="off"
             />
+            <span style={{ paddingRight: '1rem', pointerEvents: 'none', color: 'var(--text-main)', opacity: 0.6, fontSize: '0.8rem' }}>▼</span>
           </div>
           
           {showEmployerDropdown && (
             <div style={{
-              position: 'absolute', top: '100%', left: 0, right: 0, maxHeight: '200px', overflowY: 'auto',
-              background: 'var(--card-bg)', border: '1px solid var(--border)', borderRadius: '8px',
-              marginTop: '4px', zIndex: 10, boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+              position: 'absolute', top: '100%', left: 0, right: 0, maxHeight: '250px', overflowY: 'auto',
+              background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '8px',
+              marginTop: '6px', zIndex: 10, boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
             }}>
               {isSearchingEmployer ? (
-                <div style={{ padding: '0.8rem 1rem', color: 'var(--text-muted)' }}>Searching database...</div>
+                <div style={{ padding: '0.8rem 1rem', color: '#64748B' }}>Searching database...</div>
               ) : asyncEmployers.length > 0 ? (
                 asyncEmployers.map(e => (
                   <div key={e}
                     onClick={() => { setEmployerSearch(e); onEmployerChange(e); setShowEmployerDropdown(false); }}
-                    style={{ padding: '0.8rem 1rem', cursor: 'pointer', borderBottom: '1px solid var(--border)', color: 'var(--text)' }}
-                    onMouseOver={(ev) => ev.target.style.background = 'var(--bg-secondary)'}
+                    style={{ padding: '0.8rem 1rem', cursor: 'pointer', borderBottom: '1px solid #F1F5F9', color: '#1E293B' }}
+                    onMouseOver={(ev) => ev.target.style.background = '#F8FAFC'}
                     onMouseOut={(ev) => ev.target.style.background = 'transparent'}
                   >{e}</div>
                 ))
               ) : (
-                <div style={{ padding: '0.8rem 1rem', color: 'var(--text-muted)' }}>Type to specify company</div>
+                <div style={{ padding: '0.8rem 1rem', color: '#64748B' }}>Type to specify company</div>
               )}
             </div>
           )}

@@ -19,7 +19,7 @@ export default function LoanCard({ loan, idx, removeLoan, updateLoan }) {
         <button type="button" onClick={() => removeLoan(loan.id)} style={{ background: 'transparent', border: 'none', color: 'var(--danger)', cursor: 'pointer', fontSize: '1.4rem', lineHeight: 1 }}>×</button>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: '1rem' }}>
         <div className="input-group">
           <label>Bank / NBFC</label>
           <div className="input-wrapper">

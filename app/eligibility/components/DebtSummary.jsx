@@ -7,7 +7,7 @@ export default function DebtSummary({ loansLength, totalOutstanding, totalMonthl
         </div>
       </div>
       
-      <div className="sub-stats-grid" style={{ marginBottom: '1.5rem', marginTop: '1rem', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))' }}>
+      <div className="sub-stats-grid" style={{ marginBottom: '1.5rem', marginTop: '1rem' }}>
         <div className="stat-box">
           <span className="stat-label">Total Loans</span>
           <strong className="stat-value">{loansLength}</strong>
