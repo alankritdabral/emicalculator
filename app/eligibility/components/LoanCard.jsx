@@ -107,20 +107,18 @@ export default function LoanCard({ loan, idx, removeLoan, updateLoan }) {
           </div>
         </div>
 
-        {loan.type !== 'Credit Card' && (
-          <div className="input-group">
-            <label>Monthly EMI (Optional)</label>
-            <div className="input-wrapper">
-              <span className="currency">₹</span>
-              <input 
-                type="number" 
-                placeholder={autoEmi > 0 ? Math.round(autoEmi).toString() : "Auto-calculated"} 
-                value={loan.emi} 
-                onChange={(e) => updateLoan(loan.id, 'emi', e.target.value)} 
-              />
-            </div>
+        <div className="input-group">
+          <label>Monthly EMI (Optional)</label>
+          <div className="input-wrapper">
+            <span className="currency">₹</span>
+            <input 
+              type="number" 
+              placeholder={loan.type === 'Credit Card' ? (loan.currentOutstanding ? Math.round(loan.currentOutstanding * 0.05).toString() : "e.g. 5000") : (autoEmi > 0 ? Math.round(autoEmi).toString() : "Auto-calculated")} 
+              value={loan.emi} 
+              onChange={(e) => updateLoan(loan.id, 'emi', e.target.value)} 
+            />
           </div>
-        )}
+        </div>
       </div>
     </div>
   );

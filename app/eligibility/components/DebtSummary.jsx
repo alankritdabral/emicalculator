@@ -1,4 +1,4 @@
-export default function DebtSummary({ loansLength, totalOutstanding, totalMonthlyEmi, emiUsageRatio, emiCapacity, currentEmiA, currentEmiB }) {
+export default function DebtSummary({ loansLength, totalOutstanding, totalMonthlyEmi, emiUsageRatio, emiCapacity, currentEmiA, currentEmiB, availableNewLoanAmount }) {
   return (
     <div className="result-card outstanding-card">
       <div className="card-header">
@@ -51,10 +51,15 @@ export default function DebtSummary({ loansLength, totalOutstanding, totalMonthl
         </div>
       </div>
       
-      {emiUsageRatio > 100 && (
+      {emiUsageRatio >= 100 || availableNewLoanAmount <= 0 ? (
         <div style={{ background: 'var(--card-bg)', border: '1px solid var(--danger)', color: 'var(--danger)', padding: '0.85rem', borderRadius: '8px', fontSize: '0.85rem', marginTop: '1.25rem', display: 'flex', gap: '0.5rem', alignItems: 'flex-start' }}>
           <span style={{ fontSize: '1.1rem' }}>⚠️</span>
-          <span style={{ lineHeight: 1.4 }}>Your current EMI exceeds your estimated capacity. Consolidating your loans could help reduce this monthly burden.</span>
+          <span style={{ lineHeight: 1.4 }}>Your current debt burden exceeds or meets your estimated capacity. Consolidating your loans could help reduce this.</span>
+        </div>
+      ) : (
+        <div style={{ background: 'var(--card-bg)', border: '1px solid var(--success)', color: 'var(--success)', padding: '0.85rem', borderRadius: '8px', fontSize: '0.85rem', marginTop: '1.25rem', display: 'flex', gap: '0.5rem', alignItems: 'flex-start' }}>
+          <span style={{ fontSize: '1.1rem' }}>✅</span>
+          <span style={{ lineHeight: 1.4 }}>You are eligible for a new loan. Estimated Available Loan Amount: <strong>₹{Math.floor(availableNewLoanAmount).toLocaleString('en-IN')}</strong> (based on {(emiCapacity - totalMonthlyEmi).toLocaleString('en-IN', { maximumFractionDigits: 0 })}/mo unused EMI capacity).</span>
         </div>
       )}
     </div>

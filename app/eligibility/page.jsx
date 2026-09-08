@@ -18,6 +18,13 @@ function calculateEMI(p, annualRate, months) {
   return p * r * Math.pow(1 + r, months) / (Math.pow(1 + r, months) - 1);
 }
 
+function calculatePrincipalFromEMI(emi, annualRate, months) {
+  if (!emi || !annualRate || !months) return 0;
+  if (annualRate === 0) return emi * months;
+  const r = annualRate / 12 / 100;
+  return emi * (Math.pow(1 + r, months) - 1) / (r * Math.pow(1 + r, months));
+}
+
 function getEmisPaid(disbursedDate) {
   if (!disbursedDate) return 0;
   const d = new Date(disbursedDate);
@@ -55,6 +62,8 @@ export default function EligibilityPage() {
   
   // Step 4
   const [wantsTopUp, setWantsTopUp] = useState('');
+  const [topUpTenure, setTopUpTenure] = useState('');
+  const [topUpRoi, setTopUpRoi] = useState('12');
   const [topUpAmount, setTopUpAmount] = useState('');
 
   const [emiCapacity, setEmiCapacity] = useState(null);
@@ -73,8 +82,10 @@ export default function EligibilityPage() {
     const savedBounce = localStorage.getItem('hasBounce');
     const savedLate = localStorage.getItem('hasLatePayment');
     const savedOverdue = localStorage.getItem('hasActiveOverdue');
-    const savedTopUp = localStorage.getItem('wantsTopUp');
-    const savedTopUpAmt = localStorage.getItem('topUpAmount');
+    const savedWantsTopUp = localStorage.getItem('wantsTopUp');
+    const savedTopUpTenure = localStorage.getItem('topUpTenure');
+    const savedTopUpRoi = localStorage.getItem('topUpRoi');
+    const savedTopUpAmount = localStorage.getItem('topUpAmount');
     
     if (savedSalary) {
       setNetSalary(savedSalary);
@@ -88,8 +99,10 @@ export default function EligibilityPage() {
     if (savedBounce) setHasBounce(savedBounce);
     if (savedLate) setHasLatePayment(savedLate);
     if (savedOverdue) setHasActiveOverdue(savedOverdue);
-    if (savedTopUp) setWantsTopUp(savedTopUp);
-    if (savedTopUpAmt) setTopUpAmount(savedTopUpAmt);
+    if (savedWantsTopUp) setWantsTopUp(savedWantsTopUp);
+    if (savedTopUpTenure) setTopUpTenure(savedTopUpTenure);
+    if (savedTopUpRoi) setTopUpRoi(savedTopUpRoi);
+    if (savedTopUpAmount) setTopUpAmount(savedTopUpAmount);
 
     if (savedLoans) {
       try {
@@ -104,7 +117,7 @@ export default function EligibilityPage() {
     salary, newLoans, currentCibil = cibil, currentCity = city, 
     currentDob = dob, currentEmployer = employer, currentVintage = employmentVintage,
     currentBounce = hasBounce, currentLate = hasLatePayment, currentOverdue = hasActiveOverdue,
-    currentTopUp = wantsTopUp, currentTopUpAmt = topUpAmount
+    currentTopUp = wantsTopUp, currentTopUpTenure = topUpTenure, currentTopUpRoi = topUpRoi, currentTopUpAmount = topUpAmount
   ) => {
     localStorage.setItem('netSalary', salary);
     localStorage.setItem('cibil', currentCibil);
@@ -117,7 +130,9 @@ export default function EligibilityPage() {
     localStorage.setItem('hasLatePayment', currentLate);
     localStorage.setItem('hasActiveOverdue', currentOverdue);
     localStorage.setItem('wantsTopUp', currentTopUp);
-    localStorage.setItem('topUpAmount', currentTopUpAmt);
+    localStorage.setItem('topUpTenure', currentTopUpTenure);
+    localStorage.setItem('topUpRoi', currentTopUpRoi);
+    localStorage.setItem('topUpAmount', currentTopUpAmount);
   };
 
   const calculateCapacity = (salary) => {
@@ -137,6 +152,8 @@ export default function EligibilityPage() {
     localStorage.removeItem('hasLatePayment');
     localStorage.removeItem('hasActiveOverdue');
     localStorage.removeItem('wantsTopUp');
+    localStorage.removeItem('topUpTenure');
+    localStorage.removeItem('topUpRoi');
     localStorage.removeItem('topUpAmount');
     
     setNetSalary('');
@@ -149,6 +166,8 @@ export default function EligibilityPage() {
     setHasLatePayment('');
     setHasActiveOverdue('');
     setWantsTopUp('');
+    setTopUpTenure('');
+    setTopUpRoi('12');
     setTopUpAmount('');
     
     setEmiCapacity(null);
@@ -211,7 +230,7 @@ export default function EligibilityPage() {
 
     if (l.type === 'Credit Card') {
       calculatedOutstanding = Number(l.currentOutstanding) || 0;
-      calculatedEmi = calculatedOutstanding * 0.05;
+      calculatedEmi = l.emi ? Number(l.emi) : (calculatedOutstanding * 0.05);
       emisRemaining = 60; // Dummy tenure for CC to show interest savings
       emisPaid = 0;
     }
@@ -240,10 +259,25 @@ export default function EligibilityPage() {
   
   // Phase 5 & 6: Engine & Savings Options Computation
   const profile = {
-    cibil, netSalary, employer, hasBounce, hasLatePayment, hasActiveOverdue, wantsTopUp, topUpAmount
+    cibil, netSalary, employer, hasBounce, hasLatePayment, hasActiveOverdue, wantsTopUp, topUpTenure
   };
   
-  const additionalAmount = (wantsTopUp === 'yes' && Number(topUpAmount) > 0) ? Number(topUpAmount) : 0;
+  const unusedEmiCapacity = Math.max(0, (emiCapacity || 0) - totalMonthlyEmi);
+  const topUpTenureMonths = (wantsTopUp === 'Yes' && Number(topUpTenure) > 0) ? Number(topUpTenure) * 12 : 0;
+  const topUpRoiNumber = Number(topUpRoi) || 12;
+  
+  const defaultRoiForCapacity = Number(topUpRoi) || 12;
+  const defaultTenureForCapacityMonths = (Number(topUpTenure) || 5) * 12;
+  const totalLoanCapacity = calculatePrincipalFromEMI(emiCapacity, defaultRoiForCapacity, defaultTenureForCapacityMonths);
+  const availableNewLoanAmount = Math.max(0, totalLoanCapacity - totalOutstanding);
+  
+  const availableTopUpAmount = availableNewLoanAmount;
+  
+  // Custom loan amount bounded by limits
+  const requestedTopUp = Number(topUpAmount) || 0;
+  const additionalAmount = (wantsTopUp === 'Yes' && requestedTopUp >= 100000) 
+    ? Math.min(requestedTopUp, availableTopUpAmount) 
+    : 0;
   
   let topOptions = [];
   let globalIneligible = [];
@@ -397,21 +431,43 @@ export default function EligibilityPage() {
 
           <CreditBehaviourInput 
             hasBounce={hasBounce}
-            onHasBounceChange={(val) => { setHasBounce(val); saveToStorage(netSalary, loans, cibil, city, dob, employer, employmentVintage, val, hasLatePayment, hasActiveOverdue, wantsTopUp, topUpAmount); }}
+            onHasBounceChange={(val) => { setHasBounce(val); saveToStorage(netSalary, loans, cibil, city, dob, employer, employmentVintage, val, hasLatePayment, hasActiveOverdue, wantsTopUp, topUpTenure); }}
             hasLatePayment={hasLatePayment}
-            onHasLatePaymentChange={(val) => { setHasLatePayment(val); saveToStorage(netSalary, loans, cibil, city, dob, employer, employmentVintage, hasBounce, val, hasActiveOverdue, wantsTopUp, topUpAmount); }}
+            onHasLatePaymentChange={(val) => { setHasLatePayment(val); saveToStorage(netSalary, loans, cibil, city, dob, employer, employmentVintage, hasBounce, val, hasActiveOverdue, wantsTopUp, topUpTenure); }}
             hasActiveOverdue={hasActiveOverdue}
-            onHasActiveOverdueChange={(val) => { setHasActiveOverdue(val); saveToStorage(netSalary, loans, cibil, city, dob, employer, employmentVintage, hasBounce, hasLatePayment, val, wantsTopUp, topUpAmount); }}
+            onHasActiveOverdueChange={(val) => { setHasActiveOverdue(val); saveToStorage(netSalary, loans, cibil, city, dob, employer, employmentVintage, hasBounce, hasLatePayment, val, wantsTopUp, topUpTenure); }}
           />
 
           <RequirementInput
             wantsTopUp={wantsTopUp}
-            onWantsTopUpChange={(val) => { setWantsTopUp(val); saveToStorage(netSalary, loans, cibil, city, dob, employer, employmentVintage, hasBounce, hasLatePayment, hasActiveOverdue, val, topUpAmount); }}
+            onWantsTopUpChange={(val) => { setWantsTopUp(val); saveToStorage(netSalary, loans, cibil, city, dob, employer, employmentVintage, hasBounce, hasLatePayment, hasActiveOverdue, val, topUpTenure, topUpRoi, topUpAmount); }}
+            topUpTenure={topUpTenure}
+            onTopUpTenureChange={(val) => { setTopUpTenure(val); saveToStorage(netSalary, loans, cibil, city, dob, employer, employmentVintage, hasBounce, hasLatePayment, hasActiveOverdue, wantsTopUp, val, topUpRoi, topUpAmount); }}
+            topUpRoi={topUpRoi}
+            onTopUpRoiChange={(val) => { setTopUpRoi(val); saveToStorage(netSalary, loans, cibil, city, dob, employer, employmentVintage, hasBounce, hasLatePayment, hasActiveOverdue, wantsTopUp, topUpTenure, val, topUpAmount); }}
             topUpAmount={topUpAmount}
-            onTopUpAmountChange={(val) => { setTopUpAmount(val); saveToStorage(netSalary, loans, cibil, city, dob, employer, employmentVintage, hasBounce, hasLatePayment, hasActiveOverdue, wantsTopUp, val); }}
+            onTopUpAmountChange={(val) => { setTopUpAmount(val); saveToStorage(netSalary, loans, cibil, city, dob, employer, employmentVintage, hasBounce, hasLatePayment, hasActiveOverdue, wantsTopUp, topUpTenure, topUpRoi, val); }}
+            unusedEmiCapacity={unusedEmiCapacity}
+            availableTopUpAmount={availableTopUpAmount}
+            totalOutstanding={totalOutstanding}
+            totalLoanCapacity={totalLoanCapacity}
           />
 
-          <button type="submit" className="calculate-btn">
+          {wantsTopUp === 'Yes' && availableNewLoanAmount < 100000 && (
+            <div style={{ background: 'var(--card-bg)', border: '1px solid var(--danger)', color: 'var(--danger)', padding: '0.85rem', borderRadius: '8px', fontSize: '0.85rem', marginBottom: '1rem', display: 'flex', gap: '0.5rem', alignItems: 'flex-start' }}>
+              <span style={{ fontSize: '1.1rem' }}>⚠️</span>
+              <span style={{ lineHeight: 1.4 }}>
+                You are not eligible for a new loan. Your current outstanding debt leaves a loan capacity of less than ₹1,00,000 based on the selected tenure and interest rate.
+              </span>
+            </div>
+          )}
+
+          <button 
+            type="submit" 
+            className="calculate-btn"
+            disabled={wantsTopUp === 'Yes' && availableNewLoanAmount < 100000}
+            style={wantsTopUp === 'Yes' && availableNewLoanAmount < 100000 ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
+          >
             <span>Analyze Eligibility & Savings</span>
             <svg width={24} height={24} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
@@ -429,6 +485,7 @@ export default function EligibilityPage() {
               emiCapacity={emiCapacity}
               currentEmiA={currentEmiA}
               currentEmiB={currentEmiB}
+              availableNewLoanAmount={availableNewLoanAmount}
             />
 
             <TransferAnalysis 
