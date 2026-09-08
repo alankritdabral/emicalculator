@@ -45,61 +45,82 @@ export default function LoanCard({ loan, idx, removeLoan, updateLoan }) {
         </div>
 
         <div className="input-group">
-          <label>Original Loan Amount</label>
+          <label>Do you want to BT this?</label>
           <div className="input-wrapper">
-            <span className="currency">₹</span>
-            <input type="number" min={1} required value={loan.originalAmount} onChange={(e) => updateLoan(loan.id, 'originalAmount', e.target.value)} />
-          </div>
-        </div>
-        
-        <div className="input-group">
-          <label>Disbursed Date</label>
-          <div className="input-wrapper date-wrapper">
-            <input type="date" required value={loan.disbursedDate} onChange={(e) => updateLoan(loan.id, 'disbursedDate', e.target.value)} />
+            <select 
+              value={loan.wantsBT || 'yes'} 
+              onChange={(e) => updateLoan(loan.id, 'wantsBT', e.target.value)}
+              style={{ width: '100%', background: 'transparent', border: 'none', color: 'var(--text-main)', padding: '0.8rem 1rem', fontSize: '1rem', outline: 'none' }}
+            >
+              <option value="yes" style={{color:'black'}}>Yes</option>
+              <option value="no" style={{color:'black'}}>No</option>
+            </select>
           </div>
         </div>
 
-        <div className="input-group">
-          <label>Interest Rate (% p.a.)</label>
-          <div className="input-wrapper">
-            <input type="number" step="any" min={0.1} required value={loan.rate} onChange={(e) => updateLoan(loan.id, 'rate', e.target.value)} />
-            <span className="percent">%</span>
-          </div>
-        </div>
+        {loan.type !== 'Credit Card' && (
+          <>
+            <div className="input-group">
+              <label>Original Loan Amount</label>
+              <div className="input-wrapper">
+                <span className="currency">₹</span>
+                <input type="number" min={1} required value={loan.originalAmount} onChange={(e) => updateLoan(loan.id, 'originalAmount', e.target.value)} />
+              </div>
+            </div>
+            
+            <div className="input-group">
+              <label>Disbursed Date</label>
+              <div className="input-wrapper date-wrapper">
+                <input type="date" required value={loan.disbursedDate} onChange={(e) => updateLoan(loan.id, 'disbursedDate', e.target.value)} />
+              </div>
+            </div>
+
+            <div className="input-group">
+              <label>Interest Rate (% p.a.)</label>
+              <div className="input-wrapper">
+                <input type="number" step="any" min={0.1} required value={loan.rate} onChange={(e) => updateLoan(loan.id, 'rate', e.target.value)} />
+                <span className="percent">%</span>
+              </div>
+            </div>
+
+            <div className="input-group">
+              <label>Original Tenure (Months)</label>
+              <div className="input-wrapper">
+                <input type="number" min={1} required value={loan.tenure} onChange={(e) => updateLoan(loan.id, 'tenure', e.target.value)} />
+                <span className="unit">Mo</span>
+              </div>
+            </div>
+          </>
+        )}
 
         <div className="input-group">
-          <label>Original Tenure (Months)</label>
-          <div className="input-wrapper">
-            <input type="number" min={1} required value={loan.tenure} onChange={(e) => updateLoan(loan.id, 'tenure', e.target.value)} />
-            <span className="unit">Mo</span>
-          </div>
-        </div>
-
-        <div className="input-group">
-          <label>Current Outstanding (Optional)</label>
+          <label>Current Outstanding {loan.type !== 'Credit Card' && '(Optional)'}</label>
           <div className="input-wrapper">
             <span className="currency">₹</span>
             <input 
               type="number" 
-              placeholder={autoOutstanding > 0 ? Math.round(autoOutstanding).toString() : "Auto-calculated"} 
+              placeholder={loan.type !== 'Credit Card' && autoOutstanding > 0 ? Math.round(autoOutstanding).toString() : "e.g. 50000"} 
+              required={loan.type === 'Credit Card'}
               value={loan.currentOutstanding} 
               onChange={(e) => updateLoan(loan.id, 'currentOutstanding', e.target.value)} 
             />
           </div>
         </div>
 
-        <div className="input-group">
-          <label>Monthly EMI (Optional)</label>
-          <div className="input-wrapper">
-            <span className="currency">₹</span>
-            <input 
-              type="number" 
-              placeholder={autoEmi > 0 ? Math.round(autoEmi).toString() : "Auto-calculated"} 
-              value={loan.emi} 
-              onChange={(e) => updateLoan(loan.id, 'emi', e.target.value)} 
-            />
+        {loan.type !== 'Credit Card' && (
+          <div className="input-group">
+            <label>Monthly EMI (Optional)</label>
+            <div className="input-wrapper">
+              <span className="currency">₹</span>
+              <input 
+                type="number" 
+                placeholder={autoEmi > 0 ? Math.round(autoEmi).toString() : "Auto-calculated"} 
+                value={loan.emi} 
+                onChange={(e) => updateLoan(loan.id, 'emi', e.target.value)} 
+              />
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

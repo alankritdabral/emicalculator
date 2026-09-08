@@ -109,68 +109,6 @@ export default function ProfileInput({
           </div>
         </div>
 
-        {/* CIBIL Score */}
-        <div>
-          <div className="label-with-hint">
-            <label htmlFor="cibil">CIBIL Score</label>
-          </div>
-          <div className="input-wrapper">
-            <input
-              type="number"
-              id="cibil"
-              placeholder="e.g. 750"
-              required
-              min={300}
-              max={900}
-              value={cibil}
-              onChange={(e) => onCibilChange(e.target.value)}
-            />
-          </div>
-        </div>
-
-        {/* City (Custom Dropdown) */}
-        <div ref={cityDropdownRef} style={{ position: 'relative' }}>
-          <div className="label-with-hint">
-            <label htmlFor="city">City</label>
-          </div>
-          <div className="input-wrapper">
-            <input
-              type="text"
-              id="city"
-              placeholder="Search city..."
-              required
-              value={citySearch}
-              onChange={(e) => {
-                setCitySearch(e.target.value);
-                setShowCityDropdown(true);
-              }}
-              onFocus={() => setShowCityDropdown(true)}
-              autoComplete="off"
-            />
-          </div>
-          
-          {showCityDropdown && (
-            <div style={{
-              position: 'absolute', top: '100%', left: 0, right: 0, maxHeight: '200px', overflowY: 'auto',
-              background: 'var(--card-bg)', border: '1px solid var(--border)', borderRadius: '8px',
-              marginTop: '4px', zIndex: 10, boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-            }}>
-              {filteredCities.length > 0 ? (
-                filteredCities.map(c => (
-                  <div key={c}
-                    onClick={() => { setCitySearch(c); onCityChange(c); setShowCityDropdown(false); }}
-                    style={{ padding: '0.8rem 1rem', cursor: 'pointer', borderBottom: '1px solid var(--border)', color: 'var(--text)' }}
-                    onMouseOver={(e) => e.target.style.background = 'var(--bg-secondary)'}
-                    onMouseOut={(e) => e.target.style.background = 'transparent'}
-                  >{c}</div>
-                ))
-              ) : (
-                <div style={{ padding: '0.8rem 1rem', color: 'var(--text-muted)' }}>No cities found</div>
-              )}
-            </div>
-          )}
-        </div>
-
         {/* DOB */}
         <div>
           <div className="label-with-hint">
@@ -181,7 +119,8 @@ export default function ProfileInput({
               type="date"
               id="dob"
               required
-              max={new Date(new Date().setFullYear(new Date().getFullYear() - 18)).toISOString().split('T')[0]} // Max date = 18 years ago
+              max={new Date(new Date().setFullYear(new Date().getFullYear() - 18)).toISOString().split('T')[0]}
+              min={new Date(new Date().setFullYear(new Date().getFullYear() - 56)).toISOString().split('T')[0]}
               value={dob}
               onChange={(e) => onDobChange(e.target.value)}
             />
@@ -233,23 +172,6 @@ export default function ProfileInput({
           )}
         </div>
 
-        {/* Employment Vintage */}
-        <div>
-          <div className="label-with-hint">
-            <label htmlFor="employment-vintage">Job Vintage (Months)</label>
-          </div>
-          <div className="input-wrapper">
-            <input
-              type="number"
-              id="employment-vintage"
-              placeholder="Months in current job (e.g. 24)"
-              required
-              min={0}
-              value={employmentVintage}
-              onChange={(e) => onEmploymentVintageChange(e.target.value)}
-            />
-          </div>
-        </div>
 
       </div>
       

@@ -196,9 +196,9 @@ export default function EligibilityPage() {
 
   // Derived calculations for summary
   const processedLoans = loans.map(l => {
-    const p = Number(l.originalAmount);
-    const r = Number(l.rate);
-    const n = Number(l.tenure);
+    let p = Number(l.originalAmount);
+    let r = Number(l.rate);
+    let n = Number(l.tenure);
     
     let calculatedEmi = l.emi ? Number(l.emi) : calculateEMI(p, r, n);
     let emisPaid = getEmisPaid(l.disbursedDate);
@@ -207,13 +207,22 @@ export default function EligibilityPage() {
       ? Number(l.currentOutstanding) 
       : calculateOutstanding(p, r, n, emisPaid);
 
+    let emisRemaining = Math.max(0, n - emisPaid);
+
+    if (l.type === 'Credit Card') {
+      calculatedOutstanding = Number(l.currentOutstanding) || 0;
+      calculatedEmi = calculatedOutstanding * 0.05;
+      emisRemaining = 60; // Dummy tenure for CC to show interest savings
+      emisPaid = 0;
+    }
+
     return {
       ...l,
       calculatedEmi,
       calculatedOutstanding,
       emisPaid,
-      emisRemaining: Math.max(0, n - emisPaid),
-      category: CATEGORY_B.includes(l.type) ? 'B' : 'A'
+      emisRemaining,
+      category: CATEGORY_B.includes(l.type) && l.wantsBT !== 'no' ? 'B' : 'A'
     };
   });
 
