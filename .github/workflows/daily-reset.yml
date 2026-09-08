@@ -1,0 +1,28 @@
+name: Daily Login Code Reset
+
+on:
+  schedule:
+    # 18:30 UTC is exactly 12:00 AM IST
+    - cron: '30 18 * * *'
+  workflow_dispatch: # Allows manual triggering from GitHub UI
+
+jobs:
+  reset-code:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      # Install only firebase-admin since it's the only dependency needed for the script
+      - name: Install dependencies
+        run: npm install firebase-admin
+
+      - name: Run reset script
+        env:
+          FIREBASE_SERVICE_ACCOUNT_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}
+        run: node scripts/reset-access-code.js
