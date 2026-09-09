@@ -10,42 +10,14 @@ import { CATEGORY_B } from './components/LoanCard';
 import CreditBehaviourInput from './components/CreditBehaviourInput';
 import RequirementInput from './components/RequirementInput';
 
-// --- Utilities ---
-function calculateEMI(p, annualRate, months) {
-  if (!p || !annualRate || !months) return 0;
-  if (annualRate === 0) return p / months;
-  const r = annualRate / 12 / 100;
-  return p * r * Math.pow(1 + r, months) / (Math.pow(1 + r, months) - 1);
-}
-
-function calculatePrincipalFromEMI(emi, annualRate, months) {
-  if (!emi || !annualRate || !months) return 0;
-  if (annualRate === 0) return emi * months;
-  const r = annualRate / 12 / 100;
-  return emi * (Math.pow(1 + r, months) - 1) / (r * Math.pow(1 + r, months));
-}
-
-function getEmisPaid(disbursedDate) {
-  if (!disbursedDate) return 0;
-  const d = new Date(disbursedDate);
-  const now = new Date();
-  
-  let firstEmiMonthOffset = d.getDate() <= 20 ? 1 : 2;
-  const firstEmiDate = new Date(d.getFullYear(), d.getMonth() + firstEmiMonthOffset, 1);
-  
-  let months = (now.getFullYear() - firstEmiDate.getFullYear()) * 12 + (now.getMonth() - firstEmiDate.getMonth());
-  return Math.max(0, months);
-}
-
-function calculateOutstanding(p, annualRate, months, emisPaid) {
-  if (!p || !annualRate || !months || emisPaid < 0) return p;
-  if (emisPaid >= months) return 0;
-  const r = annualRate / 12 / 100;
-  if (r === 0) return Math.max(0, p - (p / months) * emisPaid);
-  const emi = calculateEMI(p, annualRate, months);
-  const outstanding = p * Math.pow(1+r, emisPaid) - (emi * (Math.pow(1+r, emisPaid) - 1) / r);
-  return Math.max(0, outstanding);
-}
+import {
+  calculateEMI,
+  calculatePrincipalFromEMI,
+  calculateRateFromEMI,
+  calculateTenureFromEMI,
+  getEmisPaid,
+  calculateOutstanding
+} from '../../lib/engine';
 
 export default function EligibilityPage() {
   const [netSalary, setNetSalary] = useState('');
@@ -69,6 +41,35 @@ export default function EligibilityPage() {
   const [emiCapacity, setEmiCapacity] = useState(null);
   const [loans, setLoans] = useState([]);
   const [showResults, setShowResults] = useState(false);
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
+
+  useEffect(() => {
+    const checkAuth = () => {
+      if (window.AuthSystem) {
+        window.AuthSystem.onAuthStateChanged((user) => {
+          if (!user) {
+            window.location.href = '/login';
+          } else {
+            setIsAuthLoading(false);
+          }
+        });
+      }
+    };
+    
+    if (typeof window !== 'undefined') {
+      if (window.AuthSystem) {
+        checkAuth();
+      } else {
+        const timer = setInterval(() => {
+          if (window.AuthSystem) {
+            clearInterval(timer);
+            checkAuth();
+          }
+        }, 100);
+        setTimeout(() => clearInterval(timer), 5000); // 5 sec timeout
+      }
+    }
+  }, []);
 
   // Load from local storage
   useEffect(() => {
@@ -218,21 +219,66 @@ export default function EligibilityPage() {
     let p = Number(l.originalAmount);
     let r = Number(l.rate);
     let n = Number(l.tenure);
-    
-    let calculatedEmi = l.emi ? Number(l.emi) : calculateEMI(p, r, n);
-    let emisPaid = getEmisPaid(l.disbursedDate);
-    
-    let calculatedOutstanding = l.currentOutstanding 
-      ? Number(l.currentOutstanding) 
-      : calculateOutstanding(p, r, n, emisPaid);
+    let emi = Number(l.emi);
 
-    let emisRemaining = Math.max(0, n - emisPaid);
+    let emisPaid = 0;
+    let calculatedEmi = 0;
+    let calculatedOutstanding = 0;
+    let emisRemaining = 0;
 
-    if (l.type === 'Credit Card') {
+    if (l.type === 'Overdraft') {
+      const initialMonths = (l.odPlan === '3yr') ? 36 : 24;
+      n = (l.odPlan === '3yr') ? 60 : 72; // Overwrite tenure
+
+      if (!l.originalAmount && r > 0 && emi > 0) {
+         p = calculatePrincipalFromEMI(emi, r, n);
+      }
+      if (!l.rate && p > 0 && emi > 0) {
+         r = calculateRateFromEMI(p, emi, n);
+      }
+      
+      const standardMonthsSince = getEmisPaid(l.disbursedDate);
+      const emisActuallyPaid = Math.max(0, standardMonthsSince - initialMonths);
+      
+      if (standardMonthsSince <= initialMonths) {
+        // Initial Period
+        calculatedEmi = 0;
+        emisPaid = 0;
+        calculatedOutstanding = l.currentOutstanding ? Number(l.currentOutstanding) : p;
+        emisRemaining = n;
+      } else {
+        // EMI Period
+        emisPaid = emisActuallyPaid;
+        calculatedEmi = emi > 0 ? emi : calculateEMI(p, r, n);
+        calculatedOutstanding = l.currentOutstanding 
+          ? Number(l.currentOutstanding) 
+          : calculateOutstanding(p, r, n, emisPaid);
+        emisRemaining = Math.max(0, n - emisPaid);
+      }
+
+    } else if (l.type === 'Credit Card') {
       calculatedOutstanding = Number(l.currentOutstanding) || 0;
-      calculatedEmi = l.emi ? Number(l.emi) : (calculatedOutstanding * 0.05);
+      calculatedEmi = emi > 0 ? emi : (calculatedOutstanding * 0.05);
       emisRemaining = 60; // Dummy tenure for CC to show interest savings
       emisPaid = 0;
+    } else {
+      // Normal Loans
+      if (!l.rate && p > 0 && n > 0 && emi > 0) {
+        r = calculateRateFromEMI(p, emi, n);
+      }
+      if (!l.tenure && p > 0 && r > 0 && emi > 0) {
+        n = calculateTenureFromEMI(p, emi, r);
+      }
+      if (!l.originalAmount && r > 0 && n > 0 && emi > 0) {
+        p = calculatePrincipalFromEMI(emi, r, n);
+      }
+      
+      calculatedEmi = emi > 0 ? emi : calculateEMI(p, r, n);
+      emisPaid = getEmisPaid(l.disbursedDate);
+      calculatedOutstanding = l.currentOutstanding 
+        ? Number(l.currentOutstanding) 
+        : calculateOutstanding(p, r, n, emisPaid);
+      emisRemaining = Math.max(0, n - emisPaid);
     }
 
     return {
@@ -395,11 +441,29 @@ export default function EligibilityPage() {
 
   return (
     <>
+      {isAuthLoading && (
+        <div id="auth-loading-screen" style={{position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: '#0B1F3A', zIndex: 99999, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16}}>
+          <div className="auth-btn" style={{width: 'auto', background: 'transparent', border: 'none', boxShadow: 'none'}}>
+            <div className="spinner" style={{width: 32, height: 32, borderWidth: 3, borderTopColor: '#38BDF8'}} />
+          </div>
+          <p style={{color: '#94A3B8', fontSize: 14, fontWeight: 500}}>Verifying daily access authorization...</p>
+        </div>
+      )}
+
+      {!isAuthLoading && (
+        <aside className="session-pill-bar" id="session-bar" style={{display: 'flex'}}>
+          <span className="session-dot" />
+          <span className="session-text" id="session-user-role">Access Active</span>
+          <a href="/" style={{color: '#93C5FD', fontSize: 12, fontWeight: 600, textDecoration: 'none', marginLeft: 4, padding: '2px 8px', borderRadius: 6, background: 'rgba(37, 99, 235, 0.2)'}}>Back to Main</a>
+          <button type="button" className="session-logout-btn" onClick={() => window.AuthSystem && window.AuthSystem.logout()}>Sign Out</button>
+        </aside>
+      )}
+
       <div className="background-elements">
         <div className="blob blob-1" />
         <div className="blob blob-2" />
       </div>
-      <main className="calculator-container" style={{ margin: '2rem auto', display: 'block', maxWidth: '800px', width: '90%' }}>
+      <main className="calculator-container" style={{ margin: '2rem auto', display: isAuthLoading ? 'none' : 'block', maxWidth: '800px', width: '90%' }}>
         <header>
           <h1>See How Much EMI You Can Manage</h1>
           <p>Enter your monthly income and existing loans to understand your current EMI burden and explore potential ways to reduce it.</p>

@@ -31,9 +31,11 @@ export default function Page() {
         </div>
       </div>
       <div className="admin-user-info">
-        <a href="index.html" style={{color: '#93C5FD', fontSize: 13, fontWeight: 600, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 8, background: 'rgba(37, 99, 235, 0.1)', border: '1px solid rgba(191, 219, 254, 0.2)'}}>
-          <span>Open Calculator</span>
-          <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1={10} y1={14} x2={21} y2={3} /></svg>
+        <a href="/" style={{color: '#93C5FD', fontSize: 13, fontWeight: 600, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 8, background: 'rgba(37, 99, 235, 0.1)', border: '1px solid rgba(191, 219, 254, 0.2)'}}>
+          <span>Calculator</span>
+        </a>
+        <a href="/eligibility" style={{color: '#93C5FD', fontSize: 13, fontWeight: 600, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 8, background: 'rgba(37, 99, 235, 0.1)', border: '1px solid rgba(191, 219, 254, 0.2)'}}>
+          <span>Eligibility</span>
         </a>
         <span className="admin-email-tag" id="display-admin-email">admin@creditexpertindia.com</span>
         <button type="button" className="session-logout-btn" onClick={() => { window.AuthSystem.logout() }}>Logout</button>

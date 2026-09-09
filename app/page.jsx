@@ -17,7 +17,8 @@ export default function Home() {
   <aside className="session-pill-bar" id="session-bar" style={{display: 'none'}}>
     <span className="session-dot" />
     <span className="session-text" id="session-user-role">Access Active</span>
-    <a href="admin.html" id="admin-shortcut-link" style={{display: 'none', color: '#93C5FD', fontSize: 12, fontWeight: 600, textDecoration: 'none', marginLeft: 4, padding: '2px 8px', borderRadius: 6, background: 'rgba(37, 99, 235, 0.2)'}}>Admin Panel</a>
+    <a href="/admin" id="admin-shortcut-link" style={{display: 'none', color: '#93C5FD', fontSize: 12, fontWeight: 600, textDecoration: 'none', marginLeft: 4, padding: '2px 8px', borderRadius: 6, background: 'rgba(37, 99, 235, 0.2)'}}>Admin Panel</a>
+    <a href="/eligibility" style={{color: '#93C5FD', fontSize: 12, fontWeight: 600, textDecoration: 'none', marginLeft: 4, padding: '2px 8px', borderRadius: 6, background: 'rgba(37, 99, 235, 0.2)'}}>Eligibility Calculator</a>
     <button type="button" className="session-logout-btn" onClick={() => window.AuthSystem && window.AuthSystem.logout()}>Sign Out</button>
   </aside>
   {/* Auth Verification Loading Veil */}
