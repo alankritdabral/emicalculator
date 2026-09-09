@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "./*"
+      ]
+    },
+    "types": ["node", "prop-types", "react", "react-dom"]
+  },
+  "typeAcquisition": {
+    "enable": true
+  }
+}

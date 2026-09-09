@@ -1,0 +1,23 @@
+[
+  {
+    "id": "hdfc-bank",
+    "name": "HDFC Bank",
+    "aliases": ["HDFC", "HDFC Bank Ltd"],
+    "type": "BANK",
+    "active": true
+  },
+  {
+    "id": "icici-bank",
+    "name": "ICICI Bank",
+    "aliases": ["ICICI"],
+    "type": "BANK",
+    "active": true
+  },
+  {
+    "id": "bajaj-finance",
+    "name": "Bajaj Finance",
+    "aliases": ["Bajaj", "Bajaj Finserv"],
+    "type": "NBFC",
+    "active": true
+  }
+]

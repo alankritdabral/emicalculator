@@ -1,0 +1,48 @@
+{
+  "name": "emi-calculator",
+  "version": "1.0.0",
+  "description": "A premium, modern, and beautiful EMI (Equated Monthly Installment) Calculator built with Next.js and TypeScript.",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alankritdabral/emicalculator.git"
+  },
+  "keywords": [
+    "emi-calculator",
+    "loan-calculator",
+    "refinance",
+    "nextjs"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/alankritdabral/emicalculator/issues"
+  },
+  "homepage": "https://github.com/alankritdabral/emicalculator#readme",
+  "dependencies": {
+    "canvas-confetti": "^1.9.3",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^2.5.1",
+    "lucide-react": "^0.436.0",
+    "next": "^14.2.5",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/canvas-confetti": "^1.9.0",
+    "@types/node": "^20.19.43",
+    "@types/prop-types": "^15.7.15",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "autoprefixer": "^10.5.5",
+    "postcss": "^8.5.28",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^5.5.4"
+  }
+}

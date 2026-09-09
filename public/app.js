@@ -1,6 +1,47 @@
-document.addEventListener('DOMContentLoaded', () => {
+function initApp() {
     const form = document.getElementById('emi-form');
     const resultsSection = document.getElementById('results');
+    if (!form) return;
+
+    // Check Auth Status & remove loading screen
+    if (window.AuthSystem) {
+        window.AuthSystem.onAuthStateChanged((user) => {
+            const loadingScreen = document.getElementById('auth-loading-screen');
+            const calculatorMain = document.getElementById('calculator-main');
+            const sessionBar = document.getElementById('session-bar');
+            const userRoleBadge = document.getElementById('session-user-role');
+            const adminShortcut = document.getElementById('admin-shortcut-link');
+            const demoBanner = document.getElementById('demo-banner');
+
+            if (!user) {
+                window.location.href = '/login';
+                return;
+            }
+
+            if (loadingScreen) loadingScreen.style.display = 'none';
+            if (calculatorMain) calculatorMain.style.display = 'block';
+            if (sessionBar) sessionBar.style.display = 'flex';
+            if (userRoleBadge) {
+                userRoleBadge.textContent = user.role === 'admin' ? 'Admin Access' : 'Access Active';
+            }
+            if (adminShortcut && user.role === 'admin') {
+                adminShortcut.style.display = 'inline-block';
+            }
+            if (demoBanner && !window.AuthSystem.isLive) {
+                demoBanner.style.display = 'flex';
+            }
+        });
+
+        // Active 12:00 AM IST auto-logout heartbeat watcher
+        setInterval(() => {
+            const session = window.AuthSystem.getSession ? window.AuthSystem.getSession() : null;
+            if (session && session.role === 'user' && session.expiresAt) {
+                if (Date.now() >= new Date(session.expiresAt).getTime()) {
+                    window.AuthSystem.logout();
+                }
+            }
+        }, 5000);
+    }
 
     // Inputs
     const loanAmountInput = document.getElementById('loan-amount');
@@ -995,5 +1036,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize default date and initial calculation
     setDefaultIssueDate();
     performCalculation(false);
-});
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initApp);
+} else {
+    initApp();
+}
 
