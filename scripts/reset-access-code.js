@@ -36,14 +36,29 @@ async function resetAccessCode() {
     const doc = await codeRef.get();
     
     let currentVersion = 0;
+    let oldCode = null;
     if (doc.exists) {
         const data = doc.data();
         currentVersion = data.version || 0;
+        oldCode = data.code;
     }
 
     const newCode = generateRandom6Digit();
     const nextExpiry = getNext12AmIST();
     
+    const batch = db.batch();
+
+    if (oldCode && oldCode !== newCode) {
+        batch.delete(db.collection("access_codes").doc(oldCode));
+    }
+
+    const newCodeRef = db.collection("access_codes").doc(newCode);
+    batch.set(newCodeRef, {
+        active: true,
+        expiresAt: admin.firestore.Timestamp.fromDate(nextExpiry),
+        createdAt: admin.firestore.FieldValue.serverTimestamp()
+    });
+
     const newDoc = {
       code: newCode,
       type: "random",
@@ -53,8 +68,9 @@ async function resetAccessCode() {
       version: currentVersion + 1,
     };
     
-    await codeRef.set(newDoc);
-    console.log(`Successfully reset access code to ${newCode}. Expires at ${nextExpiry.toISOString()}`);
+    batch.set(codeRef, newDoc);
+    await batch.commit();
+    // console.log(`Successfully reset access code to ${newCode}. Expires at ${nextExpiry.toISOString()}`);
     process.exit(0);
   } catch (error) {
     console.error("Error resetting access code:", error);
