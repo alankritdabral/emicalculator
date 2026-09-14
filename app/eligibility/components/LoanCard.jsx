@@ -24,9 +24,6 @@ export default function LoanCard({ loan, idx, removeLoan, updateLoan }) {
   const autoEmi = calculateEMI(p, r, n);
   
   let autoRate = 0;
-  if (!loan.rate && p > 0 && n > 0 && emiVal > 0) {
-    autoRate = calculateRateFromEMI(p, emiVal, n);
-  }
   
   let autoTenure = 0;
   if (loan.type !== 'Overdraft' && !loan.tenure && p > 0 && r > 0 && emiVal > 0) {
@@ -99,7 +96,7 @@ export default function LoanCard({ loan, idx, removeLoan, updateLoan }) {
           </div>
         </div>
 
-        {loan.type !== 'Credit Card' && (
+        {loan.type !== 'Credit Card' && loan.type !== 'Gold Loan' && (
           <>
             <div className="input-group">
               <label>{loan.type === 'Overdraft' ? 'Total Amount Drawn' : 'Original Loan Amount'}</label>
@@ -119,7 +116,7 @@ export default function LoanCard({ loan, idx, removeLoan, updateLoan }) {
             <div className="input-group">
               <label>Interest Rate (% p.a.)</label>
               <div className="input-wrapper">
-                <input type="number" step="any" min={0.1} placeholder={autoRate > 0 ? autoRate.toString() : ""} required={!autoRate} value={loan.rate} onChange={(e) => updateLoan(loan.id, 'rate', e.target.value)} />
+                <input type="number" step="any" min={0.1} placeholder="" required value={loan.rate} onChange={(e) => updateLoan(loan.id, 'rate', e.target.value)} />
                 <span className="percent">%</span>
               </div>
             </div>
@@ -151,13 +148,13 @@ export default function LoanCard({ loan, idx, removeLoan, updateLoan }) {
         )}
 
         <div className="input-group">
-          <label>Current Outstanding {loan.type !== 'Credit Card'}</label>
+          <label>Current Outstanding</label>
           <div className="input-wrapper">
             <span className="currency">₹</span>
             <input
               type="number"
-              placeholder={loan.type !== 'Credit Card' && autoOutstanding > 0 ? Math.round(autoOutstanding).toString() : "e.g. 50000"}
-              required={loan.type === 'Credit Card'}
+              placeholder={(loan.type !== 'Credit Card' && loan.type !== 'Gold Loan') && autoOutstanding > 0 ? Math.round(autoOutstanding).toString() : "e.g. 50000"}
+              required={loan.type === 'Credit Card' || loan.type === 'Gold Loan'}
               value={loan.currentOutstanding}
               onChange={(e) => updateLoan(loan.id, 'currentOutstanding', e.target.value)}
             />
@@ -170,7 +167,13 @@ export default function LoanCard({ loan, idx, removeLoan, updateLoan }) {
             <span className="currency">₹</span>
             <input
               type="number"
-              placeholder={loan.type === 'Credit Card' ? (loan.currentOutstanding ? Math.round(loan.currentOutstanding * 0.05).toString() : "e.g. 5000") : (autoEmi > 0 ? Math.round(autoEmi).toString() : "Auto-calculated")}
+              placeholder={
+                loan.type === 'Credit Card' 
+                  ? (loan.currentOutstanding ? Math.round(loan.currentOutstanding * 0.05).toString() : "e.g. 5000") 
+                  : loan.type === 'Gold Loan'
+                  ? (loan.currentOutstanding ? Math.round(loan.currentOutstanding * 0.01).toString() : "e.g. 1000")
+                  : (autoEmi > 0 ? Math.round(autoEmi).toString() : "Auto-calculated")
+              }
               value={loan.emi}
               onChange={(e) => updateLoan(loan.id, 'emi', e.target.value)}
             />
