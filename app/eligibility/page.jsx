@@ -233,9 +233,6 @@ export default function EligibilityPage() {
       if (!l.originalAmount && r > 0 && emi > 0) {
          p = calculatePrincipalFromEMI(emi, r, n);
       }
-      if (!l.rate && p > 0 && emi > 0) {
-         r = calculateRateFromEMI(p, emi, n);
-      }
       
       const standardMonthsSince = getEmisPaid(l.disbursedDate);
       const emisActuallyPaid = Math.max(0, standardMonthsSince - initialMonths);
@@ -261,11 +258,13 @@ export default function EligibilityPage() {
       calculatedEmi = emi > 0 ? emi : (calculatedOutstanding * 0.05);
       emisRemaining = 60; // Dummy tenure for CC to show interest savings
       emisPaid = 0;
+    } else if (l.type === 'Gold Loan') {
+      calculatedOutstanding = Number(l.currentOutstanding) || 0;
+      calculatedEmi = emi > 0 ? emi : (calculatedOutstanding * 0.01);
+      emisRemaining = 12; // Dummy tenure for Gold Loan
+      emisPaid = 0;
     } else {
       // Normal Loans
-      if (!l.rate && p > 0 && n > 0 && emi > 0) {
-        r = calculateRateFromEMI(p, emi, n);
-      }
       if (!l.tenure && p > 0 && r > 0 && emi > 0) {
         n = calculateTenureFromEMI(p, emi, r);
       }
